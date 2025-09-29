@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { ActivityType, DifficultyLevel, SkillArea } from '../enums/activity-type.enum';
 import { ActivityCompletion } from './activity-completion.entity';
+import { ActivitySession } from './activity-session.entity';
 
 @Entity('activities')
 export class Activity {
@@ -65,4 +66,7 @@ export class Activity {
   // Relations
   @OneToMany(() => ActivityCompletion, completion => completion.activity)
   completions: ActivityCompletion[];
+
+  @OneToMany(() => ActivitySession, session => session.activity)
+  sessions: ActivitySession[];
 }

@@ -3,11 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Activity } from '../../entities/activity.entity';
 import { ActivityCompletion } from '../../entities/activity-completion.entity';
+import { ActivitySession, SessionStatus } from '../../entities/activity-session.entity';
 import { Student } from '../../entities/student.entity';
 import { StudentsService } from '../students/students.service';
 import { ActivityType, DifficultyLevel, SkillArea } from '../../enums/activity-type.enum';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { CompleteActivityDto } from './dto/complete-activity.dto';
+import { StartActivitySessionDto } from './dto/start-activity-session.dto';
+import { SubmitStageDto } from './dto/submit-stage.dto';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class ActivitiesService {
@@ -16,6 +21,8 @@ export class ActivitiesService {
     private activityRepository: Repository<Activity>,
     @InjectRepository(ActivityCompletion)
     private activityCompletionRepository: Repository<ActivityCompletion>,
+    @InjectRepository(ActivitySession)
+    private activitySessionRepository: Repository<ActivitySession>,
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
     private studentsService: StudentsService,
@@ -300,5 +307,365 @@ export class ActivitiesService {
         await this.activityRepository.save(activity);
       }
     }
+  }
+
+  // Activity Session Management Methods
+  async startActivitySession(studentId: string, sessionData: StartActivitySessionDto): Promise<ActivitySession> {
+    const student = await this.studentRepository.findOne({ where: { id: studentId } });
+    const activity = await this.activityRepository.findOne({ where: { id: sessionData.activityId } });
+
+    if (!student || !activity) {
+      throw new Error('Student or Activity not found');
+    }
+
+    // Check if there's an active session for this student and activity
+    const existingSession = await this.activitySessionRepository.findOne({
+      where: {
+        student: { id: studentId },
+        activity: { id: sessionData.activityId },
+        status: SessionStatus.ACTIVE
+      }
+    });
+
+    if (existingSession) {
+      // Resume existing session
+      existingSession.lastActivityAt = new Date();
+      return this.activitySessionRepository.save(existingSession);
+    }
+
+    // Create new session
+    const totalStages = this.calculateTotalStages(activity);
+    const session = this.activitySessionRepository.create({
+      student,
+      activity,
+      status: SessionStatus.ACTIVE,
+      currentStage: sessionData.sessionConfig?.startFromStage || 1,
+      totalStages,
+      sessionConfig: sessionData.sessionConfig || {},
+      stageData: {}
+    });
+
+    return this.activitySessionRepository.save(session);
+  }
+
+  async getActivitySession(sessionId: string, studentId: string): Promise<ActivitySession> {
+    return this.activitySessionRepository.findOne({
+      where: {
+        id: sessionId,
+        student: { id: studentId }
+      },
+      relations: ['activity', 'student']
+    });
+  }
+
+  async submitStage(sessionId: string, stageData: SubmitStageDto, audioFile: any, studentId: string) {
+    const session = await this.activitySessionRepository.findOne({
+      where: { id: sessionId, student: { id: studentId } },
+      relations: ['activity', 'student']
+    });
+
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    // Process audio if provided
+    let audioProcessingResult = null;
+    if (audioFile) {
+      audioProcessingResult = await this.processAudioSubmission(audioFile, {
+        activityType: session.activity.type,
+        stageNumber: stageData.stageNumber,
+        expectedContent: this.getExpectedContentForStage(session.activity, stageData.stageNumber)
+      });
+    }
+
+    // Calculate stage score
+    const stageScore = this.calculateStageScore(session.activity, stageData, audioProcessingResult);
+
+    // Update session data
+    const currentStageData = session.stageData || {};
+    currentStageData[`stage_${stageData.stageNumber}`] = {
+      score: stageScore,
+      timeSpent: stageData.timeSpent,
+      audioData: stageData.audioData,
+      textData: stageData.textData,
+      processingResult: audioProcessingResult,
+      submittedAt: new Date(),
+      isCompleted: stageData.isCompleted
+    };
+
+    // Update session
+    session.stageData = currentStageData;
+    session.currentScore = this.calculateOverallScore(currentStageData);
+    session.pointsEarned = Math.floor(session.currentScore * session.activity.pointsReward / 100);
+    session.timeSpent += stageData.timeSpent;
+    session.lastActivityAt = new Date();
+
+    if (stageData.isCompleted && stageData.stageNumber < session.totalStages) {
+      session.currentStage = stageData.stageNumber + 1;
+    }
+
+    const updatedSession = await this.activitySessionRepository.save(session);
+
+    // Generate feedback for this stage
+    const feedback = this.generateStageFeedback(session.activity, stageScore, audioProcessingResult);
+
+    return {
+      session: updatedSession,
+      stageScore,
+      feedback,
+      audioProcessingResult
+    };
+  }
+
+  async completeActivitySession(sessionId: string, studentId: string): Promise<ActivityCompletion> {
+    const session = await this.activitySessionRepository.findOne({
+      where: { id: sessionId, student: { id: studentId } },
+      relations: ['activity', 'student']
+    });
+
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    // Mark session as completed
+    session.status = SessionStatus.COMPLETED;
+    session.completedAt = new Date();
+    await this.activitySessionRepository.save(session);
+
+    // Create activity completion record
+    const completion = this.activityCompletionRepository.create({
+      student: session.student,
+      activity: session.activity,
+      score: session.currentScore,
+      pointsEarned: session.pointsEarned,
+      timeSpent: session.timeSpent,
+      isCompleted: session.currentScore >= 60,
+      submissionData: session.stageData,
+      feedback: this.generateFinalFeedback(session.activity, session.currentScore, session.stageData)
+    });
+
+    const savedCompletion = await this.activityCompletionRepository.save(completion);
+
+    // Update student progress
+    if (completion.isCompleted) {
+      await this.studentsService.updateStudentProgress(studentId, session.pointsEarned, session.activity.type);
+    }
+
+    return savedCompletion;
+  }
+
+  async getStageFeedback(sessionId: string, stageNumber: number) {
+    const session = await this.activitySessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['activity']
+    });
+
+    if (!session || !session.stageData || !session.stageData[`stage_${stageNumber}`]) {
+      throw new Error('Stage data not found');
+    }
+
+    const stageData = session.stageData[`stage_${stageNumber}`];
+    return this.generateStageFeedback(session.activity, stageData.score, stageData.processingResult);
+  }
+
+  async pauseActivitySession(sessionId: string, studentId: string): Promise<ActivitySession> {
+    const session = await this.activitySessionRepository.findOne({
+      where: { id: sessionId, student: { id: studentId } }
+    });
+
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    session.status = SessionStatus.PAUSED;
+    session.lastActivityAt = new Date();
+    return this.activitySessionRepository.save(session);
+  }
+
+  async resumeActivitySession(sessionId: string, studentId: string): Promise<ActivitySession> {
+    const session = await this.activitySessionRepository.findOne({
+      where: { id: sessionId, student: { id: studentId } }
+    });
+
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    session.status = SessionStatus.ACTIVE;
+    session.lastActivityAt = new Date();
+    return this.activitySessionRepository.save(session);
+  }
+
+  async processAudioSubmission(audioFile: any, metadata: any) {
+    // Mock audio processing - In production, integrate with speech recognition service
+    const mockResults = {
+      transcription: this.generateMockTranscription(metadata.activityType),
+      pronunciationScore: Math.floor(Math.random() * 40) + 60, // 60-100
+      fluencyScore: Math.floor(Math.random() * 30) + 70, // 70-100
+      clarityScore: Math.floor(Math.random() * 35) + 65, // 65-100
+      matchAccuracy: Math.floor(Math.random() * 45) + 55, // 55-100
+      detectedWords: [],
+      feedback: [],
+      processingTime: Math.random() * 2000 + 500 // 500-2500ms
+    };
+
+    // Simulate processing delay
+    await new Promise(resolve => setTimeout(resolve, mockResults.processingTime));
+
+    // Save audio file (optional for real implementation)
+    if (audioFile) {
+      const audioDir = path.join(process.cwd(), 'uploads', 'audio');
+      if (!fs.existsSync(audioDir)) {
+        fs.mkdirSync(audioDir, { recursive: true });
+      }
+      const filename = `${Date.now()}-${audioFile.originalname}`;
+      const filepath = path.join(audioDir, filename);
+      fs.writeFileSync(filepath, audioFile.buffer);
+      mockResults['audioPath'] = filepath;
+    }
+
+    return mockResults;
+  }
+
+  // Helper methods
+  private calculateTotalStages(activity: Activity): number {
+    switch (activity.type) {
+      case ActivityType.PRONUNCIATION_CHALLENGE:
+        return activity.content?.words?.length || 5;
+      case ActivityType.PICTURE_DESCRIPTION:
+        return activity.content?.images?.length || 3;
+      case ActivityType.VIRTUAL_CONVERSATION:
+        return activity.content?.prompts?.length || 5;
+      default:
+        return 5;
+    }
+  }
+
+  private calculateStageScore(activity: Activity, stageData: SubmitStageDto, audioResult: any): number {
+    if (audioResult) {
+      // Use audio processing results for scoring
+      switch (activity.type) {
+        case ActivityType.PRONUNCIATION_CHALLENGE:
+          return audioResult.pronunciationScore;
+        case ActivityType.PICTURE_DESCRIPTION:
+          return (audioResult.fluencyScore + audioResult.clarityScore) / 2;
+        case ActivityType.VIRTUAL_CONVERSATION:
+          return (audioResult.fluencyScore + audioResult.matchAccuracy) / 2;
+        default:
+          return audioResult.pronunciationScore || 75;
+      }
+    }
+
+    // Fallback scoring without audio
+    return Math.floor(Math.random() * 40) + 60;
+  }
+
+  private calculateOverallScore(stageData: any): number {
+    const scores = Object.values(stageData).map((stage: any) => stage.score);
+    return scores.length > 0 ? Math.floor(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+  }
+
+  private getExpectedContentForStage(activity: Activity, stageNumber: number): any {
+    switch (activity.type) {
+      case ActivityType.PRONUNCIATION_CHALLENGE:
+        return activity.content?.words?.[stageNumber - 1] || '';
+      case ActivityType.PICTURE_DESCRIPTION:
+        return activity.content?.vocabulary || [];
+      case ActivityType.VIRTUAL_CONVERSATION:
+        return activity.content?.prompts?.[stageNumber - 1] || '';
+      default:
+        return null;
+    }
+  }
+
+  private generateMockTranscription(activityType: ActivityType): string {
+    const samples = {
+      [ActivityType.PRONUNCIATION_CHALLENGE]: ['hello', 'thank you', 'goodbye', 'please', 'excuse me'],
+      [ActivityType.PICTURE_DESCRIPTION]: ['I can see children playing on the playground', 'There is a swing and a slide'],
+      [ActivityType.VIRTUAL_CONVERSATION]: ['My name is Sarah', 'I like to play soccer', 'Reading is fun']
+    };
+
+    const sampleArray = samples[activityType] || samples[ActivityType.PRONUNCIATION_CHALLENGE];
+    return sampleArray[Math.floor(Math.random() * sampleArray.length)];
+  }
+
+  private generateStageFeedback(activity: Activity, score: number, audioResult: any): any {
+    const feedback = {
+      score,
+      level: score >= 85 ? 'excellent' : score >= 70 ? 'good' : 'needs-practice',
+      message: '',
+      suggestions: [],
+      encouragement: '',
+      audioFeedback: audioResult ? {
+        transcription: audioResult.transcription,
+        pronunciationTips: this.generatePronunciationTips(audioResult)
+      } : null
+    };
+
+    if (score >= 85) {
+      feedback.message = 'Excellent! Your pronunciation is clear and accurate.';
+      feedback.encouragement = 'Keep up the fantastic work!';
+    } else if (score >= 70) {
+      feedback.message = 'Good job! You\'re making great progress.';
+      feedback.suggestions = ['Try to speak more clearly', 'Focus on word stress'];
+      feedback.encouragement = 'You\'re doing well!';
+    } else {
+      feedback.message = 'Keep practicing! Every attempt helps you improve.';
+      feedback.suggestions = ['Practice pronunciation slowly', 'Listen to native speakers', 'Record yourself speaking'];
+      feedback.encouragement = 'Don\'t give up, you\'re learning!';
+    }
+
+    return feedback;
+  }
+
+  private generateFinalFeedback(activity: Activity, finalScore: number, stageData: any): any {
+    const completedStages = Object.keys(stageData).length;
+    const averageStageScore = this.calculateOverallScore(stageData);
+
+    return {
+      finalScore,
+      averageStageScore,
+      completedStages,
+      totalTime: Object.values(stageData).reduce((sum: number, stage: any) => sum + (stage.timeSpent || 0), 0),
+      message: finalScore >= 85 ? 'Outstanding performance!' : finalScore >= 70 ? 'Great work!' : 'Good effort!',
+      improvement: this.generateImprovementSuggestions(activity.type, averageStageScore),
+      achievements: this.checkNewAchievements(activity, finalScore, stageData)
+    };
+  }
+
+  private generatePronunciationTips(audioResult: any): string[] {
+    const tips = [];
+    if (audioResult.pronunciationScore < 80) tips.push('Focus on clear consonant sounds');
+    if (audioResult.fluencyScore < 75) tips.push('Try to speak more smoothly');
+    if (audioResult.clarityScore < 70) tips.push('Speak louder and more clearly');
+    return tips;
+  }
+
+  private generateImprovementSuggestions(activityType: ActivityType, score: number): string[] {
+    const suggestions = [];
+
+    switch (activityType) {
+      case ActivityType.PRONUNCIATION_CHALLENGE:
+        if (score < 80) suggestions.push('Practice individual sounds', 'Use pronunciation apps');
+        break;
+      case ActivityType.PICTURE_DESCRIPTION:
+        if (score < 80) suggestions.push('Learn more descriptive vocabulary', 'Practice forming complete sentences');
+        break;
+      case ActivityType.VIRTUAL_CONVERSATION:
+        if (score < 80) suggestions.push('Practice conversation starters', 'Work on natural responses');
+        break;
+    }
+
+    return suggestions;
+  }
+
+  private checkNewAchievements(activity: Activity, score: number, stageData: any): any[] {
+    const achievements = [];
+
+    if (score >= 95) achievements.push({ name: 'Perfect Score', icon: '🌟' });
+    if (score >= 85) achievements.push({ name: 'Excellent Speaker', icon: '🎤' });
+    if (Object.keys(stageData).length >= 5) achievements.push({ name: 'Dedicated Learner', icon: '📚' });
+
+    return achievements;
   }
 }

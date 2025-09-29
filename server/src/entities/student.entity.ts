@@ -4,6 +4,7 @@ import { Parent } from './parent.entity';
 import { Teacher } from './teacher.entity';
 import { Progress } from './progress.entity';
 import { ActivityCompletion } from './activity-completion.entity';
+import { ActivitySession } from './activity-session.entity';
 import { Badge } from './badge.entity';
 
 @Entity('students')
@@ -63,6 +64,9 @@ export class Student {
 
   @OneToMany(() => ActivityCompletion, completion => completion.student)
   activityCompletions: ActivityCompletion[];
+
+  @OneToMany(() => ActivitySession, session => session.student)
+  activitySessions: ActivitySession[];
 
   @ManyToMany(() => Badge)
   @JoinTable()

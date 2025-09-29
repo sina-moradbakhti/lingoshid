@@ -448,8 +448,10 @@ export class ActivityDetailComponent implements OnInit {
   }
 
   startActivity() {
-    // For now, show an alert - this will be enhanced later
-    alert(`🎮 Starting "${this.activity?.title}"!\n\nIn the full version, this would open the interactive activity interface.`);
+    if (this.activity) {
+      // Navigate to the interactive activity runner
+      this.router.navigate(['/student/activities', this.activity.id, 'start']);
+    }
   }
 
   goBack() {

@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { CompleteActivityDto } from './dto/complete-activity.dto';
+import { StartActivitySessionDto } from './dto/start-activity-session.dto';
+import { SubmitStageDto } from './dto/submit-stage.dto';
 import { ActivityType, DifficultyLevel, SkillArea } from '../../enums/activity-type.enum';
 
 @Controller('activities')
@@ -80,5 +83,60 @@ export class ActivitiesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.activitiesService.remove(id);
+  }
+
+  // Activity Session Endpoints
+  @Post('sessions/start')
+  async startSession(@Body() sessionData: StartActivitySessionDto, @Request() req) {
+    const studentId = req.user.studentId;
+    return this.activitiesService.startActivitySession(studentId, sessionData);
+  }
+
+  @Get('sessions/:sessionId')
+  getSession(@Param('sessionId') sessionId: string, @Request() req) {
+    const studentId = req.user.studentId;
+    return this.activitiesService.getActivitySession(sessionId, studentId);
+  }
+
+  @Post('sessions/:sessionId/stage')
+  @UseInterceptors(FileInterceptor('audio'))
+  async submitStage(
+    @Param('sessionId') sessionId: string,
+    @Body() stageData: SubmitStageDto,
+    @UploadedFile() audioFile: any,
+    @Request() req
+  ) {
+    const studentId = req.user.studentId;
+    return this.activitiesService.submitStage(sessionId, stageData, audioFile, studentId);
+  }
+
+  @Post('sessions/:sessionId/complete')
+  async completeSession(@Param('sessionId') sessionId: string, @Request() req) {
+    const studentId = req.user.studentId;
+    return this.activitiesService.completeActivitySession(sessionId, studentId);
+  }
+
+  @Get('sessions/:sessionId/feedback/:stageNumber')
+  getStageFeedback(@Param('sessionId') sessionId: string, @Param('stageNumber') stageNumber: number) {
+    return this.activitiesService.getStageFeedback(sessionId, stageNumber);
+  }
+
+  @Post('sessions/:sessionId/pause')
+  pauseSession(@Param('sessionId') sessionId: string, @Request() req) {
+    const studentId = req.user.studentId;
+    return this.activitiesService.pauseActivitySession(sessionId, studentId);
+  }
+
+  @Post('sessions/:sessionId/resume')
+  resumeSession(@Param('sessionId') sessionId: string, @Request() req) {
+    const studentId = req.user.studentId;
+    return this.activitiesService.resumeActivitySession(sessionId, studentId);
+  }
+
+  // Audio processing endpoint
+  @Post('process-audio')
+  @UseInterceptors(FileInterceptor('audio'))
+  async processAudio(@UploadedFile() audioFile: any, @Body() metadata: any) {
+    return this.activitiesService.processAudioSubmission(audioFile, metadata);
   }
 }

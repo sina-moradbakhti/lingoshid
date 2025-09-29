@@ -36,6 +36,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/student/activity-detail/activity-detail.component').then(m => m.ActivityDetailComponent)
       },
       {
+        path: 'activities/:id/start',
+        loadComponent: () => import('./components/student/start-activity/start-activity.component').then(m => m.StartActivityComponent)
+      },
+      {
         path: 'leaderboard',
         loadComponent: () => import('./components/student/leaderboard/leaderboard.component').then(m => m.LeaderboardComponent)
       },
