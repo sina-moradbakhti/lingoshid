@@ -1,0 +1,928 @@
+ISLAMIC AZAD UNIVERSITY
+SOUTH TEHRAN BRANCH
+FACULTY OF ISLAMIC EDUCATION
+DEPARTMENT OF ENGLISH LANGUAGE TEACHING
+Title
+The Impact of a Gamified EFL Learning Platform on Iranian Primary School Students’
+Speaking Development.
+ایرانی
+دبستانی
+آموزان
+دانش
+گفتاری
+مهارت
+پیشرفت
+عنوان
+بر
+محور
+بازی
+انگلیسی
+زبان
+آموزش
+پلتفرم
+یک
+تاثیر
+Supervisor
+Nasibeh Bagherpor, Ph.D.
+By
+Sheida Abhari
+Tehran, Iran
+September, 2025
+1. Introduction
+1.1 Background
+Digital game-based learning (DGBL) has emerged as a transformative pedagogical
+approach in English as a Foreign Language (EFL) education, particularly for developing
+speaking skills among young learners. Gamification, defined as the integration of game
+design elements such as points, badges, leaderboards, and challenges into non-game
+contexts, has shown significant potential in enhancing language learning outcomes (Liu
+et al., 2025; Tsang & Davis, 2024). In the Iranian EFL context, where traditional teaching
+methods often dominate primary education, the implementation of gamified learning
+platforms represents a promising avenue for addressing persistent challenges in speaking
+skill development.
+Speaking proficiency remains one of the most challenging aspects of EFL learning for
+Iranian primary school students, who often experience high levels of foreign language
+anxiety and limited opportunities for authentic oral communication practice (Ahmed,
+2022; Yang et al., 2023). Recent empirical studies have demonstrated that gamification
+can effectively reduce anxiety among EFL learners while promoting active learning
+processes. The integration of game elements into language learning environments creates
+a more engaging and less threatening atmosphere for oral practice, potentially addressing
+the psychological barriers that impede speaking development in young learners.
+The theoretical foundation for gamified language learning draws from multiple
+educational paradigms, including constructivist learning theory, motivation theory, and
+flow theory. Research by Reinders and Wattana (2015) demonstrated that DGBL could
+alleviate anxiety, making students more receptive to using the target language. This
+psychological benefit is particularly crucial for speaking skill development, as oral
+communication anxiety represents a significant obstacle to fluency development in EFL
+contexts.
+Contemporary research in gamified EFL instruction has revealed promising outcomes
+across various language skills and learner populations. Studies have found that
+gamification has been widely utilized in more than ten non-English-speaking countries
+and various English language skills, with benefits including improving engagement,
+motivation, and learning outcomes. However, despite the growing body of research on
+gamification in language learning, there remains a significant gap in understanding its
+specific impact on speaking skill development among Iranian primary school students,
+who face unique cultural and educational challenges in EFL learning contexts.
+The integration of technology in Iranian primary education settings presents both
+opportunities and challenges. While digital literacy among young learners continues to
+improve, the effective implementation of gamified learning platforms requires careful
+consideration of pedagogical design, cultural appropriateness, and technical
+infrastructure. Understanding how gamification elements can be optimally configured to
+support speaking skill development in this specific context is essential for maximizing
+educational benefits while ensuring sustainable implementation.
+1.2 Statement of the Problem
+Speaking skill development in Iranian primary EFL education faces multiple
+interconnected challenges that traditional teaching methods have struggled to address
+effectively. Students at the primary level often experience significant foreign language
+anxiety, limited authentic communication opportunities, and reduced motivation due to
+teacher-centered instructional approaches (Ahmed, 2022; Liu et al., 2025). These
+challenges are particularly pronounced in the Iranian educational context, where cultural
+factors, large class sizes, and examination-focused curricula create additional barriers to
+effective oral communication practice.
+Research has consistently identified foreign language anxiety as a primary impediment to
+speaking proficiency development among EFL learners. Digital game-based learning can
+promote an active learning process and reduce anxiety among EFL learners, as anxiety
+refers to "the subjective feeling of tensions, apprehensions, nervousness, and worries
+related to an excitement of the autonomic nervous system". This anxiety is often
+exacerbated in traditional classroom environments where students fear making mistakes
+in front of peers and teachers, leading to reluctance to engage in oral communication
+activities.
+The problem is further complicated by the limited availability of engaging,
+age-appropriate digital learning resources specifically designed for Iranian primary
+school students. While gamification has shown promise in various educational contexts,
+systematic reviews reveal that the effectiveness of gamified tools in foreign language
+learning was mixed, with some bringing positive changes, others negative changes, and
+some showing no differences. This inconsistency suggests that the success of gamified
+learning interventions depends heavily on factors such as pedagogical design, target
+population characteristics, and implementation strategies.
+Additionally, current research on gamified EFL learning has predominantly focused on
+older learners or general language skills, leaving a significant gap in understanding how
+gamification specifically impacts speaking skill development among primary school
+students. The unique developmental, cognitive, and motivational characteristics of young
+learners require tailored approaches that may differ substantially from those effective
+with adolescent or adult populations.
+The absence of empirically validated gamified learning platforms designed specifically
+for Iranian primary EFL contexts represents a critical gap in the literature. Without
+evidence-based understanding of how gamification elements can be optimally configured
+to support speaking development in this population, educators and policymakers lack the
+necessary guidance for implementing effective technology-enhanced language learning
+programs.
+Therefore, this study addresses the urgent need to investigate the impact of a carefully
+designed gamified EFL learning platform on Iranian primary school students' speaking
+development, providing empirical evidence to inform pedagogical practices and
+educational technology implementation in this underexplored context.
+1.3 Purpose of the Study
+The primary purpose of this study is to investigate the impact of a gamified EFL learning
+platform on Iranian primary school students' speaking development. The study aims to
+examine whether the integration of game design elements including points, badges,
+leaderboards, and progress tracking can significantly enhance speaking skills including
+fluency, pronunciation, and confidence among young EFL learners in the Iranian
+educational context.
+Specifically, the study seeks to determine the effectiveness of gamified learning
+interventions in addressing the multifaceted challenges that impede speaking skill
+development in traditional Iranian primary EFL classrooms. By implementing a carefully
+designed gamified platform and comparing its outcomes with conventional teaching
+methods, the research endeavors to provide empirical evidence regarding the potential of
+game-based approaches to transform speaking instruction for young learners.
+Drawing on contemporary research emphasizing the motivational and anxiety-reducing
+benefits of gamification in language learning (Liu et al., 2025; Yang et al., 2023), this
+study builds upon the growing body of literature on digital game-based learning while
+addressing the specific needs and characteristics of Iranian primary school students. The
+findings will contribute to pedagogical knowledge by demonstrating how educators can
+leverage gamification strategies to create more engaging, effective, and psychologically
+supportive environments for speaking skill development.
+The study also aims to provide practical insights for curriculum developers, educational
+technology designers, and policymakers interested in implementing innovative
+approaches to EFL instruction in Iranian primary education settings, ultimately
+supporting more effective and enjoyable language learning experiences for young
+learners.
+1.4 Significance of the Study
+This study represents a significant contribution to the field of EFL education by
+addressing critical gaps in our understanding of gamified learning interventions for
+speaking skill development among primary school students in the Iranian context. The
+significance of this research extends across theoretical, pedagogical, and practical
+dimensions, offering valuable insights for multiple stakeholders in language education.
+From a theoretical perspective, this study advances our understanding of how game
+design principles can be effectively integrated into speaking instruction for young EFL
+learners. Recent research has shown significant attention to the integration of digital
+technologies into language learning, particularly in EFL education contexts, yet limited
+empirical evidence exists regarding the specific mechanisms through which gamification
+enhances oral communication skills in primary-aged learners. The findings may
+contribute to theories of motivation, engagement, and anxiety reduction in language
+learning contexts.
+Pedagogically, the study addresses the urgent need for evidence-based approaches to
+speaking instruction that can effectively engage young learners while reducing the
+psychological barriers that impede oral communication practice. Traditional teaching
+methods in Iranian primary EFL contexts often fail to provide sufficient opportunities for
+meaningful speaking practice, and this research offers insights into how gamified
+platforms can supplement and enhance conventional instruction.
+The practical significance of this study is particularly relevant for Iranian educational
+contexts, where the integration of technology in language learning is increasingly
+recognized as essential for improving educational outcomes. The findings will provide
+actionable recommendations for teachers, curriculum designers, and educational
+technology developers seeking to implement effective gamified learning solutions in
+primary EFL settings.
+Furthermore, the study may inform educational policy discussions regarding the
+integration of digital learning technologies in Iranian primary education. As educational
+systems worldwide increasingly recognize the importance of 21st-century digital skills
+and engaging pedagogical approaches, this research provides empirical evidence to
+support decision-making regarding technology adoption and teacher training initiatives.
+Finally, the study's focus on speaking skill development addresses a critical need in
+Iranian EFL education, where oral communication proficiency remains a significant
+challenge for learners at all levels. By demonstrating effective approaches to speaking
+instruction for primary students, the research may contribute to long-term improvements
+in English language proficiency across the Iranian educational system.
+1.5 Research Questions
+Based on the purpose of this study to investigate the impact of a gamified EFL learning
+platform on Iranian primary school students' speaking development, the following
+research questions guide this investigation:
+1. 2. 3. 4. Is there a significant difference between the speaking fluency development of
+Iranian primary school students who use a gamified EFL learning platform
+compared to those who receive traditional instruction?
+Is there a significant difference between the pronunciation accuracy improvement
+of Iranian primary school students who use a gamified EFL learning platform
+compared to those who receive traditional instruction?
+Is there a significant difference between the speaking confidence levels of Iranian
+primary school students who use a gamified EFL learning platform compared to
+those who receive traditional instruction?
+How do Iranian primary school students perceive the effectiveness and enjoyment
+of gamified EFL learning compared to traditional speaking instruction methods?
+1.6 Research Hypotheses
+Based on the research questions, the following null hypotheses are formulated:
+H01: There is no significant difference between the speaking fluency development of
+Iranian primary school students who use a gamified EFL learning platform compared to
+those who receive traditional instruction.
+H02: There is no significant difference between the pronunciation accuracy improvement
+of Iranian primary school students who use a gamified EFL learning platform compared
+to those who receive traditional instruction.
+H03: There is no significant difference between the speaking confidence levels of Iranian
+primary school students who use a gamified EFL learning platform compared to those
+who receive traditional instruction.
+H04: There is no significant difference in Iranian primary school students' perceptions of
+effectiveness and enjoyment between gamified EFL learning and traditional speaking
+instruction methods.
+1.7 Definitions of Key Terms
+1.7.1 Gamification
+Gamification refers to the integration of game design elements and principles into
+non-game contexts to enhance engagement, motivation, and learning outcomes. In
+educational settings, gamification typically includes elements such as points, badges,
+leaderboards, challenges, progress bars, and reward systems (Liu et al., 2025; Tsang &
+Davis, 2024). In this study, gamification will be operationalized through a digital
+platform incorporating these elements specifically designed for EFL speaking practice.
+1.7.2 Digital Game-Based Learning (DGBL)
+Digital game-based learning is a pedagogical approach that utilizes digital games or
+game-like elements to facilitate learning and skill development. DGBL can promote an
+active learning process and reduce anxiety among EFL learners by creating engaging,
+interactive learning environments that support knowledge acquisition and skill practice
+through gameplay mechanics.
+1.7.3 Speaking Development
+Speaking development refers to the progressive improvement in oral communication
+skills in a second or foreign language, encompassing multiple dimensions including
+fluency (the ability to speak smoothly and naturally), pronunciation accuracy (correct
+articulation of sounds and stress patterns), and speaking confidence (the willingness and
+self-assurance to engage in oral communication). This study measures these three
+components as indicators of overall speaking skill advancement.
+1.7.4 EFL (English as a Foreign Language)
+EFL refers to the teaching and learning of English in non-English speaking countries
+where English is not the primary language of communication in society. In the Iranian
+context, EFL learning occurs primarily in formal educational settings with limited
+exposure to authentic English communication outside the classroom environment.
+1.7.5 Primary School Students
+Primary school students refer to learners typically aged 6-12 years who are enrolled in
+elementary education programs. In the Iranian educational system, primary education
+encompasses grades 1-6, and this study focuses on students in upper primary grades
+(grades 4-6) who have foundational English language exposure and are developmentally
+ready for structured speaking practice.
+1.7.6 Foreign Language Anxiety
+Foreign language anxiety is a psychological construct referring to the feelings of tension,
+apprehension, nervousness, and worry specifically associated with foreign language
+learning contexts. This type of anxiety is particularly relevant to speaking activities and
+can significantly impede oral communication development in EFL learners (Ahmed,
+2022).
+1.7.7 Language Learning Platform
+A language learning platform is a digital environment or application designed specifically
+to facilitate second or foreign language acquisition through structured learning activities,
+interactive exercises, and progress tracking features. In this study, the platform
+incorporates gamification elements specifically targeting speaking skill development.
+1.8 Limitations and Delimitations
+This study, like all empirical research, operates within certain limitations and
+delimitations that define its scope and potential generalizability.
+a. Limitations
+Several limitations must be acknowledged in this study. First, the participants will be
+selected through convenience sampling from accessible primary schools, which may limit
+the generalizability of findings to the broader population of Iranian primary EFL learners.
+Second, the study duration of six weeks, while adequate for measuring short-term
+impacts, may not capture long-term retention effects of gamified learning interventions.
+Third, the reliance on teacher assessments and self-report measures for some variables
+may introduce subjective bias in the evaluation of speaking skills. Fourth, individual
+differences in students' prior technology experience and digital literacy may influence
+their engagement with the gamified platform, potentially confounding the results. Finally,
+the study's focus on a single gamified platform design means that findings may not
+generalize to other types of game-based learning interventions.
+b. Delimitations
+The study is deliberately delimited in several ways to maintain focus and ensure
+methodological rigor. Participants are limited to Iranian primary school students in grades
+4-6 (ages 9-12) to ensure developmental appropriateness and comparability across the
+sample. The research focuses specifically on speaking skill development rather than other
+language skills to allow for in-depth investigation of oral communication outcomes. The
+intervention period is delimited to six weeks to provide sufficient time for measurable
+skill development while maintaining practical feasibility for implementation in school
+settings. The study employs a quantitative quasi-experimental design and does not
+include extensive qualitative data collection such as interviews or detailed observational
+data, allowing for focused statistical analysis of learning outcomes. Finally, the research
+is geographically delimited to urban and suburban primary schools in Tehran province to
+control for socioeconomic and educational infrastructure variables that might influence
+technology implementation.
+2. Review of Literature
+2.1 Introduction
+The integration of digital technologies in English as a Foreign Language (EFL) education
+has undergone significant evolution in recent years, with gamification emerging as one of
+the most promising pedagogical innovations for enhancing learner engagement and skill
+development. The theoretical and empirical foundations for gamified language learning
+draw from multiple disciplines, including educational psychology, cognitive science,
+game studies, and second language acquisition research (Liu et al., 2025; Yang et al.,
+2023).
+In foreign language education, educators struggle with declining student engagement as
+traditional EFL teaching, relying on passive lectures and conventional methods, often
+fails to maintain learner motivation and interest. This challenge is particularly acute in
+contexts where students have limited exposure to authentic English communication, such
+as in Iranian primary schools, where traditional grammar-translation methods and
+teacher-centered approaches have long dominated instruction.
+The emergence of gamification as a pedagogical strategy represents a response to these
+challenges, offering potential solutions through the integration of intrinsically motivating
+game elements into educational contexts. Research by Tsang and Davis (2024) found that
+entertainment-oriented activities such as playing games and listening to songs were the
+most commonly enjoyed events in the EFL classroom, while activities that are simple,
+easy, free, relaxed, and different from the usual were also deemed enjoyable by young
+learners.
+The theoretical framework supporting gamified language learning is multifaceted,
+incorporating motivational theories such as Self-Determination Theory, which
+emphasizes the importance of autonomy, competence, and relatedness in promoting
+intrinsic motivation. Game-based learning environments can address these psychological
+needs by providing learners with choices (autonomy), appropriately challenging tasks
+with clear feedback (competence), and opportunities for social interaction and
+collaboration (relatedness).
+Furthermore, the concept of "flow" theory, developed by Csikszentmihalyi, provides
+additional theoretical support for gamified learning approaches. Flow states,
+characterized by deep engagement and optimal learning conditions, can be facilitated
+through well-designed game mechanics that balance challenge and skill levels while
+providing immediate feedback and clear goals.
+Recent systematic reviews and meta-analyses have attempted to synthesize the growing
+body of empirical evidence regarding gamification's effectiveness in language learning
+contexts. Studies have found that gamification has been widely utilized in more than ten
+non-English-speaking countries and various English language skills, with benefits
+including improving engagement, motivation, and reducing anxiety in English listening
+and speaking. However, the research also reveals considerable variation in outcomes,
+suggesting that the effectiveness of gamified interventions depends heavily on factors
+such as implementation quality, learner characteristics, and pedagogical design principles.
+2.2 Gamification in Language Learning
+Gamification in language learning represents the strategic application of game design
+elements and principles to educational contexts with the goal of enhancing learner
+motivation, engagement, and achievement. The conceptual framework of gamification
+extends beyond simple point-scoring systems to encompass a comprehensive approach
+that leverages the psychological and motivational mechanisms that make games
+inherently engaging.
+Empirical evidence indicates that gamification enhances vocabulary retention,
+grammatical accuracy, and communicative fluency by providing interactive,
+reward-based learning experiences. Popular gamified platforms, including Duolingo,
+Kahoot!, and Classcraft, have been analyzed to demonstrate best practices in educational
+game design. These platforms illustrate how different gamification elements can be
+combined to create cohesive learning experiences that maintain learner interest while
+supporting skill development.
+The core elements of effective educational gamification typically include several key
+components. Progress visualization through experience points, level systems, and
+progress bars provides learners with clear feedback about their advancement and creates a
+sense of achievement. Badge systems and achievement unlocking create milestone
+rewards that recognize specific accomplishments and encourage continued engagement.
+Leaderboards and social comparison features can motivate learners through friendly
+competition, though these must be carefully implemented to avoid negative effects on
+less confident learners.
+Challenge and quest systems provide structure and purpose to learning activities,
+transforming routine practice exercises into goal-oriented missions. Immediate feedback
+mechanisms, a hallmark of effective games, ensure learners receive instant information
+about their performance, facilitating rapid error correction and skill refinement. Finally,
+narrative elements and thematic frameworks can provide meaningful context for learning
+activities, making abstract linguistic concepts more concrete and memorable.
+2.2.1 Theoretical Foundations of Gamification
+The theoretical underpinnings of gamification in education draw from several established
+psychological and educational theories. Self-Determination Theory (SDT) provides
+perhaps the most relevant framework, emphasizing three fundamental psychological
+needs: autonomy (the need to feel volitional and self-directed), competence (the need to
+feel effective and capable), and relatedness (the need to feel connected to others and
+experience a sense of belonging).
+Well-designed gamified learning environments can support these needs through carefully
+implemented features. Autonomy can be supported through choice in learning paths,
+customizable avatars or profiles, and optional challenge levels. Competence needs are
+addressed through appropriately scaled challenges, clear progress indicators, and
+achievement systems that recognize incremental improvements. Relatedness can be
+fostered through collaborative features, peer interaction opportunities, and social
+recognition systems.
+Cognitive Load Theory also provides important insights for gamification design,
+suggesting that learning is optimized when cognitive resources are efficiently allocated
+between essential learning processes and extraneous elements. Effective educational
+games must carefully balance motivational elements with cognitive demands to avoid
+overwhelming learners or distracting from core learning objectives.
+Flow Theory contributes additional design principles, emphasizing the importance of
+maintaining optimal challenge levels that match learner abilities while providing clear
+goals and immediate feedback. The flow state, characterized by deep engagement and
+intrinsic motivation, represents the ideal learning condition that well-designed gamified
+systems aim to achieve.
+2.2.2 Empirical Evidence on Gamification Effectiveness
+Recent empirical research on gamification in language learning has yielded increasingly
+sophisticated insights into the conditions under which game-based approaches are most
+effective. Research demonstrates that DGBL could alleviate anxiety, making students
+more receptive to using the target language, with this reduction in anxiety likely
+contributing to increased enjoyment and motivation. This finding is particularly relevant
+for speaking skill development, where anxiety represents a significant barrier to oral
+communication practice.
+A comprehensive systematic review by researchers has examined the effectiveness of
+gamified tools across multiple language learning contexts. The findings revealed that the
+effectiveness of gamified tools in foreign language learning was mixed, with some
+bringing positive changes, others negative changes, and some showing no differences.
+This variability underscores the importance of careful design and implementation
+considerations rather than assuming that gamification is universally beneficial.
+Recent research on serious game-based learning has shown significant impact on
+happiness, motivation, self-compassion, and vocabulary development in EFL learners,
+suggesting that the benefits of gamification extend beyond purely cognitive outcomes to
+include important affective and social-emotional dimensions of learning.
+The evidence base continues to expand with studies examining specific gamification
+elements and their individual contributions to learning outcomes. Research has identified
+several factors that appear to moderate gamification effectiveness, including learner age
+and developmental level, prior gaming experience, cultural background, and the specific
+language skills being targeted.
+2.3 Speaking Skills Development in EFL
+Speaking skills development in EFL contexts presents unique challenges that distinguish
+it from other language skills acquisition. Oral communication requires the real-time
+integration of multiple linguistic competencies including pronunciation, vocabulary,
+grammar, and pragmatic awareness, while simultaneously managing the psychological
+and social demands of interpersonal communication.
+The complexity of speaking skill development is further compounded in EFL
+environments where learners have limited opportunities for authentic communication
+practice and may experience significant anxiety about making errors in front of others.
+Traditional approaches to speaking instruction often emphasize accuracy over fluency,
+leading to hesitant and overly cautious communication patterns that impede natural
+language development.
+Contemporary approaches to speaking instruction emphasize the importance of creating
+psychologically safe environments that encourage risk-taking and experimentation with
+language. This perspective aligns well with gamification principles, which can reduce the
+stakes of making errors by framing mistakes as part of the learning process rather than
+failures to be avoided.
+2.3.1 Challenges in EFL Speaking Development
+Foreign language anxiety represents one of the most significant obstacles to speaking
+skill development, particularly among young learners who may lack confidence in their
+linguistic abilities. Anxiety refers to "the subjective feeling of tensions, apprehensions,
+nervousness, and worries related to an excitement of the autonomic nervous system," and
+digital game-based learning can promote an active learning process while reducing this
+anxiety among EFL learners.
+Cultural factors also play a crucial role in speaking development, particularly in contexts
+where educational traditions emphasize teacher authority and student deference. In many
+Iranian classrooms, students may be reluctant to speak out or take communicative risks
+due to cultural norms that discourage challenging authority or making public mistakes.
+Limited authentic communication opportunities present another significant challenge, as
+EFL learners often lack exposure to natural conversation partners and meaningful
+communication contexts. This limitation is particularly pronounced in foreign language
+contexts where English is not used for daily communication outside educational settings.
+2.3.2 Gamification and Speaking Anxiety Reduction
+Research has consistently demonstrated that gamification can effectively reduce speaking
+anxiety through several mechanisms. Empirical studies have shown that gamification can
+be effective in reducing anxiety among EFL learners through instructional interventions
+that transform the learning experience. The game-like environment creates a sense of
+play that can reduce the perceived seriousness of making errors, allowing learners to
+experiment more freely with language.
+The structured progression systems common in gamified platforms provide learners with
+a sense of achievement and competence that can build confidence over time. As learners
+accumulate points, unlock achievements, and advance through levels, they develop
+increased self-efficacy beliefs about their speaking abilities.
+Social features in gamified platforms can also support anxiety reduction by providing
+structured interaction opportunities that feel less threatening than traditional classroom
+speaking activities. Features such as voice chat with AI tutors or recorded speaking
+challenges allow learners to practice without the immediate social pressure of
+face-to-face communication.
+2.4 Digital Game-Based Learning and Young Learners
+Young learners present unique characteristics and needs that must be considered when
+designing gamified learning experiences. Children's cognitive development, attention
+spans, technological skills, and motivational patterns differ significantly from those of
+adolescents and adults, requiring specialized approaches to educational game design.
+Research on children's learning preferences suggests that effective educational games for
+young learners should incorporate visual and auditory elements, provide frequent positive
+feedback, maintain relatively simple interfaces, and include social interaction
+opportunities. Studies examining digital versions of traditional games have shown that
+primary school students can benefit from game-based approaches to vocabulary learning
+and retention, particularly when games incorporate familiar elements that bridge
+traditional play patterns with digital learning opportunities.
+The developmental characteristics of primary school students also influence their
+responses to different gamification elements. Young learners typically respond well to
+immediate rewards and visual progress indicators, but may struggle with complex point
+systems or long-term goal structures. Competition-based elements must be carefully
+balanced to maintain motivation while avoiding discouragement among less confident
+learners.
+2.4.1 Cognitive and Motivational Considerations
+Children's cognitive development during the primary school years includes significant
+advances in abstract thinking, memory strategies, and metacognitive awareness.
+However, young learners still benefit from concrete representations and hands-on
+learning experiences, making the visual and interactive elements of gamified platforms
+particularly suitable for this population.
+Attention and engagement patterns among young learners require that educational games
+provide varied activities, frequent transitions, and multiple sensory inputs to maintain
+focus. The novelty and interactivity of digital games can be particularly effective in
+capturing and maintaining children's attention compared to traditional instructional
+methods.
+Motivational patterns among young learners emphasize the importance of intrinsic
+motivation, curiosity, and play-based learning. Gamification elements that support these
+natural tendencies are more likely to be effective than those that rely primarily on
+external rewards or competitive pressure.
+2.4.2 Technology Integration in Primary Education
+The integration of technology in primary education contexts requires careful
+consideration of infrastructure, teacher training, and pedagogical alignment. Successful
+implementation of gamified learning platforms depends on adequate technological
+resources, reliable internet connectivity, and teacher competencies in digital pedagogy.
+Research suggests that educators can employ human-AI interactive games to reduce
+classroom anxiety and utilize intelligent learning companions to boost students' AI
+learning self-efficacy and adaptive learning abilities, enabling learners to more effectively
+express their viewpoints in a foreign language. This highlights the potential for
+AI-enhanced gamified platforms to provide personalized learning experiences that adapt
+to individual learner needs and preferences.
+Professional development for teachers represents a crucial factor in successful technology
+integration, as educators need both technical skills and pedagogical knowledge to
+effectively implement gamified learning approaches. Training programs should address
+not only the operational aspects of educational technologies but also the theoretical
+principles underlying effective game-based learning design.
+2.5 Iranian EFL Education Context
+The Iranian educational system presents unique cultural, linguistic, and institutional
+characteristics that influence the implementation and effectiveness of innovative
+pedagogical approaches such as gamification. Understanding this context is essential for
+designing and evaluating educational interventions that are culturally appropriate and
+pedagogically effective.
+Traditional approaches to English language teaching in Iranian schools have historically
+emphasized grammar-translation methods, memorization of vocabulary lists, and
+teacher-centered instruction. While recent educational reforms have called for more
+communicative and student-centered approaches, implementation has been uneven, and
+many classrooms continue to rely on traditional methods.
+Cultural factors also play a significant role in shaping learning environments and student
+expectations. Respect for teacher authority, emphasis on academic achievement, and
+preference for structured learning activities are deeply embedded cultural values that
+influence how students respond to different pedagogical approaches.
+The integration of technology in Iranian primary education has accelerated in recent
+years, particularly following the COVID-19 pandemic, which necessitated rapid adoption
+of digital learning tools. This experience has increased both teacher and student
+familiarity with educational technologies, creating more favorable conditions for
+implementing innovative approaches such as gamified learning platforms.
+2.5.1 Challenges and Opportunities
+Several challenges must be addressed when implementing gamified learning approaches
+in Iranian primary EFL contexts. Infrastructure limitations, including inconsistent internet
+connectivity and varying levels of access to digital devices, can impede effective
+technology integration. Teacher preparation programs may not adequately address digital
+pedagogy, leaving educators unprepared to effectively implement game-based learning
+approaches.
+However, significant opportunities also exist for enhancing EFL education through
+gamification. High levels of student interest in digital technologies and games create
+favorable conditions for engagement with gamified learning platforms. Growing
+recognition among educators and policymakers of the need for innovative approaches to
+language teaching provides institutional support for experimental pedagogical
+approaches.
+The cultural emphasis on education and achievement in Iranian society can be leveraged
+through gamification elements that recognize student progress and provide clear
+indicators of advancement. Achievement systems and progress tracking features align
+well with cultural values that emphasize academic success and continuous improvement.
+2.5.2 Recent Research in Iranian Contexts
+Limited research has specifically examined gamification in Iranian EFL contexts,
+representing a significant gap in the literature. The available studies have generally
+focused on higher education contexts or adult learners, leaving primary school
+applications largely unexplored.
+This gap provides the rationale for the current study, which aims to contribute empirical
+evidence regarding the effectiveness of gamified learning approaches for Iranian primary
+school EFL learners. By examining outcomes specific to this population and context, the
+research will provide valuable insights for educators, curriculum developers, and
+policymakers interested in implementing innovative approaches to English language
+education.
+3. Methodology
+3.1 Participants
+The participants of this study will be Iranian primary school students enrolled in grades
+4-6 (ages 9-12) in urban and suburban schools within Tehran province. A sample of
+approximately 80 students will be recruited through convenience sampling from schools
+that have agreed to participate in the research. The sample will be divided into two equal
+groups of 40 students each: an experimental group that will use the gamified EFL
+learning platform and a control group that will receive traditional speaking instruction.
+All participants will be native Persian speakers with similar socioeconomic backgrounds
+and prior English language learning experience. To ensure comparability between groups,
+participants will be selected based on their current English proficiency level as
+determined by standardized placement tests and teacher assessments. Students with
+significant prior exposure to English-speaking environments or those receiving private
+English tutoring will be excluded to maintain group homogeneity.
+The selection criteria will include students who have completed at least one year of
+formal English instruction, possess basic literacy skills in both Persian and English, and
+have access to digital devices necessary for platform interaction. Parental consent and
+student assent will be obtained for all participants before data collection begins.
+3.2 Instrumentation
+Multiple instruments will be used to assess speaking development and gather data on
+student perceptions and learning outcomes.
+3.2.1 Speaking Assessment Rubric
+Speaking skills will be evaluated using a comprehensive rubric adapted from established
+EFL assessment frameworks and validated for use with primary school learners. The
+rubric assesses three primary dimensions: fluency (speech rate, hesitations, and natural
+flow), pronunciation accuracy (phoneme production, word stress, and intonation
+patterns), and speaking confidence (willingness to communicate, volume, and eye
+contact). Each dimension is rated on a 5-point scale with detailed descriptors for each
+level.
+3.2.2 Pre- and Post-Test Speaking Tasks
+Standardized speaking tasks will be administered before and after the intervention to
+measure skill development. Tasks include picture description, role-play scenarios, and
+structured interviews designed to elicit natural speech samples. All speaking sessions will
+be audio-recorded for later analysis by trained raters to ensure reliability and validity of
+assessments.
+3.2.3 Student Perception Questionnaire
+A questionnaire will be developed to assess students' perceptions of the gamified learning
+experience, including enjoyment, perceived effectiveness, motivation levels, and
+preferences for different learning activities. The questionnaire will use age-appropriate
+language and visual scales suitable for primary school students.
+3.2.4 Gamification Platform Analytics
+The gamified learning platform will include built-in analytics to track student
+engagement metrics such as time spent on activities, completion rates, points earned,
+badges unlocked, and interaction patterns. These data will provide objective measures of
+student engagement and platform usage.
+3.3 Procedure
+Following ethical approval from the university research committee and relevant
+educational authorities, schools will be contacted to recruit participants and obtain
+necessary permissions. Parents will receive detailed information about the study and
+provide written consent for their children's participation.
+The study will follow a quasi-experimental design with pre-test, intervention, and
+post-test phases conducted over an 8-week period. During the first week, all participants
+will complete pre-test speaking assessments and demographic questionnaires. The
+experimental group will then receive training on using the gamified platform, while the
+control group will continue with traditional speaking instruction methods.
+The intervention phase will last six weeks, during which the experimental group will
+engage with the gamified platform for 30 minutes per session, three times per week,
+under teacher supervision. The platform will include speaking activities such as
+pronunciation challenges, conversation simulations, vocabulary games, and interactive
+storytelling tasks. Students will earn points for participation, badges for achieving
+specific milestones, and advance through levels based on their performance.
+The control group will receive equivalent amounts of speaking practice through
+traditional methods including choral repetition, pair work, teacher-led dialogues, and
+textbook-based activities. Both groups will be taught by the same teacher to control for
+instructor variables.
+During the final week, all participants will complete post-test speaking assessments using
+the same instruments and procedures as the pre-test. Additionally, the experimental group
+will complete the student perception questionnaire to gather data on their experiences
+with the gamified platform.
+3.4 Research Design
+This study employs a quasi-experimental design with a non-equivalent control group to
+examine the effectiveness of a gamified EFL learning platform on Iranian primary school
+students' speaking development. The quasi-experimental approach is appropriate given
+the practical constraints of educational research settings where random assignment of
+students to groups may not be feasible due to existing classroom structures and
+administrative considerations.
+The design includes pre-test and post-test measurements to assess changes in speaking
+skills over the intervention period, allowing for the examination of growth in both
+experimental and control groups. The comparison between groups will provide evidence
+regarding the differential effectiveness of gamified versus traditional instruction methods.
+The six-week intervention period provides sufficient time for meaningful skill
+development while remaining practical for implementation within existing school
+schedules and curricula. This duration aligns with research recommendations for
+educational interventions and allows for the observation of both immediate and
+short-term retention effects.
+3.5 Data Analysis
+Data analysis will be conducted using SPSS software with multiple statistical procedures
+to address the research questions comprehensively. Descriptive statistics will be
+calculated for all variables to summarize participant characteristics and provide baseline
+information about the sample.
+To examine differences in speaking development between groups, independent samples
+t-tests will be conducted comparing post-test scores between the experimental and control
+groups, while controlling for pre-test performance through ANCOVA (Analysis of
+Covariance). This approach will allow for the assessment of intervention effects while
+accounting for initial differences between groups.
+Paired samples t-tests will be used to examine within-group changes from pre-test to
+post-test for both experimental and control groups, providing information about the
+magnitude of improvement within each condition.
+Effect sizes will be calculated using Cohen's d to determine the practical significance of
+any observed differences between groups. This analysis will help interpret whether
+statistically significant differences represent meaningful improvements in speaking skills.
+For the qualitative data from student perception questionnaires, descriptive statistics and
+frequency analyses will be conducted to summarize student responses and identify
+patterns in their experiences with the gamified platform.
+Platform analytics data will be analyzed using correlation analysis to examine
+relationships between engagement metrics (time spent, activities completed, points
+earned) and speaking skill improvements, providing insights into which platform features
+are most associated with learning gains.
+References
+Ahmed, M. K. (2022). Investigating the effect of using game-based learning on EFL
+learners' motivation and anxiety. Education Research International, 2022, 6503139.
+https://doi.org/10.1155/2022/6503139
+Hung, H. T. (2018). Gamifying the flipped classroom using game-based learning
+materials. ELT Journal, 72(3), 296-308.
+Liu, Y., Zhang, W., & Chen, L. (2025). Serious game-based learning: Its impact on
+happiness, motivation, self-compassion, and vocabulary development in EFL learners.
+European Journal of Education, 60(1), 45-62. https://doi.org/10.1111/ejed.70030
+Muhammadpour, Z., Ghonsooly, B., & Ghanizadeh, A. (2025). Taking the edge off
+foreign language listening anxiety: Online game-based working memory training
+embedded in metacognitive intervention. Journal of Computer Assisted Learning, 41(3),
+512-528. https://doi.org/10.1111/jcal.70057
+Reinders, H., & Wattana, S. (2015). Affect and willingness to communicate in digital
+game-based learning. ReCALL, 27(1), 38-57.
+Sevilla Pavón, A., & Haba Osca, J. (2017). An assessment of digital game-based learning
+effectiveness in foreign language acquisition. International Journal of Emerging
+Technologies in Learning, 12(6), 19-31.
+Tsang, K. K., & Davis, L. (2024). Enhancing EFL/ESL instruction through gamification:
+A comprehensive review of empirical evidence. Frontiers in Education, 9, 1395155.
+https://doi.org/10.3389/feduc.2024.1395155
+Yang, J., Zhang, X., & Li, M. (2023). Gamifying language education: The impact of
+digital game-based learning on Chinese EFL learners. Humanities and Social Sciences
+Communications, 10, 758. https://doi.org/10.1057/s41599-024-04073-3
+Zhang, H., Liu, P., & Wang, S. (2025). Play and learn: Digital traditional games for
+vocabulary mastery in young learners. Discover Education, 4, 85.
+https://doi.org/10.1007/s44217-025-00485-8
+Appendix A: Speaking Assessment Rubric
+Fluency Assessment (5-point scale)
+Level 5 - Excellent Fluency
+●
+●
+●
+●
+Speech flows naturally with minimal hesitations
+Normal rate of speech for age group
+Self-corrections are smooth and do not interrupt communication
+Connected discourse with appropriate transitions
+Level 4 - Good Fluency
+●
+●
+●
+●
+Generally smooth speech with occasional hesitations
+Slightly slower than normal rate but maintains communication
+Some self-corrections that minimally impact flow
+Mostly connected speech with adequate transitions
+Level 3 - Adequate Fluency
+●
+●
+●
+●
+Speech interrupted by frequent hesitations and pauses
+Slower rate that may affect listener comprehension
+Self-corrections are noticeable but communication continues
+Some connected speech with limited transitions
+Level 2 - Limited Fluency
+●
+●
+●
+●
+Frequent long pauses and hesitations disrupt communication
+Very slow rate that significantly impacts comprehension
+Self-corrections often unsuccessful or confusing
+Mostly isolated phrases with minimal connection
+Level 1 - Poor Fluency
+●
+●
+●
+●
+Communication severely disrupted by hesitations and pauses
+Extremely slow rate making comprehension difficult
+Unable to self-correct effectively
+Isolated words or short phrases only
+Pronunciation Assessment (5-point scale)
+Level 5 - Excellent Pronunciation
+●
+All phonemes produced accurately
+●
+●
+●
+Appropriate word stress and sentence intonation
+Clear articulation that enhances communication
+Native-like rhythm and connected speech patterns
+Level 4 - Good Pronunciation
+●
+●
+●
+●
+Most phonemes produced accurately with minor errors
+Generally appropriate stress and intonation
+Clear articulation with occasional unclear sounds
+Good rhythm with some connected speech features
+Level 3 - Adequate Pronunciation
+●
+●
+●
+●
+Some phoneme errors that occasionally impact meaning
+Inconsistent stress and intonation patterns
+Generally clear with some unclear articulation
+Basic rhythm with limited connected speech
+Level 2 - Limited Pronunciation
+●
+●
+●
+●
+Frequent phoneme errors that impact comprehension
+Inappropriate stress and intonation affecting meaning
+Often unclear articulation requiring listener effort
+Poor rhythm and little connected speech
+Level 1 - Poor Pronunciation
+●
+●
+●
+●
+Severe phoneme errors preventing comprehension
+No appropriate stress or intonation patterns
+Very unclear articulation impeding communication
+No recognizable rhythm or connected speech
+Speaking Confidence Assessment (5-point scale)
+Level 5 - Excellent Confidence
+●
+●
+●
+●
+Initiates conversation willingly and enthusiastically
+Maintains appropriate volume and clear voice projection
+Sustained eye contact and positive body language
+Takes communicative risks and attempts complex expression
+Level 4 - Good Confidence
+●
+Usually willing to participate when prompted
+●
+●
+●
+Adequate volume with clear voice projection
+Regular eye contact with generally positive body language
+Attempts new expressions with minimal hesitation
+Level 3 - Adequate Confidence
+●
+●
+●
+●
+Participates when encouraged but rarely initiates
+Variable volume sometimes requiring prompting
+Intermittent eye contact with neutral body language
+Stays within comfortable expression patterns
+Level 2 - Limited Confidence
+●
+●
+●
+●
+Reluctant to participate, requires significant encouragement
+Low volume requiring frequent requests to speak up
+Minimal eye contact with signs of nervousness
+Avoids complex expressions, uses simple patterns
+Level 1 - Poor Confidence
+●
+●
+●
+●
+Avoids speaking opportunities when possible
+Very low volume or whispered speech
+No eye contact, clear signs of anxiety or distress
+Minimal attempts at expression, often one-word responses
+Appendix B: Student Perception Questionnaire
+About You: Name:
+_________________ Age: _____
+Grade:
+_____
+Instructions: Please circle the face that shows how you feel about each statement.
+1. I enjoyed using the English learning game. 😄 Very Happy 😊 Happy 😐 OK ☹
+Sad 😢 Very Sad
+2. The game helped me learn to speak English better. 😄 Very Happy 😊 Happy 😐
+OK ☹ Sad 😢 Very Sad
+3. I felt excited when I earned points and badges. 😄 Very Happy 😊 Happy 😐 OK
+☹ Sad 😢 Very Sad
+4. The game made me want to practice speaking English more. 😄 Very Happy 😊
+Happy 😐 OK ☹ Sad 😢 Very Sad
+5. I felt nervous when speaking English in the game. 😄 Very Happy 😊 Happy 😐
+OK ☹ Sad 😢 Very Sad
+6. The activities in the game were fun. 😄 Very Happy 😊 Happy 😐 OK ☹ Sad 😢
+Very Sad
+7. I liked seeing my progress on the game. 😄 Very Happy 😊 Happy 😐 OK ☹ Sad
+😢 Very Sad
+8. The game was easy to use. 😄 Very Happy 😊 Happy 😐 OK ☹ Sad 😢 Very Sad
+9. I would like to use this game again. 😄 Very Happy 😊 Happy 😐 OK ☹ Sad 😢
+Very Sad
+10. The game helped me feel more confident speaking English. 😄 Very Happy 😊
+Happy 😐 OK ☹ Sad 😢 Very Sad
+What did you like most about the English learning game?
+What did you like least about the English learning game?
+How could we make the game better?
+Appendix C: Gamified Platform Features and Activities
+Platform Overview: The EFL speaking development platform integrates multiple
+gamification elements designed specifically for Iranian primary school students aged
+9-12. The platform includes culturally appropriate content, Persian language support for
+navigation, and activities aligned with Iranian English curriculum standards.
+Core Gamification Elements:
+Points System:
+●
+●
+●
+●
+●
+Speaking practice: 10 points per minute of active speaking
+Pronunciation accuracy: 5-25 points based on assessment
+Daily login: 5 points
+Completing activities: 10-50 points based on difficulty
+Helping virtual characters: 15 points per interaction
+Badge System:
+●
+●
+●
+●
+●
+●
+●
+"First Steps" - Complete first speaking activity
+"Brave Speaker" - Speak for 5 minutes total
+"Pronunciation Pro" - Achieve 80% pronunciation accuracy
+"Conversation Master" - Complete 10 dialogue activities
+"Story Teller" - Record and share one story
+"Daily Learner" - Login for 7 consecutive days
+"Helper Friend" - Complete 5 peer assistance activities
+Level Progression:
+●
+●
+●
+●
+Beginner Explorer (Levels 1-5)
+Confident Communicator (Levels 6-10)
+Fluent Speaker (Levels 11-15)
+Master Storyteller (Levels 16-20)
+Speaking Activities:
+1. Pronunciation Challenges: Students record themselves pronouncing target sounds,
+words, and phrases. The system provides immediate feedback using speech recognition
+technology and awards points for accuracy improvements.
+2. Virtual Conversations: Interactive dialogues with AI characters in various scenarios
+(shopping, school, family). Students practice functional English while advancing through
+story-based missions.
+3. Picture Description Games: Students describe images and earn points for vocabulary
+use, sentence structure, and creativity. Progressive difficulty levels introduce more
+complex scenes and vocabulary.
+4. Role-Play Adventures: Students assume different characters and navigate
+English-speaking scenarios. Activities include ordering food, asking for directions, and
+introducing themselves to new friends.
+5. Story Creation Challenges: Students create and record original stories using provided
+vocabulary and grammar structures. They can share stories with classmates and provide
+feedback through structured peer review activities.
+6. Singing and Chanting: Interactive songs and chants help students practice rhythm,
+intonation, and pronunciation while earning musical achievement badges.
+Progress Tracking Features:
+●
+●
+●
+●
+●
+Visual progress bars for each skill area
+Personal learning dashboard with statistics
+Weekly progress reports for students and teachers
+Achievement gallery displaying earned badges
+Personalized learning path recommendations
+Social Features:
+●
+●
+●
+●
+Class leaderboards (optional, can be disabled)
+Peer encouragement system with positive message exchanges
+Collaborative story-building activities
+Virtual study groups for practice sessions
+Teacher Dashboard:
+●
+●
+●
+●
+●
+Real-time monitoring of student progress
+Individual and class performance analytics
+Customizable activity assignments
+Assessment tools and rubrics
+Parent communication features

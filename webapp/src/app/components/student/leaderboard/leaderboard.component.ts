@@ -1,0 +1,166 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-leaderboard',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="leaderboard-container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+        <h1>🏆 Leaderboard</h1>
+        <p>See how you rank among your classmates!</p>
+      </div>
+
+      <div class="leaderboard-card">
+        <div class="podium">
+          <div class="rank-item gold">
+            <div class="rank-number">🥇</div>
+            <div class="student-info">
+              <h3>Sara Ahmad</h3>
+              <p>2,450 points</p>
+            </div>
+          </div>
+          <div class="rank-item silver">
+            <div class="rank-number">���</div>
+            <div class="student-info">
+              <h3>Mohammad Ali</h3>
+              <p>1,890 points</p>
+            </div>
+          </div>
+          <div class="rank-item bronze current-user">
+            <div class="rank-number">🥉</div>
+            <div class="student-info">
+              <h3>Alex Johnson (You)</h3>
+              <p>1,250 points</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-message">
+          <h3>🚧 Demo Version</h3>
+          <p>In the full version, you'll see real classmate rankings and can compete in weekly challenges!</p>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .leaderboard-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .header h1 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+      font-size: 2.5rem;
+    }
+
+    .leaderboard-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .podium {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .rank-item {
+      text-align: center;
+      padding: 20px;
+      border-radius: 15px;
+      flex: 1;
+      max-width: 200px;
+    }
+
+    .rank-item.gold {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    }
+
+    .rank-item.silver {
+      background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+    }
+
+    .rank-item.bronze {
+      background: linear-gradient(135deg, #cd7f32 0%, #daa520 100%);
+    }
+
+    .rank-item.current-user {
+      border: 3px solid #667eea;
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .rank-number {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .student-info h3 {
+      margin: 0 0 5px 0;
+      color: #333;
+    }
+
+    .student-info p {
+      margin: 0;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .demo-message {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .demo-message h3 {
+      margin: 0 0 10px 0;
+    }
+
+    .demo-message p {
+      margin: 0;
+      opacity: 0.9;
+    }
+  `]
+})
+export class LeaderboardComponent {
+  constructor(private router: Router) {}
+
+  goBack() {
+    this.router.navigate(['/student/dashboard']);
+  }
+}

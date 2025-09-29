@@ -1,0 +1,30 @@
+{
+  "name": "lingoshid-platform",
+  "version": "1.0.0",
+  "description": "Gamified EFL Learning Platform for Iranian Primary School Students",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run webapp:dev\"",
+    "server:dev": "cd server && npm run start:dev",
+    "webapp:dev": "cd webapp && npm start",
+    "build": "npm run server:build && npm run webapp:build",
+    "server:build": "cd server && npm run build",
+    "webapp:build": "cd webapp && npm run build",
+    "install:all": "npm install && cd server && npm install && cd ../webapp && npm install",
+    "seed": "cd server && npm run seed"
+  },
+  "keywords": [
+    "gamification",
+    "efl",
+    "education",
+    "speaking-skills",
+    "primary-school",
+    "iranian-students",
+    "nestjs",
+    "angular"
+  ],
+  "author": "Sheida Abhari",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
