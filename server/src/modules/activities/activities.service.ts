@@ -417,7 +417,7 @@ export class ActivitiesService {
     };
   }
 
-  async completeActivitySession(sessionId: string, studentId: string): Promise<ActivityCompletion> {
+  async completeActivitySession(sessionId: string, studentId: string, completionData?: any): Promise<ActivityCompletion> {
     const session = await this.activitySessionRepository.findOne({
       where: { id: sessionId, student: { id: studentId } },
       relations: ['activity', 'student']
@@ -427,28 +427,37 @@ export class ActivitiesService {
       throw new Error('Session not found');
     }
 
+    // Use frontend completion data if provided, otherwise fall back to session data
+    const finalScore = completionData?.finalScore || completionData?.score || session.currentScore || 0;
+    const pointsEarned = completionData?.pointsEarned || session.pointsEarned || 0;
+    const timeSpent = completionData?.totalTime || session.timeSpent || 0;
+    const stageData = completionData?.stageResults || session.stageData || {};
+
     // Mark session as completed
     session.status = SessionStatus.COMPLETED;
     session.completedAt = new Date();
+    session.currentScore = finalScore;
+    session.pointsEarned = pointsEarned;
+    session.timeSpent = timeSpent;
     await this.activitySessionRepository.save(session);
 
-    // Create activity completion record
+    // Create activity completion record with proper data
     const completion = this.activityCompletionRepository.create({
       student: session.student,
       activity: session.activity,
-      score: session.currentScore,
-      pointsEarned: session.pointsEarned,
-      timeSpent: session.timeSpent,
-      isCompleted: session.currentScore >= 60,
-      submissionData: session.stageData,
-      feedback: this.generateFinalFeedback(session.activity, session.currentScore, session.stageData)
+      score: finalScore,
+      pointsEarned: pointsEarned,
+      timeSpent: timeSpent,
+      isCompleted: finalScore >= 60,
+      submissionData: stageData,
+      feedback: completionData || this.generateFinalFeedback(session.activity, finalScore, stageData)
     });
 
     const savedCompletion = await this.activityCompletionRepository.save(completion);
 
     // Update student progress
     if (completion.isCompleted) {
-      await this.studentsService.updateStudentProgress(studentId, session.pointsEarned, session.activity.type);
+      await this.studentsService.updateStudentProgress(studentId, pointsEarned, session.activity.type);
     }
 
     return savedCompletion;

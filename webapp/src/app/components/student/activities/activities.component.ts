@@ -38,7 +38,7 @@ import { Activity } from '../../../models/user.model';
               <span class="difficulty" [class]="activity.difficulty">
                 {{ activity.difficulty | titlecase }}
               </span>
-              <span class="points">{{ activity.pointsReward }} points</span>
+              <span class="points">{{ getPointsRange(activity) }}</span>
             </div>
             
             <div class="skill-area">
@@ -370,6 +370,40 @@ export class ActivitiesComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/student/dashboard']);
+  }
+
+  getPointsRange(activity: Activity): string {
+    const basePoints = activity.pointsReward;
+
+    // Calculate potential bonus points based on difficulty and type
+    let maxBonus = 0;
+
+    // Difficulty bonus (matches start-activity component logic)
+    switch (activity.difficulty) {
+      case 'beginner':
+        maxBonus += Math.floor(basePoints * 0.1);
+        break;
+      case 'intermediate':
+        maxBonus += Math.floor(basePoints * 0.2);
+        break;
+      case 'advanced':
+        maxBonus += Math.floor(basePoints * 0.3);
+        break;
+    }
+
+    // Perfect performance bonus (up to 50% of base)
+    maxBonus += Math.floor(basePoints * 0.5);
+
+    // Speed bonus (up to 20% of base)
+    maxBonus += Math.floor(basePoints * 0.2);
+
+    const maxPoints = basePoints + maxBonus;
+
+    if (maxPoints > basePoints) {
+      return `${basePoints}-${maxPoints} pts`;
+    } else {
+      return `${basePoints} pts`;
+    }
   }
 
   private createMockActivities() {

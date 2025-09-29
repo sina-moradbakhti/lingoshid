@@ -123,8 +123,8 @@ export class ActivitySessionService {
     });
   }
 
-  completeSession(sessionId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/sessions/${sessionId}/complete`, {});
+  completeSession(sessionId: string, completionData?: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sessions/${sessionId}/complete`, completionData || {});
   }
 
   getStageFeedback(sessionId: string, stageNumber: number): Observable<any> {

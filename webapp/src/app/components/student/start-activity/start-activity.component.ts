@@ -261,7 +261,7 @@ import { Activity } from '../../../models/user.model';
 
           <div class="completion-stats" *ngIf="completionResult">
             <div class="stat-item">
-              <div class="stat-value">{{ completionResult.score }}%</div>
+              <div class="stat-value">{{ completionResult.finalScore || completionResult.score || 0 }}%</div>
               <div class="stat-label">Final Score</div>
             </div>
             <div class="stat-item">
@@ -274,23 +274,23 @@ import { Activity } from '../../../models/user.model';
             </div>
           </div>
 
-          <div class="detailed-feedback" *ngIf="completionResult?.feedback">
+          <div class="detailed-feedback" *ngIf="completionResult?.message">
             <h3>Your Performance</h3>
-            <p class="feedback-message">{{ completionResult.feedback.message }}</p>
+            <p class="feedback-message">{{ completionResult.message }}</p>
 
-            <div class="achievements" *ngIf="completionResult.feedback.achievements?.length > 0">
+            <div class="achievements" *ngIf="completionResult.achievements?.length > 0">
               <h4>🏆 New Achievements!</h4>
               <div class="achievement-list">
-                <div class="achievement-item" *ngFor="let achievement of completionResult.feedback.achievements">
+                <div class="achievement-item" *ngFor="let achievement of completionResult.achievements">
                   {{ achievement.icon }} {{ achievement.name }}
                 </div>
               </div>
             </div>
 
-            <div class="improvement-tips" *ngIf="completionResult.feedback.improvement?.length > 0">
+            <div class="improvement-tips" *ngIf="completionResult.improvement?.length > 0">
               <h4>💡 Tips for Improvement</h4>
               <ul>
-                <li *ngFor="let tip of completionResult.feedback.improvement">{{ tip }}</li>
+                <li *ngFor="let tip of completionResult.improvement">{{ tip }}</li>
               </ul>
             </div>
           </div>
@@ -1119,6 +1119,9 @@ export class StartActivityComponent implements OnInit, OnDestroy {
   // Subscriptions
   private subscriptions: Subscription[] = [];
 
+  // Celebration properties
+  public confettiArray: any[] = [];
+
   // Mock data (will be replaced by real API data)
   private pronunciationWords = [
     { word: 'Hello', phonetic: '/həˈloʊ/' },
@@ -1492,10 +1495,30 @@ export class StartActivityComponent implements OnInit, OnDestroy {
 
     try {
       this.isProcessing = true;
-      this.loadingMessage = 'Completing activity...';
+      this.loadingMessage = 'Calculating results...';
 
-      const result = await this.activitySessionService.completeSession(this.currentSession.id).toPromise();
-      this.completionResult = result;
+      // Calculate comprehensive results locally
+      const completionData = this.calculateActivityResults();
+      console.log('Calculated completion data:', completionData);
+      console.log('Current session:', this.currentSession);
+
+      // Send completion to server (if available) or store locally
+      try {
+        const serverResult = await this.activitySessionService.completeSession(this.currentSession.id, completionData).toPromise();
+        console.log('Server completion result:', serverResult);
+        // Keep our local scoring, but merge any additional server fields
+        this.completionResult = { ...completionData, ...serverResult };
+      } catch (serverError) {
+        console.warn('Server completion failed, using local calculation:', serverError);
+        this.completionResult = completionData;
+      }
+
+      // Update local student data with new points and XP
+      this.updateStudentProgress(this.completionResult);
+
+      // Generate confetti for celebration
+      this.generateConfetti();
+
       this.showCompletionModal = true;
 
     } catch (error) {
@@ -1669,5 +1692,201 @@ export class StartActivityComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigate(['/student/activities']);
+  }
+
+  // Enhanced completion and celebration methods
+  private calculateActivityResults() {
+    if (!this.currentSession) return {};
+
+    // Ensure we have valid scores, use accumulated score or calculate from stages completed
+    const totalScore = this.currentSession.currentScore || 0;
+    const stagesCompleted = Math.max(1, this.currentSession.currentStage || 1);
+    const finalScore = totalScore > 0 ? Math.round(totalScore / stagesCompleted) : 65; // Default to 65% for participation
+    const basePoints = Math.max(10, Math.round(finalScore * 2)); // Minimum 10 points
+    const timeBonus = this.calculateTimeBonus();
+    const accuracyBonus = finalScore >= 80 ? 20 : finalScore >= 60 ? 10 : 0;
+
+    const totalPointsEarned = basePoints + timeBonus + accuracyBonus;
+    const experienceGained = Math.round(totalPointsEarned * 1.5);
+
+    // Determine if level up
+    const currentXP = this.getCurrentStudentXP();
+    const newXP = currentXP + experienceGained;
+    const currentLevel = this.calculateLevel(currentXP);
+    const newLevel = this.calculateLevel(newXP);
+    const levelUp = newLevel > currentLevel;
+
+    // Check for new badges
+    const badgesEarned = this.checkNewBadges(finalScore, this.currentSession.activity.type);
+
+    // Generate feedback message based on score
+    const feedbackMessage = this.generateFeedbackMessage(finalScore);
+    const improvementTips = this.generateImprovementTips(finalScore, this.currentSession.activity.type);
+
+    return {
+      finalScore,
+      pointsEarned: totalPointsEarned,
+      experienceGained,
+      timeSpent: this.currentSession.timeSpent || 0,
+      totalTime: this.currentSession.timeSpent || 0,
+      levelUp,
+      newLevel: levelUp ? newLevel : undefined,
+      badgesEarned,
+      timeBonus,
+      accuracyBonus,
+      message: feedbackMessage,
+      improvement: improvementTips,
+      achievements: badgesEarned
+    };
+  }
+
+  private calculateTimeBonus(): number {
+    if (!this.currentSession) return 0;
+    const timeSpent = this.currentSession.timeSpent || 0;
+    const expectedTime = this.currentSession.totalStages * 30; // 30 seconds per stage
+
+    if (timeSpent <= expectedTime * 0.5) return 15; // Very fast
+    if (timeSpent <= expectedTime * 0.75) return 10; // Fast
+    if (timeSpent <= expectedTime) return 5; // Normal
+    return 0; // Slow
+  }
+
+  private getCurrentStudentXP(): number {
+    // This would normally come from a service, using mock data for now
+    return parseInt(localStorage.getItem('studentXP') || '0');
+  }
+
+  private calculateLevel(xp: number): number {
+    // Level calculation: Level 1 = 0-99 XP, Level 2 = 100-299 XP, etc.
+    return Math.floor(xp / 100) + 1;
+  }
+
+  private checkNewBadges(score: number, activityType: string): any[] {
+    const badges = [];
+
+    if (score === 100) {
+      badges.push({ name: 'Perfect Score', icon: '💯' });
+    } else if (score >= 90) {
+      badges.push({ name: 'Excellence', icon: '⭐' });
+    }
+
+    if (activityType === 'pronunciation_challenge' && score >= 85) {
+      badges.push({ name: 'Pronunciation Master', icon: '🗣️' });
+    }
+
+    return badges;
+  }
+
+  private generateFeedbackMessage(score: number): string {
+    if (score >= 95) return 'Outstanding performance! You nailed it! 🌟';
+    if (score >= 85) return 'Excellent work! You\'re doing great! 👏';
+    if (score >= 75) return 'Good job! Keep up the good work! 💪';
+    if (score >= 65) return 'Nice effort! You\'re improving! 🎯';
+    return 'Good effort! Keep practicing and you\'ll get better! 💛';
+  }
+
+  private generateImprovementTips(score: number, activityType: string): string[] {
+    const tips = [];
+
+    if (score < 80) {
+      if (activityType === 'pronunciation_challenge') {
+        tips.push('Practice individual sounds');
+        tips.push('Use pronunciation apps');
+        tips.push('Listen to native speakers');
+      } else if (activityType === 'picture_description') {
+        tips.push('Use more descriptive vocabulary');
+        tips.push('Practice describing everyday objects');
+        tips.push('Focus on sentence structure');
+      } else {
+        tips.push('Practice more frequently');
+        tips.push('Focus on accuracy');
+        tips.push('Take your time to think');
+      }
+    } else {
+      tips.push('Try more challenging activities');
+      tips.push('Focus on fluency');
+      tips.push('Keep up the excellent work!');
+    }
+
+    return tips;
+  }
+
+  private updateStudentProgress(completionResult: any) {
+    // Update local storage (in a real app this would sync with server)
+    const currentXP = this.getCurrentStudentXP();
+    const newXP = currentXP + completionResult.experienceGained;
+    const currentPoints = parseInt(localStorage.getItem('studentPoints') || '0');
+    const newPoints = currentPoints + completionResult.pointsEarned;
+
+    localStorage.setItem('studentXP', newXP.toString());
+    localStorage.setItem('studentPoints', newPoints.toString());
+
+    // Update streak
+    const lastActivityDate = localStorage.getItem('lastActivityDate');
+    const today = new Date().toDateString();
+    const currentStreak = parseInt(localStorage.getItem('studentStreak') || '0');
+
+    if (lastActivityDate === today) {
+      // Same day, don't update streak
+    } else if (lastActivityDate &&
+        new Date(lastActivityDate).getTime() === new Date(today).getTime() - 86400000) {
+      // Consecutive day
+      localStorage.setItem('studentStreak', (currentStreak + 1).toString());
+    } else {
+      // Broken streak or first activity
+      localStorage.setItem('studentStreak', '1');
+    }
+
+    localStorage.setItem('lastActivityDate', today);
+  }
+
+  private generateConfetti() {
+    this.confettiArray = [];
+    for (let i = 0; i < 50; i++) {
+      this.confettiArray.push({
+        id: i,
+        left: Math.random() * 100 + '%',
+        animationDelay: Math.random() * 3 + 's',
+        backgroundColor: this.getRandomColor()
+      });
+    }
+  }
+
+  private getRandomColor(): string {
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  // Methods for enhanced completion modal
+  getAchievementLevel(): string {
+    if (!this.completionResult) return 'bronze';
+    if (this.completionResult.finalScore >= 90) return 'gold';
+    if (this.completionResult.finalScore >= 75) return 'silver';
+    return 'bronze';
+  }
+
+  getAchievementIcon(): string {
+    if (!this.completionResult) return '🏆';
+    if (this.completionResult.finalScore >= 95) return '🏆';
+    if (this.completionResult.finalScore >= 85) return '🥇';
+    if (this.completionResult.finalScore >= 75) return '🥈';
+    return '🥉';
+  }
+
+  getCompletionTitle(): string {
+    if (!this.completionResult) return 'Activity Complete!';
+    if (this.completionResult.finalScore >= 95) return '🌟 Outstanding Performance!';
+    if (this.completionResult.finalScore >= 85) return '🎉 Excellent Work!';
+    if (this.completionResult.finalScore >= 75) return '👏 Great Job!';
+    if (this.completionResult.finalScore >= 60) return '👍 Good Effort!';
+    return '💪 Keep Practicing!';
+  }
+
+  getEncouragementMessage(): string {
+    if (!this.completionResult) return 'Well done!';
+    if (this.completionResult.finalScore >= 90) return "You're amazing! Your English skills are really shining!";
+    if (this.completionResult.finalScore >= 75) return "Fantastic progress! You're getting better every day!";
+    if (this.completionResult.finalScore >= 60) return "Good work! Keep practicing and you'll improve even more!";
+    return "Don't give up! Every practice session makes you better!";
   }
 }

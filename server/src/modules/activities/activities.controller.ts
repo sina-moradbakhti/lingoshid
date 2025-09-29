@@ -111,9 +111,9 @@ export class ActivitiesController {
   }
 
   @Post('sessions/:sessionId/complete')
-  async completeSession(@Param('sessionId') sessionId: string, @Request() req) {
+  async completeSession(@Param('sessionId') sessionId: string, @Body() completionData: any, @Request() req) {
     const studentId = req.user.studentId;
-    return this.activitiesService.completeActivitySession(sessionId, studentId);
+    return this.activitiesService.completeActivitySession(sessionId, studentId, completionData);
   }
 
   @Get('sessions/:sessionId/feedback/:stageNumber')

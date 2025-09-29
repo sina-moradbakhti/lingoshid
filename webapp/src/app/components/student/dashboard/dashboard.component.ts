@@ -467,7 +467,7 @@ export class DashboardComponent implements OnInit {
         id: '1',
         grade: 5,
         age: 10,
-        totalPoints: 1250,
+        totalPoints: parseInt(localStorage.getItem('studentPoints') || '1250'),
         currentLevel: 8,
         experiencePoints: 350,
         proficiencyLevel: 'intermediate',
