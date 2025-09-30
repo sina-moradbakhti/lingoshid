@@ -402,9 +402,19 @@ export class TeachersService {
       student.user.password = hashedPassword;
       await this.userRepository.save(student.user);
 
+      // Generate QR code for new credentials
+      const qrCode = await QRCodeGenerator.generateCredentialsQRCode(
+        newUsername,
+        newPassword,
+        'student'
+      );
+
       return {
         username: newUsername,
         password: newPassword,
+        qrCode,
+        firstName: student.user.firstName,
+        lastName: student.user.lastName,
         message: 'Student credentials updated successfully',
       };
     } else {
@@ -420,9 +430,19 @@ export class TeachersService {
       student.parent.user.password = hashedPassword;
       await this.userRepository.save(student.parent.user);
 
+      // Generate QR code for new credentials
+      const qrCode = await QRCodeGenerator.generateCredentialsQRCode(
+        newUsername,
+        newPassword,
+        'parent'
+      );
+
       return {
         username: newUsername,
         password: newPassword,
+        qrCode,
+        firstName: student.parent.user.firstName,
+        lastName: student.parent.user.lastName,
         message: 'Parent credentials updated successfully',
       };
     }
@@ -674,18 +694,18 @@ export class TeachersService {
     const savedActivity = await this.activityRepository.save(activity);
 
     // Determine which students to assign
+    // Only create assignments if specific students are selected
+    // If assignedStudents is empty/undefined, no assignments = global activity visible to all
     let studentsToAssign: Student[] = [];
     if (createDto.assignedStudents && createDto.assignedStudents.length > 0) {
-      // Assign to specific students
+      // Assign to specific students only
       studentsToAssign = teacher.students.filter(s =>
         createDto.assignedStudents.includes(s.id)
       );
-    } else {
-      // Assign to all students
-      studentsToAssign = teacher.students;
     }
+    // If no students specified, don't create any assignments (global activity)
 
-    // Create assignments
+    // Create assignments only for specific students
     const assignments = [];
     for (const student of studentsToAssign) {
       const assignment = this.activityAssignmentRepository.create({
@@ -696,11 +716,14 @@ export class TeachersService {
       assignments.push(await this.activityAssignmentRepository.save(assignment));
     }
 
+    const isGlobal = assignments.length === 0;
     return {
       activity: savedActivity,
-      assignedTo: assignments.length,
+      assignedTo: isGlobal ? 'all students (global)' : assignments.length,
       assignments,
-      message: `Custom practice created and assigned to ${assignments.length} student(s)`,
+      message: isGlobal
+        ? 'Custom practice created as a global activity (visible to all students)'
+        : `Custom practice created and assigned to ${assignments.length} student(s)`,
     };
   }
 

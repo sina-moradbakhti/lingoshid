@@ -105,6 +105,31 @@ import { TeacherService } from '../../../services/teacher.service';
           </form>
         </div>
       </div>
+
+      <!-- Credentials Modal -->
+      <div *ngIf="showCredentialsModal" class="modal-overlay" (click)="closeCredentialsModal()">
+        <div class="credentials-modal-content" (click)="$event.stopPropagation()">
+          <h2>✅ {{ credentialsData?.message }}</h2>
+          <p class="success-message">New credentials have been generated. Please save or print them.</p>
+
+          <div class="credential-display">
+            <div class="credential-info">
+              <p><strong>Name:</strong> {{ credentialsData?.firstName }} {{ credentialsData?.lastName }}</p>
+              <p><strong>Username:</strong> <span class="highlight">{{ credentialsData?.username }}</span></p>
+              <p><strong>Password:</strong> <span class="highlight">{{ credentialsData?.password }}</span></p>
+            </div>
+            <div class="qr-code-section">
+              <img [src]="credentialsData?.qrCode" alt="QR Code" class="qr-image" />
+              <p class="qr-label">Scan to save credentials</p>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button (click)="printCredentials()" class="btn-print">🖨️ Print</button>
+            <button (click)="closeCredentialsModal()" class="btn-done">✅ Done</button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
@@ -331,6 +356,138 @@ import { TeacherService } from '../../../services/teacher.service';
     .btn-cancel:hover {
       background: #cbd5e0;
     }
+
+    /* Credentials Modal Styles */
+    .credentials-modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .credentials-modal-content h2 {
+      margin: 0 0 10px 0;
+      color: #48bb78;
+      text-align: center;
+    }
+
+    .success-message {
+      text-align: center;
+      color: #4a5568;
+      margin-bottom: 30px;
+    }
+
+    .credential-display {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      padding: 25px;
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .credential-info p {
+      margin: 12px 0;
+      color: #4a5568;
+      font-size: 1rem;
+    }
+
+    .credential-info strong {
+      color: #2d3748;
+    }
+
+    .credential-info .highlight {
+      color: #667eea;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 4px 8px;
+      background: #edf2f7;
+      border-radius: 4px;
+    }
+
+    .qr-code-section {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-image {
+      width: 150px;
+      height: 150px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .qr-label {
+      margin: 0;
+      color: #718096;
+      font-size: 0.9rem;
+    }
+
+    .btn-print {
+      flex: 1;
+      padding: 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-print:hover {
+      background: #5a67d8;
+    }
+
+    .btn-done {
+      flex: 1;
+      padding: 12px;
+      background: #48bb78;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-done:hover {
+      background: #38a169;
+    }
+
+    @media (max-width: 768px) {
+      .credential-display {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .qr-code-section {
+        margin-top: 20px;
+      }
+    }
+
+    @media print {
+      .modal-overlay {
+        display: none !important;
+      }
+
+      .credentials-modal-content {
+        display: block !important;
+        position: static;
+        box-shadow: none;
+      }
+
+      .modal-actions {
+        display: none !important;
+      }
+    }
   `]
 })
 export class StudentsListComponent implements OnInit {
@@ -341,6 +498,8 @@ export class StudentsListComponent implements OnInit {
   showEditModal = false;
   editingStudent: any = {};
   originalStudent: any = null;
+  showCredentialsModal = false;
+  credentialsData: any = null;
 
   constructor(
     private router: Router,
@@ -430,7 +589,8 @@ export class StudentsListComponent implements OnInit {
     if (confirm(`Are you sure you want to reset ${type} credentials?`)) {
       this.teacherService.updateStudentCredentials(studentId, type).subscribe({
         next: (response) => {
-          alert(`New credentials:\nUsername: ${response.username}\nPassword: ${response.password}\n\nPlease save these credentials!`);
+          this.credentialsData = response;
+          this.showCredentialsModal = true;
         },
         error: (error) => {
           console.error('Error resetting credentials:', error);
@@ -438,6 +598,15 @@ export class StudentsListComponent implements OnInit {
         }
       });
     }
+  }
+
+  closeCredentialsModal() {
+    this.showCredentialsModal = false;
+    this.credentialsData = null;
+  }
+
+  printCredentials() {
+    window.print();
   }
 
   goBack() {

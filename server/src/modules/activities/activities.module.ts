@@ -6,12 +6,13 @@ import { ActivitiesController } from './activities.controller';
 import { Activity } from '../../entities/activity.entity';
 import { ActivityCompletion } from '../../entities/activity-completion.entity';
 import { ActivitySession } from '../../entities/activity-session.entity';
+import { ActivityAssignment } from '../../entities/activity-assignment.entity';
 import { Student } from '../../entities/student.entity';
 import { StudentsModule } from '../students/students.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Activity, ActivityCompletion, ActivitySession, Student]),
+    TypeOrmModule.forFeature([Activity, ActivityCompletion, ActivitySession, ActivityAssignment, Student]),
     MulterModule.register({
       dest: './uploads/audio',
       limits: {

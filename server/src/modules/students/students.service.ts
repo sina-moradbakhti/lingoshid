@@ -118,14 +118,14 @@ export class StudentsService {
     return student;
   }
 
-  async getLeaderboard(grade?: number, limit: number = 10) {
+  async getLeaderboard(teacherId?: string, limit: number = 10) {
     const queryBuilder = this.studentRepository.createQueryBuilder('student')
       .leftJoinAndSelect('student.user', 'user')
       .orderBy('student.totalPoints', 'DESC')
       .limit(limit);
 
-    if (grade) {
-      queryBuilder.where('student.grade = :grade', { grade });
+    if (teacherId) {
+      queryBuilder.where('student.teacherId = :teacherId', { teacherId });
     }
 
     return queryBuilder.getMany();

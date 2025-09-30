@@ -152,13 +152,22 @@ export class AuthService {
     await this.userRepository.save(user);
 
     // Generate JWT token
-    const payload = { 
-      email: user.email, 
-      sub: user.id, 
+    const payload: any = {
+      email: user.email,
+      sub: user.id,
       role: user.role,
       firstName: user.firstName,
       lastName: user.lastName
     };
+
+    // Add role-specific IDs to the payload
+    if (user.role === UserRole.STUDENT && user.studentProfile) {
+      payload.studentId = user.studentProfile.id;
+    } else if (user.role === UserRole.TEACHER && user.teacherProfile) {
+      payload.teacherId = user.teacherProfile.id;
+    } else if (user.role === UserRole.PARENT && user.parentProfile) {
+      payload.parentId = user.parentProfile.id;
+    }
 
     return {
       access_token: this.jwtService.sign(payload),

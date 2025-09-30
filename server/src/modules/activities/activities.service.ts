@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Activity } from '../../entities/activity.entity';
 import { ActivityCompletion } from '../../entities/activity-completion.entity';
 import { ActivitySession, SessionStatus } from '../../entities/activity-session.entity';
+import { ActivityAssignment } from '../../entities/activity-assignment.entity';
 import { Student } from '../../entities/student.entity';
 import { StudentsService } from '../students/students.service';
 import { ActivityType, DifficultyLevel, SkillArea } from '../../enums/activity-type.enum';
@@ -23,6 +24,8 @@ export class ActivitiesService {
     private activityCompletionRepository: Repository<ActivityCompletion>,
     @InjectRepository(ActivitySession)
     private activitySessionRepository: Repository<ActivitySession>,
+    @InjectRepository(ActivityAssignment)
+    private activityAssignmentRepository: Repository<ActivityAssignment>,
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
     private studentsService: StudentsService,
@@ -70,14 +73,39 @@ export class ActivitiesService {
       throw new Error('Student not found');
     }
 
-    // Get activities appropriate for student's level
-    return this.activityRepository.find({
+    // Get activities assigned specifically to this student
+    const assignments = await this.activityAssignmentRepository.find({
+      where: { student: { id: studentId } },
+      relations: ['activity'],
+    });
+
+    const assignedActivityIds = assignments.map(a => a.activity.id);
+
+    // Get all activity IDs that have any assignments (these are custom/targeted activities)
+    const allAssignments = await this.activityAssignmentRepository.find({
+      relations: ['activity'],
+    });
+    const activitiesWithAssignments = new Set(allAssignments.map(a => a.activity.id));
+
+    // Get all active activities
+    const allActivities = await this.activityRepository.find({
       where: {
         isActive: true,
-        minLevel: { $lte: student.currentLevel } as any,
+        minLevel: student.currentLevel >= 1 ? undefined : { $lte: student.currentLevel } as any,
       },
       order: { order: 'ASC' },
     });
+
+    // Filter to include:
+    // 1. Activities assigned to this student
+    // 2. Activities with NO assignments (global activities available to all)
+    const availableActivities = allActivities.filter(activity => {
+      const isAssignedToStudent = assignedActivityIds.includes(activity.id);
+      const isGlobalActivity = !activitiesWithAssignments.has(activity.id);
+      return isAssignedToStudent || isGlobalActivity;
+    });
+
+    return availableActivities;
   }
 
   async findOne(id: string): Promise<Activity> {

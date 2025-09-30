@@ -25,10 +25,16 @@ export class StudentsController {
   }
 
   @Get('leaderboard')
-  getLeaderboard(@Query('grade') grade?: string, @Query('limit') limit?: string) {
-    const gradeNum = grade ? parseInt(grade) : undefined;
+  async getLeaderboard(@Request() req, @Query('limit') limit?: string) {
     const limitNum = limit ? parseInt(limit) : 10;
-    return this.studentsService.getLeaderboard(gradeNum, limitNum);
+
+    // Get current student to find their teacher
+    const student = await this.studentsService.findByUserId(req.user.userId);
+    if (!student) {
+      throw new Error('Student profile not found');
+    }
+
+    return this.studentsService.getLeaderboard(student.teacher?.id, limitNum);
   }
 
   @Get('by-teacher/:teacherId')

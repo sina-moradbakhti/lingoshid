@@ -1531,36 +1531,74 @@ export class StartActivityComponent implements OnInit, OnDestroy {
   // Utility methods for getting current activity data
   getCurrentWord(): string {
     if (!this.currentSession || this.currentSession.activity.type !== 'pronunciation_challenge') return '';
+    const content = this.currentSession.activity.content;
+    if (!content?.words || !Array.isArray(content.words)) {
+      // Fallback to hardcoded data if content not available
+      const index = this.currentSession.currentStage - 1;
+      return this.pronunciationWords[index]?.word || '';
+    }
     const index = this.currentSession.currentStage - 1;
-    return this.pronunciationWords[index]?.word || '';
+    return content.words[index]?.word || '';
   }
 
   getCurrentPhonetic(): string {
     if (!this.currentSession || this.currentSession.activity.type !== 'pronunciation_challenge') return '';
+    const content = this.currentSession.activity.content;
+    if (!content?.words || !Array.isArray(content.words)) {
+      // Fallback to hardcoded data if content not available
+      const index = this.currentSession.currentStage - 1;
+      return this.pronunciationWords[index]?.phonetic || '';
+    }
     const index = this.currentSession.currentStage - 1;
-    return this.pronunciationWords[index]?.phonetic || '';
+    return content.words[index]?.phonetic || '';
   }
 
   getCurrentPicture(): string {
     if (!this.currentSession || this.currentSession.activity.type !== 'picture_description') return '';
+    const content = this.currentSession.activity.content;
+    if (!content?.pictures || !Array.isArray(content.pictures)) {
+      // Fallback to hardcoded data if content not available
+      const index = this.currentSession.currentStage - 1;
+      return this.pictureDescriptions[index]?.image || '';
+    }
     const index = this.currentSession.currentStage - 1;
-    return this.pictureDescriptions[index]?.image || '';
+    return content.pictures[index]?.imageUrl || '';
   }
 
   getCurrentPrompt(): string {
     if (!this.currentSession || this.currentSession.activity.type !== 'picture_description') return '';
+    const content = this.currentSession.activity.content;
+    if (!content?.pictures || !Array.isArray(content.pictures)) {
+      // Fallback to hardcoded data if content not available
+      const index = this.currentSession.currentStage - 1;
+      return this.pictureDescriptions[index]?.prompt || '';
+    }
     const index = this.currentSession.currentStage - 1;
-    return this.pictureDescriptions[index]?.prompt || '';
+    return content.pictures[index]?.prompt || '';
   }
 
   getCurrentVocabulary(): string[] {
     if (!this.currentSession || this.currentSession.activity.type !== 'picture_description') return [];
+    const content = this.currentSession.activity.content;
+    if (!content?.pictures || !Array.isArray(content.pictures)) {
+      // Fallback to hardcoded data if content not available
+      const index = this.currentSession.currentStage - 1;
+      return this.pictureDescriptions[index]?.vocabulary || [];
+    }
     const index = this.currentSession.currentStage - 1;
-    return this.pictureDescriptions[index]?.vocabulary || [];
+    return content.pictures[index]?.vocabularyHints || [];
   }
 
   getCurrentCharacter() {
-    return this.conversationCharacters[0]; // Default to first character
+    if (!this.currentSession || this.currentSession.activity.type !== 'virtual_conversation') {
+      return this.conversationCharacters[0]; // Fallback
+    }
+    const content = this.currentSession.activity.content;
+    if (!content?.character) {
+      // Fallback to hardcoded data if content not available
+      return this.conversationCharacters[0];
+    }
+    return content.character;
   }
 
   getScoreComponent(component: string): number {

@@ -312,17 +312,16 @@ export class LeaderboardComponent implements OnInit {
   loadLeaderboard() {
     this.isLoading = true;
 
-    // Get current student's grade from dashboard
+    // Get current student info from dashboard
     this.studentService.getDashboard().subscribe({
       next: (dashboard) => {
-        const grade = dashboard?.student?.grade;
-
-        this.leaderboardService.getLeaderboard(grade, 20).subscribe({
+        // Load leaderboard without grade filter (filtered by teacher on backend)
+        this.leaderboardService.getLeaderboard(undefined, 20).subscribe({
           next: (data) => {
             this.leaderboardData = data;
             this.allEntries = data.entries;
             this.topEntries = data.entries.slice(0, 3);
-            this.markCurrentUser(dashboard?.student?.user?.firstName);
+            this.markCurrentUser(dashboard?.student?.id);
             this.isLoading = false;
           },
           error: (error) => {
@@ -340,17 +339,17 @@ export class LeaderboardComponent implements OnInit {
     });
   }
 
-  private markCurrentUser(currentUserFirstName?: string) {
-    if (!currentUserFirstName) return;
+  private markCurrentUser(currentStudentId?: string) {
+    if (!currentStudentId) return;
 
     this.allEntries.forEach(entry => {
-      if (entry.student.user.firstName === currentUserFirstName) {
+      if (entry.student.id === currentStudentId) {
         entry.isCurrentUser = true;
       }
     });
 
     this.topEntries.forEach(entry => {
-      if (entry.student.user.firstName === currentUserFirstName) {
+      if (entry.student.id === currentStudentId) {
         entry.isCurrentUser = true;
       }
     });

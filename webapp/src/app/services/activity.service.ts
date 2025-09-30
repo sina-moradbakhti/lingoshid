@@ -22,6 +22,7 @@ export class ActivityService {
     difficulty?: string;
     skillArea?: string;
   }): Observable<Activity[]> {
+    // Use the for-student endpoint which includes assignment filtering
     let params = '';
     if (filters) {
       const queryParams = new URLSearchParams();
@@ -30,7 +31,7 @@ export class ActivityService {
       if (filters.skillArea) queryParams.append('skillArea', filters.skillArea);
       params = queryParams.toString() ? `?${queryParams.toString()}` : '';
     }
-    return this.http.get<Activity[]>(`${this.apiUrl}${params}`);
+    return this.http.get<Activity[]>(`${this.apiUrl}/for-student${params}`);
   }
 
   getActivity(id: string): Observable<Activity> {

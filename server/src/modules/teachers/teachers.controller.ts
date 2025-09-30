@@ -24,6 +24,15 @@ export class TeachersController {
     return this.teachersService.getTeacherDashboard(teacher.id);
   }
 
+  @Get('analytics')
+  async getAnalytics(@Request() req) {
+    const teacher = await this.teachersService.findByUserId(req.user.userId);
+    if (!teacher) {
+      throw new Error('Teacher profile not found');
+    }
+    return this.teachersService.getTeacherAnalytics(teacher.id);
+  }
+
   @Get('students')
   async getStudentsList(@Request() req) {
     const teacher = await this.teachersService.findByUserId(req.user.userId);
@@ -68,30 +77,6 @@ export class TeachersController {
     return this.teachersService.updateStudentCredentials(teacher.id, studentId, type);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teachersService.findOne(id);
-  }
-
-  @Post(':teacherId/assign-student/:studentId')
-  assignStudent(@Param('teacherId') teacherId: string, @Param('studentId') studentId: string) {
-    return this.teachersService.assignStudentToTeacher(teacherId, studentId);
-  }
-
-  @Post(':teacherId/create-class')
-  createClass(@Param('teacherId') teacherId: string, @Body() classData: any) {
-    return this.teachersService.createClass(teacherId, classData);
-  }
-
-  @Get('analytics')
-  async getAnalytics(@Request() req) {
-    const teacher = await this.teachersService.findByUserId(req.user.userId);
-    if (!teacher) {
-      throw new Error('Teacher profile not found');
-    }
-    return this.teachersService.getTeacherAnalytics(teacher.id);
-  }
-
   @Get('class/:classId/analytics')
   getClassAnalytics(@Param('classId') classId: string) {
     return this.teachersService.getClassAnalytics(classId);
@@ -122,5 +107,20 @@ export class TeachersController {
       throw new Error('Teacher profile not found');
     }
     return this.teachersService.deleteCustomPractice(teacher.id, activityId);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.teachersService.findOne(id);
+  }
+
+  @Post(':teacherId/assign-student/:studentId')
+  assignStudent(@Param('teacherId') teacherId: string, @Param('studentId') studentId: string) {
+    return this.teachersService.assignStudentToTeacher(teacherId, studentId);
+  }
+
+  @Post(':teacherId/create-class')
+  createClass(@Param('teacherId') teacherId: string, @Body() classData: any) {
+    return this.teachersService.createClass(teacherId, classData);
   }
 }
