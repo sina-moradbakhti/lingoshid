@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { Subscription } from 'rxjs';
@@ -12,7 +11,7 @@ import { Activity } from '../../../models/user.model';
 @Component({
   selector: 'app-enhanced-start-activity',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule],
   template: `
     <div class="activity-runner">
       <!-- Header with Progress -->

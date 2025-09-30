@@ -43,6 +43,16 @@ export class StudentsController {
     return this.studentsService.findOne(id);
   }
 
+  @Get(':id/badges')
+  getStudentBadges(@Param('id') id: string) {
+    return this.studentsService.getStudentBadges(id);
+  }
+
+  @Get(':id/detailed-progress')
+  getDetailedProgress(@Param('id') id: string) {
+    return this.studentsService.getDetailedProgress(id);
+  }
+
   @Post(':id/update-progress')
   updateProgress(
     @Param('id') id: string,

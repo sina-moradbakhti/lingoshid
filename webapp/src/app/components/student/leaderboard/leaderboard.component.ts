@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { LeaderboardService, LeaderboardEntry, LeaderboardResponse } from '../../../services/leaderboard.service';
+import { StudentService } from '../../../services/student.service';
 
 @Component({
   selector: 'app-leaderboard',
@@ -14,34 +16,57 @@ import { Router } from '@angular/router';
         <p>See how you rank among your classmates!</p>
       </div>
 
-      <div class="leaderboard-card">
-        <div class="podium">
-          <div class="rank-item gold">
-            <div class="rank-number">🥇</div>
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner">🎮</div>
+        <p>Loading leaderboard...</p>
+      </div>
+
+      <!-- Leaderboard Content -->
+      <div class="leaderboard-card" *ngIf="!isLoading">
+        <!-- Podium for top 3 -->
+        <div class="podium" *ngIf="topEntries.length > 0">
+          <div class="rank-item"
+               *ngFor="let entry of topEntries; let i = index"
+               [class.gold]="i === 0"
+               [class.silver]="i === 1"
+               [class.bronze]="i === 2"
+               [class.current-user]="entry.isCurrentUser">
+            <div class="rank-number">{{ getRankEmoji(i + 1) }}</div>
             <div class="student-info">
-              <h3>Sara Ahmad</h3>
-              <p>2,450 points</p>
-            </div>
-          </div>
-          <div class="rank-item silver">
-            <div class="rank-number">���</div>
-            <div class="student-info">
-              <h3>Mohammad Ali</h3>
-              <p>1,890 points</p>
-            </div>
-          </div>
-          <div class="rank-item bronze current-user">
-            <div class="rank-number">🥉</div>
-            <div class="student-info">
-              <h3>Alex Johnson (You)</h3>
-              <p>1,250 points</p>
+              <h3>{{ entry.student.user.firstName }} {{ entry.student.user.lastName }}{{ entry.isCurrentUser ? ' (You)' : '' }}</h3>
+              <p>{{ entry.points }} points</p>
+              <small>Level {{ entry.student.currentLevel }}</small>
             </div>
           </div>
         </div>
 
-        <div class="demo-message">
-          <h3>🚧 Demo Version</h3>
-          <p>In the full version, you'll see real classmate rankings and can compete in weekly challenges!</p>
+        <!-- Full Leaderboard List -->
+        <div class="leaderboard-list" *ngIf="allEntries.length > 3">
+          <h3>Full Rankings</h3>
+          <div class="rank-list">
+            <div class="rank-entry"
+                 *ngFor="let entry of allEntries; let i = index"
+                 [class.current-user]="entry.isCurrentUser">
+              <span class="rank">#{{ entry.rank }}</span>
+              <span class="name">{{ entry.student.user.firstName }} {{ entry.student.user.lastName }}{{ entry.isCurrentUser ? ' (You)' : '' }}</span>
+              <span class="points">{{ entry.points }} pts</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="leaderboard-stats" *ngIf="leaderboardData">
+          <p>Total Students: {{ leaderboardData.totalStudents }}</p>
+          <p *ngIf="leaderboardData.currentUserRank">Your Rank: #{{ leaderboardData.currentUserRank }}</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="allEntries.length === 0">
+          <div class="empty-icon">🏆</div>
+          <h3>No Leaderboard Data</h3>
+          <p>Start completing activities to see rankings!</p>
+          <button (click)="loadLeaderboard()" class="retry-btn">Retry Loading</button>
         </div>
       </div>
     </div>
@@ -134,31 +159,286 @@ import { Router } from '@angular/router';
     }
 
     .student-info p {
-      margin: 0;
+      margin: 0 0 5px 0;
       color: #666;
       font-weight: 600;
     }
 
-    .demo-message {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
+    .student-info small {
+      color: #999;
+      font-size: 0.8rem;
+    }
+
+    .leaderboard-list {
+      margin-top: 30px;
+    }
+
+    .leaderboard-list h3 {
+      margin: 0 0 20px 0;
+      color: #333;
       text-align: center;
     }
 
-    .demo-message h3 {
-      margin: 0 0 10px 0;
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .demo-message p {
-      margin: 0;
-      opacity: 0.9;
+    .rank-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+
+    .rank-entry.current-user {
+      background: #e3f2fd;
+      border: 2px solid #667eea;
+    }
+
+    .rank-entry:hover {
+      background: #e9ecef;
+    }
+
+    .rank-entry.current-user:hover {
+      background: #bbdefb;
+    }
+
+    .rank {
+      font-weight: bold;
+      color: #667eea;
+      min-width: 40px;
+    }
+
+    .name {
+      flex: 1;
+      text-align: left;
+      padding-left: 20px;
+    }
+
+    .points {
+      font-weight: 600;
+      color: #28a745;
+    }
+
+    .leaderboard-stats {
+      margin-top: 30px;
+      text-align: center;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .leaderboard-stats p {
+      margin: 5px 0;
+      color: #666;
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      font-size: 4rem;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading p {
+      margin-top: 20px;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .empty-state p {
+      margin: 0 0 20px 0;
+      color: #666;
+    }
+
+    .retry-btn {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
     }
   `]
 })
-export class LeaderboardComponent {
-  constructor(private router: Router) {}
+export class LeaderboardComponent implements OnInit {
+  leaderboardData: LeaderboardResponse | null = null;
+  allEntries: LeaderboardEntry[] = [];
+  topEntries: LeaderboardEntry[] = [];
+  isLoading = true;
+
+  constructor(
+    private router: Router,
+    private leaderboardService: LeaderboardService,
+    private studentService: StudentService
+  ) {}
+
+  ngOnInit() {
+    this.loadLeaderboard();
+  }
+
+  loadLeaderboard() {
+    this.isLoading = true;
+
+    // Get current student's grade from dashboard
+    this.studentService.getDashboard().subscribe({
+      next: (dashboard) => {
+        const grade = dashboard?.student?.grade;
+
+        this.leaderboardService.getLeaderboard(grade, 20).subscribe({
+          next: (data) => {
+            this.leaderboardData = data;
+            this.allEntries = data.entries;
+            this.topEntries = data.entries.slice(0, 3);
+            this.markCurrentUser(dashboard?.student?.user?.firstName);
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error loading leaderboard:', error);
+            this.createMockLeaderboard();
+            this.isLoading = false;
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading dashboard:', error);
+        this.createMockLeaderboard();
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private markCurrentUser(currentUserFirstName?: string) {
+    if (!currentUserFirstName) return;
+
+    this.allEntries.forEach(entry => {
+      if (entry.student.user.firstName === currentUserFirstName) {
+        entry.isCurrentUser = true;
+      }
+    });
+
+    this.topEntries.forEach(entry => {
+      if (entry.student.user.firstName === currentUserFirstName) {
+        entry.isCurrentUser = true;
+      }
+    });
+  }
+
+  getRankEmoji(rank: number): string {
+    switch (rank) {
+      case 1: return '🥇';
+      case 2: return '🥈';
+      case 3: return '🥉';
+      default: return `#${rank}`;
+    }
+  }
+
+  private createMockLeaderboard() {
+    // Fallback mock data when server is unavailable
+    const studentPoints = parseInt(localStorage.getItem('studentPoints') || '1250');
+
+    this.allEntries = [
+      {
+        rank: 1,
+        student: {
+          id: '1',
+          user: { firstName: 'Sara', lastName: 'Ahmad' },
+          totalPoints: 2450,
+          currentLevel: 12,
+          grade: 5
+        },
+        points: 2450,
+        isCurrentUser: false
+      },
+      {
+        rank: 2,
+        student: {
+          id: '2',
+          user: { firstName: 'Mohammad', lastName: 'Ali' },
+          totalPoints: 1890,
+          currentLevel: 9,
+          grade: 5
+        },
+        points: 1890,
+        isCurrentUser: false
+      },
+      {
+        rank: 3,
+        student: {
+          id: '3',
+          user: { firstName: 'Alex', lastName: 'Johnson' },
+          totalPoints: studentPoints,
+          currentLevel: 8,
+          grade: 5
+        },
+        points: studentPoints,
+        isCurrentUser: true
+      },
+      {
+        rank: 4,
+        student: {
+          id: '4',
+          user: { firstName: 'Emma', lastName: 'Wilson' },
+          totalPoints: 980,
+          currentLevel: 6,
+          grade: 5
+        },
+        points: 980,
+        isCurrentUser: false
+      },
+      {
+        rank: 5,
+        student: {
+          id: '5',
+          user: { firstName: 'Oliver', lastName: 'Brown' },
+          totalPoints: 756,
+          currentLevel: 5,
+          grade: 5
+        },
+        points: 756,
+        isCurrentUser: false
+      }
+    ];
+
+    this.topEntries = this.allEntries.slice(0, 3);
+    this.leaderboardData = {
+      entries: this.allEntries,
+      currentUserRank: 3,
+      totalStudents: 25
+    };
+  }
 
   goBack() {
     this.router.navigate(['/student/dashboard']);

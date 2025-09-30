@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { BadgesService, Badge, StudentBadge } from '../../../services/badges.service';
+import { StudentService } from '../../../services/student.service';
 
 @Component({
   selector: 'app-badges',
@@ -14,53 +16,38 @@ import { Router } from '@angular/router';
         <p>Collect badges by completing activities and reaching milestones!</p>
       </div>
 
-      <div class="badges-grid">
-        <div class="badge-card earned">
-          <div class="badge-icon">🏆</div>
-          <h3>First Steps</h3>
-          <p>Complete your first speaking activity</p>
-          <div class="badge-status earned">Earned!</div>
-        </div>
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner">🎮</div>
+        <p>Loading your badges...</p>
+      </div>
 
-        <div class="badge-card earned">
-          <div class="badge-icon">🗣️</div>
-          <h3>Brave Speaker</h3>
-          <p>Speak for 5 minutes total</p>
-          <div class="badge-status earned">Earned!</div>
-        </div>
-
-        <div class="badge-card earned">
-          <div class="badge-icon">🔥</div>
-          <h3>Daily Learner</h3>
-          <p>Login for 7 consecutive days</p>
-          <div class="badge-status earned">Earned!</div>
-        </div>
-
-        <div class="badge-card locked">
-          <div class="badge-icon">🎯</div>
-          <h3>Pronunciation Pro</h3>
-          <p>Achieve 80% pronunciation accuracy</p>
-          <div class="badge-status locked">Locked</div>
-        </div>
-
-        <div class="badge-card locked">
-          <div class="badge-icon">💬</div>
-          <h3>Conversation Master</h3>
-          <p>Complete 10 dialogue activities</p>
-          <div class="badge-status locked">Locked</div>
-        </div>
-
-        <div class="badge-card locked">
-          <div class="badge-icon">📖</div>
-          <h3>Story Teller</h3>
-          <p>Record and share one story</p>
-          <div class="badge-status locked">Locked</div>
+      <!-- Badges Grid -->
+      <div class="badges-grid" *ngIf="!isLoading && badges.length > 0">
+        <div class="badge-card"
+             *ngFor="let badge of badges"
+             [class.earned]="isBadgeEarned(badge)"
+             [class.locked]="!isBadgeEarned(badge)">
+          <div class="badge-icon">{{ badge.icon || '🏅' }}</div>
+          <h3>{{ badge.name }}</h3>
+          <p>{{ badge.description }}</p>
+          <div class="badge-status"
+               [class.earned]="isBadgeEarned(badge)"
+               [class.locked]="!isBadgeEarned(badge)">
+            {{ isBadgeEarned(badge) ? 'Earned!' : 'Locked' }}
+          </div>
+          <div class="earned-date" *ngIf="isBadgeEarned(badge) && getBadgeEarnedDate(badge)">
+            Earned: {{ getBadgeEarnedDate(badge) | date:'short' }}
+          </div>
         </div>
       </div>
 
-      <div class="demo-message">
-        <h3>🚧 Demo Version</h3>
-        <p>In the full version, badges will be automatically awarded based on your real progress and achievements!</p>
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!isLoading && badges.length === 0">
+        <div class="empty-icon">🏅</div>
+        <h3>No Badges Available</h3>
+        <p>Badges will be loaded soon. Check back later!</p>
+        <button (click)="loadBadges()" class="retry-btn">Retry Loading</button>
       </div>
     </div>
   `,
@@ -188,10 +175,235 @@ import { Router } from '@angular/router';
       margin: 0;
       opacity: 0.9;
     }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      font-size: 4rem;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading p {
+      margin-top: 20px;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .empty-state p {
+      margin: 0 0 20px 0;
+      color: #666;
+    }
+
+    .retry-btn {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .earned-date {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      color: #28a745;
+      font-weight: 600;
+    }
   `]
 })
-export class BadgesComponent {
-  constructor(private router: Router) {}
+export class BadgesComponent implements OnInit {
+  badges: Badge[] = [];
+  studentBadges: StudentBadge[] = [];
+  isLoading = true;
+
+  constructor(
+    private router: Router,
+    private badgesService: BadgesService,
+    private studentService: StudentService
+  ) {}
+
+  ngOnInit() {
+    this.loadBadges();
+  }
+
+  loadBadges() {
+    this.isLoading = true;
+
+    // Load all available badges
+    this.badgesService.getAllBadges().subscribe({
+      next: (badges) => {
+        this.badges = badges;
+        this.loadStudentBadges();
+      },
+      error: (error) => {
+        console.error('Error loading badges:', error);
+        this.createMockBadges();
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private loadStudentBadges() {
+    // Get student information from dashboard
+    this.studentService.getDashboard().subscribe({
+      next: (dashboard) => {
+        if (dashboard?.student?.id) {
+          this.badgesService.getStudentBadges(dashboard.student.id).subscribe({
+            next: (studentBadges) => {
+              this.studentBadges = studentBadges;
+              this.isLoading = false;
+            },
+            error: (error) => {
+              console.error('Error loading student badges:', error);
+              // Continue without student badges data
+              this.isLoading = false;
+            }
+          });
+        } else {
+          this.isLoading = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading dashboard:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  isBadgeEarned(badge: Badge): boolean {
+    return this.studentBadges.some(sb => sb.badge.id === badge.id && sb.isEarned);
+  }
+
+  getBadgeEarnedDate(badge: Badge): Date | null {
+    const studentBadge = this.studentBadges.find(sb => sb.badge.id === badge.id && sb.isEarned);
+    return studentBadge ? studentBadge.earnedAt : null;
+  }
+
+  private createMockBadges() {
+    // Fallback mock data when server is unavailable
+    this.badges = [
+      {
+        id: '1',
+        name: 'First Steps',
+        description: 'Complete your first speaking activity',
+        icon: '🏆',
+        category: 'achievement',
+        criteria: {},
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '2',
+        name: 'Brave Speaker',
+        description: 'Speak for 5 minutes total',
+        icon: '🗣️',
+        category: 'practice',
+        criteria: {},
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '3',
+        name: 'Daily Learner',
+        description: 'Login for 7 consecutive days',
+        icon: '🔥',
+        category: 'streak',
+        criteria: {},
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '4',
+        name: 'Pronunciation Pro',
+        description: 'Achieve 80% pronunciation accuracy',
+        icon: '🎯',
+        category: 'skill',
+        criteria: {},
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '5',
+        name: 'Conversation Master',
+        description: 'Complete 10 dialogue activities',
+        icon: '💬',
+        category: 'activity',
+        criteria: {},
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '6',
+        name: 'Story Teller',
+        description: 'Record and share one story',
+        icon: '📖',
+        category: 'creativity',
+        criteria: {},
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ];
+
+    // Mock some earned badges based on localStorage data
+    const studentPoints = parseInt(localStorage.getItem('studentPoints') || '0');
+    this.studentBadges = [];
+
+    if (studentPoints > 0) {
+      this.studentBadges.push({
+        id: '1',
+        badge: this.badges[0],
+        student: null,
+        earnedAt: new Date(Date.now() - 86400000),
+        isEarned: true
+      });
+    }
+
+    if (studentPoints > 100) {
+      this.studentBadges.push({
+        id: '2',
+        badge: this.badges[1],
+        student: null,
+        earnedAt: new Date(Date.now() - 43200000),
+        isEarned: true
+      });
+    }
+  }
 
   goBack() {
     this.router.navigate(['/student/dashboard']);

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ActivityService } from '../../../services/activity.service';
-import { AuthService } from '../../../services/auth.service';
 import { Activity } from '../../../models/user.model';
 
 @Component({
@@ -339,7 +338,6 @@ export class ActivitiesComponent implements OnInit {
 
   constructor(
     private activityService: ActivityService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
