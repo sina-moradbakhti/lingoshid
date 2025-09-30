@@ -112,8 +112,22 @@ export class ActivitiesController {
 
   @Post('sessions/:sessionId/complete')
   async completeSession(@Param('sessionId') sessionId: string, @Body() completionData: any, @Request() req) {
+    console.log('=== COMPLETION REQUEST ===');
+    console.log('User from JWT:', req.user);
+    console.log('SessionId:', sessionId);
+    console.log('Completion Data:', completionData);
+
     const studentId = req.user.studentId;
-    return this.activitiesService.completeActivitySession(sessionId, studentId, completionData);
+
+    if (!studentId) {
+      console.error('ERROR: studentId is missing from JWT token!');
+      throw new Error('Student ID not found in authentication token. Please log out and log in again.');
+    }
+
+    console.log('StudentId extracted:', studentId);
+    const result = await this.activitiesService.completeActivitySession(sessionId, studentId, completionData);
+    console.log('Completion successful:', result.id);
+    return result;
   }
 
   @Get('sessions/:sessionId/feedback/:stageNumber')
