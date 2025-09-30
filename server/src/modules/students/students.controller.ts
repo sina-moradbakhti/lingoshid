@@ -1,6 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { StudentsService } from './students.service';
+import { RolesGuard } from '../../guards/roles.guard';
+import { Roles } from '../../decorators/roles.decorator';
+import { UserRole } from '../../enums/user-role.enum';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
@@ -49,6 +52,8 @@ export class StudentsController {
   }
 
   @Get(':id/detailed-progress')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.PARENT, UserRole.TEACHER)
   getDetailedProgress(@Param('id') id: string) {
     return this.studentsService.getDetailedProgress(id);
   }

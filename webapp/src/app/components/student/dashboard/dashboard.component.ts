@@ -83,12 +83,6 @@ import { AuthService } from '../../../services/auth.service';
             <p>See your ranking</p>
           </button>
 
-          <button (click)="navigateTo('/student/progress')" class="action-btn progress">
-            <div class="action-icon">📊</div>
-            <h3>My Progress</h3>
-            <p>Track your improvement</p>
-          </button>
-
           <button (click)="navigateTo('/student/badges')" class="action-btn badges">
             <div class="action-icon">🏅</div>
             <h3>My Badges</h3>

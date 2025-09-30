@@ -18,7 +18,16 @@ export class ParentsController {
     if (!parent) {
       throw new Error('Parent profile not found');
     }
-    return this.parentsService.getChildrenProgress(parent.id);
+    return this.parentsService.getParentDashboard(parent.id);
+  }
+
+  @Get('children')
+  async getChildren(@Request() req) {
+    const parent = await this.parentsService.findByUserId(req.user.userId);
+    if (!parent) {
+      throw new Error('Parent profile not found');
+    }
+    return this.parentsService.getChildren(parent.id);
   }
 
   @Get(':id')

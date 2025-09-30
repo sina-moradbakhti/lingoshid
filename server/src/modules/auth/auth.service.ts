@@ -10,6 +10,7 @@ import { Teacher } from '../../entities/teacher.entity';
 import { UserRole } from '../../enums/user-role.enum';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { TeacherRegisterDto } from './dto/teacher-register.dto';
 
 @Injectable()
 export class AuthService {
@@ -72,12 +73,73 @@ export class AuthService {
     };
   }
 
+  async registerTeacher(teacherRegisterDto: TeacherRegisterDto) {
+    const { email, password, firstName, lastName, phoneNumber, institution, isSelfEmployed, ...profileData } = teacherRegisterDto;
+
+    // Check if email already exists
+    const existingUser = await this.userRepository.findOne({ where: { email } });
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user with teacher role
+    const user = this.userRepository.create({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      role: UserRole.TEACHER,
+    });
+
+    const savedUser = await this.userRepository.save(user);
+
+    // Create teacher profile
+    const teacher = this.teacherRepository.create({
+      user: savedUser,
+      phoneNumber,
+      institution: isSelfEmployed ? 'Self-employed' : institution,
+      isSelfEmployed,
+      schoolName: profileData.schoolName,
+      department: profileData.department,
+      qualification: profileData.qualification,
+      yearsOfExperience: profileData.yearsOfExperience || 0,
+    });
+
+    await this.teacherRepository.save(teacher);
+
+    // Generate JWT token
+    const payload = {
+      email: savedUser.email,
+      sub: savedUser.id,
+      role: savedUser.role,
+      firstName: savedUser.firstName,
+      lastName: savedUser.lastName
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: savedUser.id,
+        email: savedUser.email,
+        firstName: savedUser.firstName,
+        lastName: savedUser.lastName,
+        role: savedUser.role,
+      },
+    };
+  }
+
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    // Find user with profile data
+    // Find user by email or username with profile data
     const user = await this.userRepository.findOne({
-      where: { email },
+      where: [
+        { email },
+        { username: email } // Allow login with username in the email field
+      ],
       relations: ['studentProfile', 'parentProfile', 'teacherProfile'],
     });
 

@@ -90,4 +90,67 @@ export class ParentsService {
     student.parent = parent;
     await this.studentRepository.save(student);
   }
+
+  async getParentDashboard(parentId: string) {
+    const parent = await this.parentRepository.findOne({
+      where: { id: parentId },
+      relations: ['user', 'children', 'children.user', 'children.progress', 'children.badges', 'children.activityCompletions'],
+    });
+
+    if (!parent) {
+      throw new Error('Parent not found');
+    }
+
+    const childrenSummary = parent.children.map(child => ({
+      id: child.id,
+      user: child.user,
+      grade: child.grade,
+      age: child.age,
+      totalPoints: child.totalPoints,
+      currentLevel: child.currentLevel,
+      streakDays: child.streakDays,
+      recentActivitiesCount: child.activityCompletions?.length || 0,
+      badgesEarned: child.badges?.length || 0,
+      lastActivityDate: child.lastActivityDate,
+    }));
+
+    return {
+      parent: {
+        id: parent.id,
+        user: parent.user,
+        phoneNumber: parent.phoneNumber,
+        occupation: parent.occupation,
+      },
+      children: childrenSummary,
+      totalChildren: parent.children.length,
+    };
+  }
+
+  async getChildren(parentId: string) {
+    const parent = await this.parentRepository.findOne({
+      where: { id: parentId },
+      relations: ['children', 'children.user', 'children.teacher', 'children.teacher.user'],
+    });
+
+    if (!parent) {
+      throw new Error('Parent not found');
+    }
+
+    return parent.children.map(child => ({
+      id: child.id,
+      user: child.user,
+      grade: child.grade,
+      age: child.age,
+      totalPoints: child.totalPoints,
+      currentLevel: child.currentLevel,
+      streakDays: child.streakDays,
+      schoolName: child.schoolName,
+      className: child.className,
+      teacher: child.teacher ? {
+        id: child.teacher.id,
+        name: `${child.teacher.user.firstName} ${child.teacher.user.lastName}`,
+        phoneNumber: child.teacher.phoneNumber,
+      } : null,
+    }));
+  }
 }

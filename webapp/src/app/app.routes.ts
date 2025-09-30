@@ -44,10 +44,6 @@ export const routes: Routes = [
         loadComponent: () => import('./components/student/leaderboard/leaderboard.component').then(m => m.LeaderboardComponent)
       },
       {
-        path: 'progress',
-        loadComponent: () => import('./components/student/progress/progress.component').then(m => m.ProgressComponent)
-      },
-      {
         path: 'badges',
         loadComponent: () => import('./components/student/badges/badges.component').then(m => m.BadgesComponent)
       }
@@ -57,13 +53,47 @@ export const routes: Routes = [
     path: 'parent',
     canActivate: [authGuard, roleGuard],
     data: { role: UserRole.PARENT },
-    loadComponent: () => import('./components/coming-soon/coming-soon.component').then(m => m.ComingSoonComponent)
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./components/parent/dashboard/dashboard.component').then(m => m.ParentDashboardComponent)
+      },
+      {
+        path: 'progress/:id',
+        loadComponent: () => import('./components/parent/progress/progress.component').then(m => m.ParentProgressComponent)
+      }
+    ]
   },
   {
     path: 'teacher',
     canActivate: [authGuard, roleGuard],
     data: { role: UserRole.TEACHER },
-    loadComponent: () => import('./components/coming-soon/coming-soon.component').then(m => m.ComingSoonComponent)
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./components/teacher/dashboard/dashboard.component').then(m => m.TeacherDashboardComponent)
+      },
+      {
+        path: 'students',
+        loadComponent: () => import('./components/teacher/students-list/students-list.component').then(m => m.StudentsListComponent)
+      },
+      {
+        path: 'register-student',
+        loadComponent: () => import('./components/teacher/register-student/register-student.component').then(m => m.RegisterStudentComponent)
+      },
+      {
+        path: 'student-progress/:id',
+        loadComponent: () => import('./components/teacher/student-progress/student-progress.component').then(m => m.TeacherStudentProgressComponent)
+      },
+      {
+        path: 'analytics',
+        loadComponent: () => import('./components/teacher/analytics/analytics.component').then(m => m.AnalyticsComponent)
+      },
+      {
+        path: 'custom-practice',
+        loadComponent: () => import('./components/teacher/custom-practice/custom-practice.component').then(m => m.CustomPracticeComponent)
+      }
+    ]
   },
   {
     path: 'admin',

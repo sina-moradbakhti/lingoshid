@@ -15,6 +15,12 @@ export class Teacher {
   schoolName: string;
 
   @Column({ nullable: true })
+  institution: string;
+
+  @Column({ default: false })
+  isSelfEmployed: boolean;
+
+  @Column({ nullable: true })
   department: string;
 
   @Column({ nullable: true })

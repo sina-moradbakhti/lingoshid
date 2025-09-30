@@ -19,17 +19,17 @@ import { UserRole } from '../../../models/user.model';
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
           <div class="form-group">
-            <label for="email">Email</label>
+            <label for="email">Email or Username</label>
             <input
-              type="email"
+              type="text"
               id="email"
               formControlName="email"
               class="form-control"
-              placeholder="Enter your email"
+              placeholder="Enter your email or username"
               [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
             />
             <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-              Please enter a valid email address
+              Email or username is required
             </div>
           </div>
 
@@ -257,7 +257,7 @@ export class LoginComponent {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', Validators.required],
       password: ['', Validators.required]
     });
   }

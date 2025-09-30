@@ -9,7 +9,11 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: configService.get('FRONTEND_URL', 'http://localhost:4200'),
+    origin: [
+      'http://localhost:4200',
+      'http://127.0.0.1:4200',
+      /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:4200$/,
+    ],
     credentials: true,
   });
 
