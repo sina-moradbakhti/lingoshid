@@ -1,0 +1,242 @@
+
+    <div class="progress-container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+        <h1>📊 Advanced Progress Analytics</h1>
+        <p>Comprehensive insights into your learning journey</p>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner">🎮</div>
+        <p>Loading your progress analytics...</p>
+      </div>
+
+      <!-- Progress Content -->
+      <div class="progress-content" *ngIf="!isLoading && detailedProgress">
+        <!-- Student Overview Cards -->
+        <div class="overview-grid">
+          <div class="overview-card primary">
+            <div class="card-icon">🎯</div>
+            <div class="card-content">
+              <h3>{{ detailedProgress.student.totalPoints }}</h3>
+              <p>Total Points</p>
+              <small>Level {{ detailedProgress.student.currentLevel }}</small>
+            </div>
+          </div>
+
+          <div class="overview-card success">
+            <div class="card-icon">✅</div>
+            <div class="card-content">
+              <h3>{{ detailedProgress.completedActivities }}/{{ detailedProgress.totalActivities }}</h3>
+              <p>Activities Completed</p>
+              <small>{{ getCompletionPercentage() }}% completion rate</small>
+            </div>
+          </div>
+
+          <div class="overview-card warning">
+            <div class="card-icon">⚡</div>
+            <div class="card-content">
+              <h3>{{ detailedProgress.student.streakDays }}</h3>
+              <p>Day Streak</p>
+              <small>{{ detailedProgress.learningAnalytics.consistencyScore }}% consistency</small>
+            </div>
+          </div>
+
+          <div class="overview-card info">
+            <div class="card-icon">⏱️</div>
+            <div class="card-content">
+              <h3>{{ formatTimeFromSeconds(detailedProgress.totalTimeSpent) }}</h3>
+              <p>Total Practice Time</p>
+              <small>Avg: {{ detailedProgress.learningAnalytics.averageSessionTime }}min/session</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills Progress Section -->
+        <div class="section-card">
+          <h2>🎭 Skill Mastery Analysis</h2>
+          <div class="skills-grid">
+            <div class="skill-card" *ngFor="let skill of detailedProgress.skillProgress">
+              <div class="skill-header">
+                <h3>{{ getSkillIcon(skill.skillArea) }} {{ skill.skillArea | titlecase }}</h3>
+                <span class="skill-level">Level {{ skill.currentLevel }}</span>
+              </div>
+
+              <div class="progress-ring-container">
+                <div class="progress-ring">
+                  <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    <path class="circle" [attr.stroke-dasharray]="skill.progressPercentage + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    <text x="18" y="20.35" class="percentage">{{ skill.progressPercentage }}%</text>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="skill-metrics">
+                <div class="metric">
+                  <span class="metric-value">{{ skill.activitiesCompleted }}/{{ skill.totalActivitiesAvailable }}</span>
+                  <span class="metric-label">Activities</span>
+                </div>
+                <div class="metric">
+                  <span class="metric-value">{{ skill.averageScore }}%</span>
+                  <span class="metric-label">Avg Score</span>
+                </div>
+                <div class="metric">
+                  <span class="metric-value">{{ skill.totalPracticeTime }}m</span>
+                  <span class="metric-label">Practice Time</span>
+                </div>
+              </div>
+
+              <div class="skill-improvement" *ngIf="skill.recentImprovement !== 0">
+                <span class="improvement-badge" [class.positive]="skill.recentImprovement > 0" [class.negative]="skill.recentImprovement < 0">
+                  {{ skill.recentImprovement > 0 ? '+' : '' }}{{ skill.recentImprovement }}% recent change
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Learning Analytics -->
+        <div class="analytics-grid">
+          <div class="section-card">
+            <h2>🧠 Learning Intelligence</h2>
+            <div class="analytics-content">
+              <div class="insight-item">
+                <span class="insight-icon">💪</span>
+                <div class="insight-text">
+                  <h4>Strongest Skill</h4>
+                  <p>{{ detailedProgress.learningAnalytics.strongestSkill | titlecase }}</p>
+                </div>
+              </div>
+
+              <div class="insight-item">
+                <span class="insight-icon">🎯</span>
+                <div class="insight-text">
+                  <h4>Focus Area</h4>
+                  <p>{{ detailedProgress.learningAnalytics.improvementArea | titlecase }}</p>
+                </div>
+              </div>
+
+              <div class="insight-item">
+                <span class="insight-icon">🚀</span>
+                <div class="insight-text">
+                  <h4>Learning Velocity</h4>
+                  <p>{{ detailedProgress.learningAnalytics.learningVelocity }} activities/week</p>
+                </div>
+              </div>
+
+              <div class="insight-item">
+                <span class="insight-icon">⏭️</span>
+                <div class="insight-text">
+                  <h4>Next Level Progress</h4>
+                  <p>{{ detailedProgress.learningAnalytics.activitiesNeededForNextLevel }} activities needed</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2>📈 Performance Trends</h2>
+            <div class="trends-content">
+              <div class="trend-indicator">
+                <span class="trend-icon" [class]="getTrendClass(detailedProgress.performanceTrends.improvementTrend)">
+                  {{ getTrendIcon(detailedProgress.performanceTrends.improvementTrend) }}
+                </span>
+                <div class="trend-text">
+                  <h4>Performance Trend</h4>
+                  <p>{{ detailedProgress.performanceTrends.improvementTrend | titlecase }}</p>
+                </div>
+              </div>
+
+              <div class="consistency-meter">
+                <h4>Performance Consistency</h4>
+                <div class="meter-container">
+                  <div class="meter-bar">
+                    <div class="meter-fill" [style.width.%]="detailedProgress.performanceTrends.performanceConsistency"></div>
+                  </div>
+                  <span class="meter-value">{{ detailedProgress.performanceTrends.performanceConsistency }}%</span>
+                </div>
+              </div>
+
+              <div class="weekly-summary">
+                <h4>Weekly Activity Trends</h4>
+                <div class="weeks-chart">
+                  <div class="week-bar" *ngFor="let week of getRecentWeeks()">
+                    <div class="bar" [style.height.%]="getWeekBarHeight(week.activitiesCompleted)"></div>
+                    <span class="week-label">{{ week.week }}</span>
+                    <span class="week-value">{{ week.activitiesCompleted }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievement Progress -->
+        <div class="section-card" *ngIf="detailedProgress.achievementProgress">
+          <h2>🏆 Achievement Progress</h2>
+          <div class="achievement-content">
+            <div class="achievement-overview">
+              <div class="badge-progress">
+                <div class="badge-circle">
+                  <span class="badge-count">{{ detailedProgress.achievementProgress.badgesEarned }}/{{ detailedProgress.achievementProgress.totalBadges }}</span>
+                  <span class="badge-label">Badges Earned</span>
+                </div>
+                <div class="progress-arc">
+                  <div class="arc-fill" [style.transform]="'rotate(' + (detailedProgress.achievementProgress.badgeProgress * 1.8) + 'deg)'"></div>
+                </div>
+              </div>
+
+              <div class="next-badge" *ngIf="detailedProgress.achievementProgress.nextBadgeTarget">
+                <h4>🎯 Next Target</h4>
+                <div class="target-badge">
+                  <h5>{{ detailedProgress.achievementProgress.nextBadgeTarget.name }}</h5>
+                  <p>{{ detailedProgress.achievementProgress.nextBadgeTarget.description }}</p>
+                  <div class="target-progress">
+                    <div class="target-bar">
+                      <div class="target-fill" [style.width.%]="detailedProgress.achievementProgress.nextBadgeTarget.progress"></div>
+                    </div>
+                    <span>{{ detailedProgress.achievementProgress.nextBadgeTarget.progress }}% complete</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="section-card">
+          <h2>📅 Activity Timeline (Last 30 Days)</h2>
+          <div class="timeline-container">
+            <div class="timeline-chart">
+              <div class="timeline-day" *ngFor="let day of getRecentTimeline()"
+                   [class.active]="day.activitiesCompleted > 0"
+                   [title]="getTimelineTooltip(day)">
+                <div class="day-bar" [style.height.%]="getTimelineBarHeight(day.activitiesCompleted)"></div>
+                <span class="day-label">{{ getDayLabel(day.date) }}</span>
+              </div>
+            </div>
+            <div class="timeline-legend">
+              <span>Less active</span>
+              <div class="legend-squares">
+                <div class="legend-square low"></div>
+                <div class="legend-square medium"></div>
+                <div class="legend-square high"></div>
+                <div class="legend-square highest"></div>
+              </div>
+              <span>More active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!isLoading && !detailedProgress">
+        <div class="empty-icon">📊</div>
+        <h3>No Progress Data Available</h3>
+        <p>Start completing activities to see your detailed progress analytics!</p>
+        <button (click)="loadProgress()" class="retry-btn">Retry Loading</button>
+      </div>
+    </div>
+  

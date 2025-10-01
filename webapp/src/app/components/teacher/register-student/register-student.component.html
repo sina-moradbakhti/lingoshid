@@ -1,0 +1,115 @@
+
+    <div class="container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back</button>
+        <h1>Register New Student</h1>
+      </div>
+
+      <div *ngIf="!registrationComplete" class="form-container">
+        <form (ngSubmit)="onSubmit()">
+          <div class="form-section">
+            <h3>Student Information</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>First Name *</label>
+                <input type="text" [(ngModel)]="formData.studentFirstName" name="studentFirstName" required />
+              </div>
+              <div class="form-group">
+                <label>Last Name *</label>
+                <input type="text" [(ngModel)]="formData.studentLastName" name="studentLastName" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Age *</label>
+                <input type="number" [(ngModel)]="formData.age" name="age" min="6" max="18" required />
+              </div>
+              <div class="form-group">
+                <label>Grade *</label>
+                <input type="number" [(ngModel)]="formData.grade" name="grade" min="4" max="12" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>School Name</label>
+                <input type="text" [(ngModel)]="formData.schoolName" name="schoolName" />
+              </div>
+              <div class="form-group">
+                <label>Class Name</label>
+                <input type="text" [(ngModel)]="formData.className" name="className" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Parent Information</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>First Name *</label>
+                <input type="text" [(ngModel)]="formData.parentFirstName" name="parentFirstName" required />
+              </div>
+              <div class="form-group">
+                <label>Last Name *</label>
+                <input type="text" [(ngModel)]="formData.parentLastName" name="parentLastName" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" [(ngModel)]="formData.parentPhoneNumber" name="parentPhoneNumber" />
+              </div>
+              <div class="form-group">
+                <label>Occupation</label>
+                <input type="text" [(ngModel)]="formData.parentOccupation" name="parentOccupation" />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" [disabled]="isSubmitting" class="submit-btn">
+            {{ isSubmitting ? 'Creating...' : 'Register Student' }}
+          </button>
+        </form>
+      </div>
+
+      <div *ngIf="registrationComplete && credentials" class="credentials-container">
+        <h2>✅ Registration Successful!</h2>
+        <p class="success-message">{{ credentials.message }}</p>
+
+        <div class="credentials-section">
+          <h3>Student Credentials</h3>
+          <div class="credential-card">
+            <div class="credential-info">
+              <p><strong>Name:</strong> {{ credentials.student.firstName }} {{ credentials.student.lastName }}</p>
+              <p><strong>Username:</strong> {{ credentials.student.username }}</p>
+              <p><strong>Password:</strong> {{ credentials.student.password }}</p>
+            </div>
+            <div class="qr-code">
+              <img [src]="credentials.student.qrCode" alt="Student QR Code" />
+              <p>Student QR Code</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="credentials-section">
+          <h3>Parent Credentials</h3>
+          <div class="credential-card">
+            <div class="credential-info">
+              <p><strong>Name:</strong> {{ credentials.parent.firstName }} {{ credentials.parent.lastName }}</p>
+              <p><strong>Username:</strong> {{ credentials.parent.username }}</p>
+              <p><strong>Password:</strong> {{ credentials.parent.password }}</p>
+            </div>
+            <div class="qr-code">
+              <img [src]="credentials.parent.qrCode" alt="Parent QR Code" />
+              <p>Parent QR Code</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button (click)="printCredentials()" class="action-btn">🖨️ Print Credentials</button>
+          <button (click)="registerAnother()" class="action-btn">➕ Register Another</button>
+          <button (click)="goBack()" class="action-btn">✅ Done</button>
+        </div>
+      </div>
+    </div>
+  

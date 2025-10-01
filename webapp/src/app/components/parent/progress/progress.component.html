@@ -1,0 +1,131 @@
+
+    <div class="progress-container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back</button>
+        <h1>Student Progress</h1>
+      </div>
+
+      <div *ngIf="isLoading" class="loading">Loading progress...</div>
+
+      <div *ngIf="!isLoading && detailedProgress" class="content">
+        <div class="overview-cards">
+          <div class="card">
+            <h3>{{ detailedProgress.student.totalPoints }}</h3>
+            <p>Total Points</p>
+            <small>Level {{ detailedProgress.student.currentLevel }}</small>
+          </div>
+
+          <div class="card">
+            <h3>{{ detailedProgress.completedActivities }}/{{ detailedProgress.totalActivities }}</h3>
+            <p>Activities Completed</p>
+            <small>{{ getCompletionPercentage() }}% completion</small>
+          </div>
+
+          <div class="card">
+            <h3>{{ detailedProgress.student.streakDays }}</h3>
+            <p>Day Streak</p>
+            <small>{{ detailedProgress.learningAnalytics.consistencyScore }}% consistency</small>
+          </div>
+
+          <div class="card">
+            <h3>{{ formatTime(detailedProgress.totalTimeSpent) }}</h3>
+            <p>Practice Time</p>
+          </div>
+        </div>
+
+        <div class="skills-section">
+          <h2>Skills Progress</h2>
+          <div class="skills-grid">
+            <div *ngFor="let skill of detailedProgress.skillProgress" class="skill-card">
+              <h4>{{ skill.skillArea | titlecase }}</h4>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="skill.progressPercentage"></div>
+              </div>
+              <p>{{ skill.progressPercentage }}% - Level {{ skill.currentLevel }}</p>
+              <small>{{ skill.activitiesCompleted }}/{{ skill.totalActivitiesAvailable }} activities</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activities Timeline -->
+        <div class="recent-activities-section">
+          <h2>📅 Recent Activities</h2>
+          <div class="activities-timeline">
+            <div *ngFor="let entry of getRecentActivities(); let i = index" 
+                 class="timeline-entry" 
+                 [class.today]="isToday(entry.date)">
+              <div class="timeline-date">
+                <span class="day">{{ formatDay(entry.date) }}</span>
+                <span class="date">{{ formatDate(entry.date) }}</span>
+              </div>
+              <div class="timeline-content">
+                <div class="activity-stats">
+                  <div class="stat">
+                    <span class="icon">🎯</span>
+                    <span class="value">{{ entry.activitiesCompleted }}</span>
+                    <span class="label">activities</span>
+                  </div>
+                  <div class="stat">
+                    <span class="icon">⏱️</span>
+                    <span class="value">{{ formatTime(entry.totalTimeSpent) }}</span>
+                    <span class="label">practice</span>
+                  </div>
+                  <div class="stat">
+                    <span class="icon">⭐</span>
+                    <span class="value">{{ entry.pointsEarned }}</span>
+                    <span class="label">points</span>
+                  </div>
+                  <div class="stat">
+                    <span class="icon">📊</span>
+                    <span class="value">{{ entry.averageScore }}%</span>
+                    <span class="label">avg score</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="charts-section">
+          <h2>📈 Performance Analytics</h2>
+          <div class="charts-grid">
+            <div class="chart-container">
+              <h3>Weekly Progress</h3>
+              <canvas #weeklyChart></canvas>
+            </div>
+            <div class="chart-container">
+              <h3>Skills Distribution</h3>
+              <canvas #skillsChart></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-section">
+          <h2>🧠 Learning Analytics</h2>
+          <div class="analytics-grid">
+            <div class="insight">
+              <strong>Strongest Skill:</strong>
+              <p>{{ detailedProgress.learningAnalytics.strongestSkill | titlecase }}</p>
+            </div>
+            <div class="insight">
+              <strong>Focus Area:</strong>
+              <p>{{ detailedProgress.learningAnalytics.improvementArea | titlecase }}</p>
+            </div>
+            <div class="insight">
+              <strong>Learning Velocity:</strong>
+              <p>{{ detailedProgress.learningAnalytics.learningVelocity }} activities/week</p>
+            </div>
+            <div class="insight">
+              <strong>Performance Trend:</strong>
+              <p>{{ detailedProgress.performanceTrends.improvementTrend | titlecase }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && !detailedProgress" class="empty-state">
+        <p>No progress data available</p>
+      </div>
+    </div>
+  

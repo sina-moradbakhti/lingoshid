@@ -1,0 +1,43 @@
+
+    <div class="badges-container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+        <h1>🏅 My Badges</h1>
+        <p>Collect badges by completing activities and reaching milestones!</p>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner">🎮</div>
+        <p>Loading your badges...</p>
+      </div>
+
+      <!-- Badges Grid -->
+      <div class="badges-grid" *ngIf="!isLoading && badges.length > 0">
+        <div class="badge-card"
+             *ngFor="let badge of badges"
+             [class.earned]="isBadgeEarned(badge)"
+             [class.locked]="!isBadgeEarned(badge)">
+          <div class="badge-icon">{{ badge.icon || '🏅' }}</div>
+          <h3>{{ badge.name }}</h3>
+          <p>{{ badge.description }}</p>
+          <div class="badge-status"
+               [class.earned]="isBadgeEarned(badge)"
+               [class.locked]="!isBadgeEarned(badge)">
+            {{ isBadgeEarned(badge) ? 'Earned!' : 'Locked' }}
+          </div>
+          <div class="earned-date" *ngIf="isBadgeEarned(badge) && getBadgeEarnedDate(badge)">
+            Earned: {{ getBadgeEarnedDate(badge) | date:'short' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!isLoading && badges.length === 0">
+        <div class="empty-icon">🏅</div>
+        <h3>No Badges Available</h3>
+        <p>Badges will be loaded soon. Check back later!</p>
+        <button (click)="loadBadges()" class="retry-btn">Retry Loading</button>
+      </div>
+    </div>
+  

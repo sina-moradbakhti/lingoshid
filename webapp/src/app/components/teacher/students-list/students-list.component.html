@@ -1,0 +1,124 @@
+
+    <div class="container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back</button>
+        <h1>My Students</h1>
+      </div>
+
+      <div class="search-section">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="filterStudents()"
+          placeholder="Search students..."
+          class="search-input"
+        />
+      </div>
+
+      <div *ngIf="isLoading" class="loading">Loading students...</div>
+
+      <div *ngIf="!isLoading && filteredStudents.length > 0" class="students-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Grade</th>
+              <th>Points</th>
+              <th>Level</th>
+              <th>Parent</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of filteredStudents">
+              <td>{{ student.firstName }} {{ student.lastName }}</td>
+              <td>{{ student.username }}</td>
+              <td>{{ student.grade }}</td>
+              <td>{{ student.totalPoints }}</td>
+              <td>{{ student.currentLevel }}</td>
+              <td>
+                <div *ngIf="student.parent">
+                  {{ student.parent.firstName }} {{ student.parent.lastName }}
+                  <br>
+                  <small>{{ student.parent.username }}</small>
+                </div>
+              </td>
+              <td>
+                <button (click)="viewProgress(student.id)" class="action-btn view">View Progress</button>
+                <button (click)="editStudent(student)" class="action-btn edit">Edit</button>
+                <button (click)="resetCredentials(student.id, 'student')" class="action-btn reset">Reset Student Cred</button>
+                <button (click)="resetCredentials(student.id, 'parent')" class="action-btn reset">Reset Parent Cred</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!isLoading && filteredStudents.length === 0" class="empty-state">
+        <p>No students found</p>
+      </div>
+
+      <!-- Edit Student Modal -->
+      <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <h2>Edit Student</h2>
+          <form (ngSubmit)="saveStudentEdit()">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" [(ngModel)]="editingStudent.firstName" name="firstName" required />
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" [(ngModel)]="editingStudent.lastName" name="lastName" required />
+            </div>
+            <div class="form-group">
+              <label>Grade</label>
+              <input type="number" [(ngModel)]="editingStudent.grade" name="grade" min="4" max="12" required />
+            </div>
+            <div class="form-group">
+              <label>Age</label>
+              <input type="number" [(ngModel)]="editingStudent.age" name="age" min="6" max="18" required />
+            </div>
+            <div class="form-group">
+              <label>School Name</label>
+              <input type="text" [(ngModel)]="editingStudent.schoolName" name="schoolName" />
+            </div>
+            <div class="form-group">
+              <label>Class Name</label>
+              <input type="text" [(ngModel)]="editingStudent.className" name="className" />
+            </div>
+            <div class="modal-actions">
+              <button type="submit" class="btn-save">Save Changes</button>
+              <button type="button" (click)="closeEditModal()" class="btn-cancel">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Credentials Modal -->
+      <div *ngIf="showCredentialsModal" class="modal-overlay" (click)="closeCredentialsModal()">
+        <div class="credentials-modal-content" (click)="$event.stopPropagation()">
+          <h2>✅ {{ credentialsData?.message }}</h2>
+          <p class="success-message">New credentials have been generated. Please save or print them.</p>
+
+          <div class="credential-display">
+            <div class="credential-info">
+              <p><strong>Name:</strong> {{ credentialsData?.firstName }} {{ credentialsData?.lastName }}</p>
+              <p><strong>Username:</strong> <span class="highlight">{{ credentialsData?.username }}</span></p>
+              <p><strong>Password:</strong> <span class="highlight">{{ credentialsData?.password }}</span></p>
+            </div>
+            <div class="qr-code-section">
+              <img [src]="credentialsData?.qrCode" alt="QR Code" class="qr-image" />
+              <p class="qr-label">Scan to save credentials</p>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button (click)="printCredentials()" class="btn-print">🖨️ Print</button>
+            <button (click)="closeCredentialsModal()" class="btn-done">✅ Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  

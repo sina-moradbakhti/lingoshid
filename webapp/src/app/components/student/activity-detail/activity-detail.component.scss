@@ -1,0 +1,267 @@
+
+    .activity-detail-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    .activity-header {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .back-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+      background: #5a6fd8;
+    }
+
+    .activity-title-section {
+      text-align: center;
+    }
+
+    .activity-icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+
+    .activity-header h1 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+      font-size: 2.2rem;
+    }
+
+    .activity-description {
+      margin: 0;
+      color: #666;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    .activity-info-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .info-item {
+      text-align: center;
+    }
+
+    .info-label {
+      display: block;
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .difficulty-badge, .skill-badge, .points-badge, .level-badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .difficulty-badge.beginner {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .difficulty-badge.intermediate {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .difficulty-badge.advanced {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .skill-badge {
+      background: #e9ecef;
+      color: #495057;
+    }
+
+    .points-badge {
+      background: #667eea;
+      color: white;
+    }
+
+    .level-badge {
+      background: #28a745;
+      color: white;
+    }
+
+    .activity-content {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .activity-content h2 {
+      margin: 0 0 20px 0;
+      color: #333;
+      font-size: 1.5rem;
+    }
+
+    .instructions-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    .instruction-step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .instruction-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-number {
+      background: #667eea;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      color: #333;
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+
+    .start-section {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .start-card h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 1.4rem;
+    }
+
+    .start-card p {
+      margin: 0 0 25px 0;
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .start-activity-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .start-activity-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      font-size: 4rem;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading p {
+      margin-top: 20px;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .error-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .error-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .error-state h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .error-state p {
+      margin: 0 0 20px 0;
+      color: #666;
+    }
+
+    .retry-btn {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  
