@@ -1,0 +1,63 @@
+
+    <div class="leaderboard-container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+        <h1>🏆 Leaderboard</h1>
+        <p>See how you rank among your classmates!</p>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner">🎮</div>
+        <p>Loading leaderboard...</p>
+      </div>
+
+      <!-- Leaderboard Content -->
+      <div class="leaderboard-card" *ngIf="!isLoading">
+        <!-- Podium for top 3 -->
+        <div class="podium" *ngIf="topEntries.length > 0">
+          <div class="rank-item"
+               *ngFor="let entry of topEntries; let i = index"
+               [class.gold]="i === 0"
+               [class.silver]="i === 1"
+               [class.bronze]="i === 2"
+               [class.current-user]="entry.isCurrentUser">
+            <div class="rank-number">{{ getRankEmoji(i + 1) }}</div>
+            <div class="student-info">
+              <h3>{{ entry.student.user.firstName }} {{ entry.student.user.lastName }}{{ entry.isCurrentUser ? ' (You)' : '' }}</h3>
+              <p>{{ entry.points }} points</p>
+              <small>Level {{ entry.student.currentLevel }}</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Leaderboard List -->
+        <div class="leaderboard-list" *ngIf="allEntries.length > 3">
+          <h3>Full Rankings</h3>
+          <div class="rank-list">
+            <div class="rank-entry"
+                 *ngFor="let entry of allEntries; let i = index"
+                 [class.current-user]="entry.isCurrentUser">
+              <span class="rank">#{{ entry.rank }}</span>
+              <span class="name">{{ entry.student.user.firstName }} {{ entry.student.user.lastName }}{{ entry.isCurrentUser ? ' (You)' : '' }}</span>
+              <span class="points">{{ entry.points }} pts</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="leaderboard-stats" *ngIf="leaderboardData">
+          <p>Total Students: {{ leaderboardData.totalStudents }}</p>
+          <p *ngIf="leaderboardData.currentUserRank">Your Rank: #{{ leaderboardData.currentUserRank }}</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="allEntries.length === 0">
+          <div class="empty-icon">🏆</div>
+          <h3>No Leaderboard Data</h3>
+          <p>Start completing activities to see rankings!</p>
+          <button (click)="loadLeaderboard()" class="retry-btn">Retry Loading</button>
+        </div>
+      </div>
+    </div>
+  

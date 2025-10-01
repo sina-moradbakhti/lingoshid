@@ -1,0 +1,71 @@
+
+    <div class="activities-container">
+      <!-- Header -->
+      <div class="activities-header">
+        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+        <h1>🎯 Speaking Activities</h1>
+        <p>Choose an activity to practice your English speaking skills!</p>
+      </div>
+
+      <!-- Activities Grid -->
+      <div class="activities-grid" *ngIf="activities.length > 0">
+        <div class="activity-card" *ngFor="let activity of activities" (click)="startActivity(activity)">
+          <div class="activity-icon">
+            <span *ngIf="activity.type === 'pronunciation_challenge'">🗣️</span>
+            <span *ngIf="activity.type === 'picture_description'">🖼️</span>
+            <span *ngIf="activity.type === 'virtual_conversation'">💬</span>
+            <span *ngIf="activity.type === 'role_play'">🎭</span>
+            <span *ngIf="activity.type === 'story_creation'">📖</span>
+            <span *ngIf="activity.type === 'singing_chanting'">🎵</span>
+          </div>
+          
+          <div class="activity-content">
+            <h3>{{ activity.title }}</h3>
+            <p>{{ activity.description }}</p>
+            
+            <div class="activity-meta">
+              <span class="difficulty" [class]="activity.difficulty">
+                {{ activity.difficulty | titlecase }}
+              </span>
+              <span class="points">{{ getPointsRange(activity) }}</span>
+            </div>
+            
+            <div class="skill-area">
+              <span class="skill-tag">{{ activity.skillArea | titlecase }}</span>
+            </div>
+          </div>
+          
+          <div class="activity-action">
+            <button class="start-btn">Start Activity</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner">🎮</div>
+        <p>Loading activities...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!isLoading && activities.length === 0">
+        <div class="empty-icon">📚</div>
+        <h3>No Activities Available</h3>
+        <p>Activities will be loaded soon. Check back later!</p>
+        <button (click)="loadActivities()" class="retry-btn">Retry Loading</button>
+      </div>
+
+      <!-- Demo Message -->
+      <div class="demo-message">
+        <h3>🚧 Demo Version</h3>
+        <p>In the full version, these activities will include:</p>
+        <ul>
+          <li>🎤 Voice recording and speech recognition</li>
+          <li>🤖 AI-powered feedback and scoring</li>
+          <li>🏆 Real-time progress tracking</li>
+          <li>🎮 Interactive games and challenges</li>
+          <li>👥 Multiplayer speaking activities</li>
+        </ul>
+      </div>
+    </div>
+  

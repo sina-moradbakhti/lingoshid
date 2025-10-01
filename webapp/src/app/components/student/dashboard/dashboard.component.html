@@ -1,0 +1,122 @@
+
+    <div class="dashboard-container" *ngIf="dashboard">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div class="welcome-section">
+          <h1>🎮 Welcome back, {{ dashboard.student.user.firstName }}!</h1>
+          <p>Ready for another exciting English adventure?</p>
+        </div>
+        <div class="logout-section">
+          <button (click)="logout()" class="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card level">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-content">
+            <h3>Level {{ dashboard.levelProgress.currentLevel }}</h3>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="dashboard.levelProgress.progressPercentage"></div>
+            </div>
+            <p>{{ dashboard.levelProgress.experiencePoints }} / {{ dashboard.levelProgress.pointsForNextLevel }} XP</p>
+          </div>
+        </div>
+
+        <div class="stat-card points">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-content">
+            <h3>{{ dashboard.student.totalPoints }}</h3>
+            <p>Total Points</p>
+          </div>
+        </div>
+
+        <div class="stat-card streak">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-content">
+            <h3>{{ dashboard.streakDays }}</h3>
+            <p>Day Streak</p>
+          </div>
+        </div>
+
+        <div class="stat-card badges">
+          <div class="stat-icon">🏅</div>
+          <div class="stat-content">
+            <h3>{{ dashboard.totalBadges }}</h3>
+            <p>Badges Earned</p>
+          </div>
+        </div>
+
+        <div class="stat-card rank">
+          <div class="stat-icon">🥇</div>
+          <div class="stat-content">
+            <h3>#{{ dashboard.leaderboardPosition }}</h3>
+            <p>Class Rank</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2>🚀 Quick Actions</h2>
+        <div class="action-grid">
+          <button (click)="navigateTo('/student/activities')" class="action-btn activities">
+            <div class="action-icon">🎯</div>
+            <h3>Practice Activities</h3>
+            <p>Start speaking challenges</p>
+          </button>
+
+          <button (click)="navigateTo('/student/leaderboard')" class="action-btn leaderboard">
+            <div class="action-icon">🏆</div>
+            <h3>Leaderboard</h3>
+            <p>See your ranking</p>
+          </button>
+
+          <button (click)="navigateTo('/student/badges')" class="action-btn badges">
+            <div class="action-icon">🏅</div>
+            <h3>My Badges</h3>
+            <p>View achievements</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Activities -->
+      <div class="recent-activities" *ngIf="dashboard.recentActivities.length > 0">
+        <h2>📚 Recent Activities</h2>
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let activity of dashboard.recentActivities">
+            <div class="activity-icon">
+              <span *ngIf="activity.activity.type === 'pronunciation_challenge'">🗣️</span>
+              <span *ngIf="activity.activity.type === 'picture_description'">🖼️</span>
+              <span *ngIf="activity.activity.type === 'virtual_conversation'">💬</span>
+              <span *ngIf="activity.activity.type === 'role_play'">🎭</span>
+              <span *ngIf="activity.activity.type === 'story_creation'">📖</span>
+            </div>
+            <div class="activity-content">
+              <h4>{{ activity.activity.title }}</h4>
+              <p>Score: {{ activity.score }}% • {{ activity.pointsEarned }} points earned</p>
+              <small>{{ activity.completedAt | date:'short' }}</small>
+            </div>
+            <div class="activity-score" [class]="getScoreClass(activity.score)">
+              {{ activity.score }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Motivational Message -->
+      <div class="motivation-card">
+        <div class="motivation-content">
+          <h3>{{ getMotivationalMessage() }}</h3>
+          <p>Keep practicing to unlock new levels and badges!</p>
+        </div>
+        <div class="motivation-character">🌟</div>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="!dashboard">
+      <div class="spinner">🎮</div>
+      <p>Loading your adventure...</p>
+    </div>
+  

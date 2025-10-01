@@ -1,0 +1,252 @@
+
+    .activities-container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    .activities-header {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .back-btn:hover {
+      background: #5a6fd8;
+    }
+
+    .activities-header h1 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+      font-size: 2.5rem;
+    }
+
+    .activities-header p {
+      margin: 0;
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .activities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .activity-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .activity-icon {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .activity-content {
+      flex: 1;
+      text-align: center;
+    }
+
+    .activity-content h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 1.3rem;
+    }
+
+    .activity-content p {
+      margin: 0 0 15px 0;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .activity-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .difficulty {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .difficulty.beginner {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .difficulty.intermediate {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .difficulty.advanced {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .points {
+      background: #667eea;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .skill-area {
+      margin-bottom: 15px;
+    }
+
+    .skill-tag {
+      background: #e9ecef;
+      color: #495057;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .activity-action {
+      margin-top: auto;
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      font-size: 4rem;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading p {
+      margin-top: 20px;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .empty-state p {
+      margin: 0 0 20px 0;
+      color: #666;
+    }
+
+    .retry-btn {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .demo-message {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 30px;
+    }
+
+    .demo-message h3 {
+      margin: 0 0 15px 0;
+      font-size: 1.5rem;
+    }
+
+    .demo-message p {
+      margin: 0 0 15px 0;
+      opacity: 0.9;
+    }
+
+    .demo-message ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .demo-message li {
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+  

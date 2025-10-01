@@ -1,0 +1,80 @@
+
+    <div class="activity-detail-container">
+      <!-- Header -->
+      <div class="activity-header">
+        <button (click)="goBack()" class="back-btn">← Back to Activities</button>
+        <div class="activity-title-section" *ngIf="activity">
+          <div class="activity-icon">
+            <span *ngIf="activity.type === 'pronunciation_challenge'">🗣️</span>
+            <span *ngIf="activity.type === 'picture_description'">🖼️</span>
+            <span *ngIf="activity.type === 'virtual_conversation'">💬</span>
+            <span *ngIf="activity.type === 'role_play'">🎭</span>
+            <span *ngIf="activity.type === 'story_creation'">📖</span>
+            <span *ngIf="activity.type === 'singing_chanting'">🎵</span>
+          </div>
+          <h1>{{ activity.title }}</h1>
+          <p class="activity-description">{{ activity.description }}</p>
+        </div>
+      </div>
+
+      <!-- Activity Info Card -->
+      <div class="activity-info-card" *ngIf="activity">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Difficulty</span>
+            <span class="difficulty-badge" [class]="activity.difficulty">
+              {{ activity.difficulty | titlecase }}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Skill Area</span>
+            <span class="skill-badge">{{ activity.skillArea | titlecase }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Points Reward</span>
+            <span class="points-badge">{{ activity.pointsReward }} points</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Required Level</span>
+            <span class="level-badge">Level {{ activity.minLevel }}+</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Content -->
+      <div class="activity-content" *ngIf="activity">
+        <h2>Activity Instructions</h2>
+        <div class="instructions-card">
+          <div class="instruction-step" *ngFor="let instruction of getInstructions(); let i = index">
+            <div class="step-number">{{ i + 1 }}</div>
+            <div class="step-content">{{ instruction }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start Activity Section -->
+      <div class="start-section" *ngIf="activity">
+        <div class="start-card">
+          <h3>Ready to Start?</h3>
+          <p>This activity will help you improve your {{ activity.skillArea }} skills!</p>
+          <button class="start-activity-btn" (click)="startActivity()">
+            🚀 Start Activity
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner">🎮</div>
+        <p>Loading activity...</p>
+      </div>
+
+      <!-- Error State -->
+      <div class="error-state" *ngIf="!isLoading && !activity">
+        <div class="error-icon">❌</div>
+        <h3>Activity Not Found</h3>
+        <p>The activity you're looking for doesn't exist or has been removed.</p>
+        <button (click)="goBack()" class="retry-btn">Go Back to Activities</button>
+      </div>
+    </div>
+  

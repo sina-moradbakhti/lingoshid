@@ -1,0 +1,122 @@
+
+    <div class="container">
+      <div class="header">
+        <button (click)="goBack()" class="back-btn">← Back</button>
+        <h1>📊 Student Analytics Dashboard</h1>
+      </div>
+
+      <div *ngIf="isLoading" class="loading">Loading analytics...</div>
+
+      <div *ngIf="!isLoading && analytics" class="content">
+        <!-- Overview Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">{{ analytics.totalStudents }}</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value">{{ analytics.averagePoints }}</div>
+            <div class="stat-label">Average Points</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value">Level {{ analytics.averageLevel }}</div>
+            <div class="stat-label">Average Level</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">{{ analytics.totalActivitiesCompleted }}</div>
+            <div class="stat-label">Activities Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-value">{{ analytics.averageCompletionRate }}%</div>
+            <div class="stat-label">Avg Completion Rate</div>
+          </div>
+        </div>
+
+        <!-- Activity Trend Chart -->
+        <div class="chart-section">
+          <h2>📅 Activity Trend (Last 7 Days)</h2>
+          <div class="bar-chart">
+            <div *ngFor="let day of analytics.recentActivityTrend" class="bar-item">
+              <div class="bar-column">
+                <div class="bar-fill" [style.height.%]="getBarHeight(day.activitiesCompleted, analytics.recentActivityTrend)"></div>
+              </div>
+              <div class="bar-label">{{ formatDate(day.date) }}</div>
+              <div class="bar-value">{{ day.activitiesCompleted }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Distribution -->
+        <div class="chart-section">
+          <h2>📊 Performance Distribution by Level</h2>
+          <div class="horizontal-bars">
+            <div *ngFor="let level of getPerformanceDistribution()" class="h-bar-item">
+              <div class="h-bar-label">Level {{ level.level }}</div>
+              <div class="h-bar-track">
+                <div class="h-bar-fill" [style.width.%]="level.percentage"></div>
+              </div>
+              <div class="h-bar-value">{{ level.count }} students</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="two-column">
+          <!-- Top Performers -->
+          <div class="list-section">
+            <h2>🏆 Top Performers</h2>
+            <div class="student-list">
+              <div *ngFor="let student of analytics.topPerformers; let i = index" class="student-item">
+                <div class="rank">{{ '#' + (i + 1) }}</div>
+                <div class="student-info">
+                  <div class="student-name">{{ student.name }}</div>
+                  <div class="student-stats">
+                    {{ student.totalPoints }} pts • Level {{ student.currentLevel }} • {{ student.activitiesCompleted }} activities
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="analytics.topPerformers.length === 0" class="empty-list">
+                No data available yet
+              </div>
+            </div>
+          </div>
+
+          <!-- Students Needing Attention -->
+          <div class="list-section alert">
+            <h2>⚠️ Students Needing Attention</h2>
+            <div class="student-list">
+              <div *ngFor="let student of analytics.studentsNeedingAttention" class="student-item">
+                <div class="alert-icon">⚠️</div>
+                <div class="student-info">
+                  <div class="student-name">{{ student.name }}</div>
+                  <div class="student-stats">
+                    {{ student.recentActivitiesCount }} activities (last 7 days) • {{ student.streakDays }} day streak
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="analytics.studentsNeedingAttention.length === 0" class="empty-list">
+                All students are active!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skill Area Analytics -->
+        <div class="chart-section" *ngIf="analytics.skillAreaAnalytics.length > 0">
+          <h2>🎭 Skill Area Progress</h2>
+          <div class="skill-grid">
+            <div *ngFor="let skill of analytics.skillAreaAnalytics" class="skill-item">
+              <div class="skill-name">{{ skill.skillArea | titlecase }}</div>
+              <div class="skill-level">Average Level: {{ skill.averageLevel }}</div>
+              <div class="skill-students">{{ skill.studentsCount }} students</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  

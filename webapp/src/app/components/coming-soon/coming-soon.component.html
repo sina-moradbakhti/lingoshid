@@ -1,0 +1,34 @@
+
+    <div class="coming-soon-container">
+      <div class="coming-soon-card">
+        <div class="icon">🚧</div>
+        <h1>Coming Soon!</h1>
+        <p>This section is under development and will be available soon.</p>
+        <p class="role-info">You are logged in as: <strong>{{ getCurrentUserRole() }}</strong></p>
+        
+        <div class="features-preview">
+          <h3>What's Coming:</h3>
+          <ul>
+            <li *ngIf="isParent()">👨‍👩‍👧‍👦 Monitor your children's progress</li>
+            <li *ngIf="isParent()">📊 Weekly progress reports</li>
+            <li *ngIf="isParent()">🏆 View achievements and badges</li>
+            
+            <li *ngIf="isTeacher()">👩‍🏫 Manage your classes</li>
+            <li *ngIf="isTeacher()">📈 Student analytics and reports</li>
+            <li *ngIf="isTeacher()">🎯 Assign activities to students</li>
+            
+            <li *ngIf="isAdmin()">🔧 User management system</li>
+            <li *ngIf="isAdmin()">📚 Content management</li>
+            <li *ngIf="isAdmin()">📊 Platform analytics</li>
+          </ul>
+        </div>
+
+        <div class="actions">
+          <button (click)="logout()" class="logout-btn">Logout</button>
+          <button (click)="goToStudentDemo()" class="demo-btn" *ngIf="!isStudent()">
+            Try Student Demo
+          </button>
+        </div>
+      </div>
+    </div>
+  

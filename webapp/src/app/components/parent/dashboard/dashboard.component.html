@@ -1,0 +1,34 @@
+
+    <div class="dashboard-container">
+      <header class="dashboard-header">
+        <h1>Parent Dashboard</h1>
+        <button (click)="logout()" class="logout-btn">Logout</button>
+      </header>
+
+      <div class="content">
+        <div class="welcome-section">
+          <h2>Welcome, {{ userName }}!</h2>
+          <p>Monitor your child's learning progress</p>
+        </div>
+
+        <div class="children-section">
+          <h3>Your Children</h3>
+          <div class="children-grid">
+            <div *ngFor="let child of children" class="child-card">
+              <h4>{{ child.user?.firstName }} {{ child.user?.lastName }}</h4>
+              <p>Grade: {{ child.grade }}</p>
+              <p>Points: {{ child.totalPoints }}</p>
+              <p>Level: {{ child.currentLevel }}</p>
+              <button (click)="viewProgress(child.id)" class="view-progress-btn">
+                View Progress
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="children.length === 0" class="empty-state">
+            <p>No children assigned yet. Contact your teacher.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  
