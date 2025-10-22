@@ -1,0 +1,106 @@
+version: '3.8'
+
+# Docker Compose Configuration for Lingoshid Platform
+# Optimized for production deployment with subdomains and SSL
+
+services:
+  # MySQL Database
+  database:
+    image: mysql:8.0
+    container_name: lingoshid-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME:-lingoshid}
+      MYSQL_USER: ${DB_USERNAME:-lingoshid_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:3307:3306"  # Expose on 3307 to avoid conflict with local MySQL
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - lingoshid-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --default-authentication-plugin=mysql_native_password
+
+  # NestJS Backend API - server.lingoshid.com
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: lingoshid-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: database
+      DB_PORT: 3306  # Always 3306 for container-to-container communication
+      DB_USERNAME: ${DB_USERNAME:-lingoshid_user}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME:-lingoshid}
+      JWT_SECRET: ${JWT_SECRET}
+      # TypeORM synchronize: true for initial setup, set to false after deployment
+      TYPEORM_SYNC: ${TYPEORM_SYNC:-true}
+      FRONTEND_URL: https://admin.lingoshid.com
+      # CORS for multiple domains
+      CORS_ORIGINS: https://admin.lingoshid.com,https://lingoshid.com,https://landing.lingoshid.com
+    ports:
+      - "127.0.0.1:3000:3000"  # Only accessible from localhost (nginx will proxy)
+    volumes:
+      - ./server/uploads:/app/uploads
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - lingoshid-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Angular Frontend - admin.lingoshid.com
+  frontend:
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
+      args:
+        - API_URL=https://server.lingoshid.com
+    container_name: lingoshid-webapp
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"  # Only accessible from localhost (nginx will proxy)
+    depends_on:
+      - backend
+    networks:
+      - lingoshid-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Landing Page Container (Optional - for future use)
+  # Uncomment when you have a landing page
+  # landing:
+  #   build:
+  #     context: ./landing
+  #     dockerfile: Dockerfile
+  #   container_name: lingoshid-landing
+  #   restart: unless-stopped
+  #   ports:
+  #     - "127.0.0.1:8081:80"
+  #   networks:
+  #     - lingoshid-network
+
+networks:
+  lingoshid-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

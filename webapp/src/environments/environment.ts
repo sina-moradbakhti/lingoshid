@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://192.168.0.174:3000/api'
+  // Use relative URL - proxy handles routing in both local dev and Docker
+  apiUrl: '/api'
 };
