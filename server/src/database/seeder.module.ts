@@ -7,6 +7,8 @@ import { Parent } from '../entities/parent.entity';
 import { Teacher } from '../entities/teacher.entity';
 import { Badge } from '../entities/badge.entity';
 import { Activity } from '../entities/activity.entity';
+import { ActivityCompletion } from '../entities/activity-completion.entity';
+import { Progress } from '../entities/progress.entity';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { Activity } from '../entities/activity.entity';
       Teacher,
       Badge,
       Activity,
+      ActivityCompletion,
+      Progress,
     ]),
   ],
   providers: [SeederService],
