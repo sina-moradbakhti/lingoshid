@@ -18,6 +18,9 @@ export class SeederService {
   // Configurable number of students to create
   private readonly STUDENT_COUNT = 100;
 
+  // Generate unique suffix for this seeding run (timestamp-based)
+  private readonly UNIQUE_SUFFIX = Date.now().toString().slice(-6);
+
   // Iranian first names
   private readonly firstNames = {
     male: ['Ali', 'Reza', 'Mohammad', 'Hossein', 'Amir', 'Mehdi', 'Javad', 'Hamid', 'Ahmad', 'Saeed', 'Majid', 'Hassan', 'Ehsan', 'Arash', 'Omid'],
@@ -51,7 +54,8 @@ export class SeederService {
 
   async seedAll() {
     console.log('🌱 Starting database seeding...');
-    console.log(`📊 Creating ${this.STUDENT_COUNT} students with realistic data...\n`);
+    console.log(`📊 Creating ${this.STUDENT_COUNT} students with realistic data...`);
+    console.log(`🔑 Unique batch ID: ${this.UNIQUE_SUFFIX}\n`);
 
     await this.seedBadges();
     await this.seedActivities();
@@ -64,6 +68,7 @@ export class SeederService {
     console.log(`   - ${this.STUDENT_COUNT} parents created`);
     console.log(`   - 3 teachers created`);
     console.log(`   - All with realistic activity data, badges, and progress`);
+    console.log(`   - Batch ID: ${this.UNIQUE_SUFFIX} (for reference)`);
   }
 
   private randomElement<T>(array: T[]): T {
@@ -290,12 +295,6 @@ export class SeederService {
   async seedTeachers() {
     console.log('👨‍🏫 Seeding teachers...');
 
-    const existingTeachers = await this.teacherRepository.count();
-    if (existingTeachers > 0) {
-      console.log('   ✓ Teachers already exist, skipping');
-      return;
-    }
-
     const teachers = [
       {
         firstName: 'Maryam',
@@ -333,6 +332,13 @@ export class SeederService {
     ];
 
     for (const teacherData of teachers) {
+      // Check if teacher already exists
+      const existingUser = await this.userRepository.findOne({ where: { email: teacherData.email } });
+      if (existingUser) {
+        console.log(`   ⚠️  Teacher ${teacherData.email} already exists, skipping`);
+        continue;
+      }
+
       const teacherUser = this.userRepository.create({
         email: teacherData.email,
         password: await bcrypt.hash('demo123', 10),
@@ -354,32 +360,35 @@ export class SeederService {
       await this.teacherRepository.save(teacher);
     }
 
-    // Create Admin User
-    const adminUser = this.userRepository.create({
-      email: 'admin@demo.com',
-      password: await bcrypt.hash('demo123', 10),
-      firstName: 'Admin',
-      lastName: 'User',
-      role: UserRole.ADMIN,
-    });
-    await this.userRepository.save(adminUser);
+    // Create Admin User if not exists
+    const existingAdmin = await this.userRepository.findOne({ where: { email: 'admin@demo.com' } });
+    if (!existingAdmin) {
+      const adminUser = this.userRepository.create({
+        email: 'admin@demo.com',
+        password: await bcrypt.hash('demo123', 10),
+        firstName: 'Admin',
+        lastName: 'User',
+        role: UserRole.ADMIN,
+      });
+      await this.userRepository.save(adminUser);
+      console.log('   ✓ Admin user created');
+    }
 
-    console.log('   ✓ Teachers and admin created successfully');
+    console.log('   ✓ Teachers seeding completed');
   }
 
   async seedStudentsAndParents() {
     console.log('👨‍🎓 Seeding students and parents...');
 
-    const existingStudents = await this.studentRepository.count();
-    if (existingStudents > 0) {
-      console.log('   ✓ Students already exist, skipping');
-      return;
-    }
-
     // Get all teachers and activities
     const teachers = await this.teacherRepository.find({ relations: ['user'] });
     const activities = await this.activityRepository.find();
     const badges = await this.badgeRepository.find();
+
+    if (teachers.length === 0) {
+      console.log('   ⚠️  No teachers found. Please seed teachers first.');
+      return;
+    }
 
     for (let i = 0; i < this.STUDENT_COUNT; i++) {
       const gender = Math.random() > 0.5 ? 'male' : 'female';
@@ -388,9 +397,13 @@ export class SeederService {
       const parentFirstName = this.randomElement(gender === 'male' ? this.firstNames.male : this.firstNames.female);
       const parentLastName = studentLastName; // Same family name
 
+      // Generate unique email addresses using batch ID
+      const parentEmail = `parent.${this.UNIQUE_SUFFIX}.${i + 1}@demo.com`;
+      const studentEmail = `student.${this.UNIQUE_SUFFIX}.${i + 1}@demo.com`;
+
       // Create Parent User
       const parentUser = this.userRepository.create({
-        email: `parent${i + 1}@demo.com`,
+        email: parentEmail,
         password: await bcrypt.hash('demo123', 10),
         firstName: parentFirstName,
         lastName: parentLastName,
@@ -440,7 +453,7 @@ export class SeederService {
 
       // Create Student User
       const studentUser = this.userRepository.create({
-        email: `student${i + 1}@demo.com`,
+        email: studentEmail,
         password: await bcrypt.hash('demo123', 10),
         firstName: studentFirstName,
         lastName: studentLastName,

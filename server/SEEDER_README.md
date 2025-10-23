@@ -2,10 +2,14 @@
 
 This enhanced seeder creates **realistic demo data** perfect for presentations and demonstrations.
 
+## ✨ NEW: Run Multiple Times!
+
+The seeder now generates **unique users every time** using timestamp-based identifiers. You can run it multiple times to create as many demo users as you need!
+
 ## 📊 What It Creates
 
-- **50 Students** with varied performance levels
-- **50 Parents** (one for each student)
+- **100 Students** with varied performance levels (configurable)
+- **100 Parents** (one for each student)
 - **3 Teachers** (students distributed among them)
 - **1 Admin** user
 - **9 Badges** (achievement system)
@@ -13,6 +17,13 @@ This enhanced seeder creates **realistic demo data** perfect for presentations a
 - **Activity Completions** with realistic scores and dates (up to 60 per student)
 - **Progress Records** for all skill areas
 - **Leaderboard data** with varied points and levels
+
+## 🔑 Unique Batch System
+
+Each time you run the seeder, it creates a unique batch with:
+- **Unique Batch ID**: 6-digit timestamp (e.g., `234567`)
+- **Unique Emails**: `student.234567.1@demo.com`, `parent.234567.1@demo.com`
+- **No Duplicates**: Run multiple times safely!
 
 ## 🎯 Performance Distribution
 
@@ -49,36 +60,57 @@ private readonly STUDENT_COUNT = 50;  // Change this number
 
 ## 🚀 How to Run
 
-### Option 1: Fresh Database (Recommended for Demo)
+### Option 1: Using Deploy Script (RECOMMENDED! ⭐)
 
-**Drop the existing database and create fresh data:**
+The easiest way - just run the deploy script and select option 6:
+
+```bash
+# On your server
+cd ~/lingoshid
+./deploy.sh
+
+# Select option 6: Seed demo data (100 students)
+```
+
+**Benefits:**
+- ✅ Interactive confirmation
+- ✅ Shows batch ID for reference
+- ✅ Displays login credentials
+- ✅ Safe to run multiple times
+
+### Option 2: Direct Command
+
+**Add 100 students to existing database:**
+
+```bash
+# On your server (production)
+cd ~/lingoshid
+docker compose exec backend npm run seed:prod
+
+# Or local development
+npm run seed
+```
+
+**Run multiple times to add more batches!** Each run creates 100 unique students.
+
+### Option 3: Fresh Database
+
+**Drop the existing database and start fresh:**
 
 ```bash
 # On your server
 cd ~/lingoshid
 
-# Stop containers
-docker compose down
+# Stop containers and remove data
+docker compose down -v
 
-# Remove database volume
-docker volume rm lingoshid_mysql_data
-
-# Start containers and run seeder
+# Start fresh and seed
 docker compose up -d
+sleep 30
 docker compose exec backend npm run seed
 ```
 
-### Option 2: Add to Existing Database
-
-**If you already have users and want to skip seeding:**
-
-The seeder automatically checks if data exists and skips creation if found.
-
-```bash
-docker compose exec backend npm run seed
-```
-
-### Option 3: Development Mode
+### Option 4: Development Mode
 
 ```bash
 # Local development
@@ -88,7 +120,7 @@ npm run seed
 
 ## 📝 Generated Demo Accounts
 
-### Teachers
+### Teachers (Always the same)
 
 | Email | Password | Name |
 |-------|----------|------|
@@ -96,19 +128,23 @@ npm run seed
 | teacher2@demo.com | demo123 | Ahmad Karimi |
 | teacher3@demo.com | demo123 | Zahra Rahimi |
 
-### Students
+### Students (Unique per batch)
 
-- `student1@demo.com` through `student50@demo.com`
+- **Format:** `student.XXXXXX.1@demo.com` through `student.XXXXXX.100@demo.com`
+- **XXXXXX** = 6-digit batch ID (shown in logs)
 - **Password:** `demo123`
 - **Names:** Realistic Iranian names (Ali, Zahra, Mohammad, etc.)
+- **Example:** `student.234567.1@demo.com`
 
-### Parents
+### Parents (Unique per batch)
 
-- `parent1@demo.com` through `parent50@demo.com`
+- **Format:** `parent.XXXXXX.1@demo.com` through `parent.XXXXXX.100@demo.com`
+- **XXXXXX** = Same batch ID as students
 - **Password:** `demo123`
 - **Each parent is linked to one student**
+- **Example:** `parent.234567.1@demo.com`
 
-### Admin
+### Admin (Always the same)
 
 | Email | Password | Role |
 |-------|----------|------|
@@ -177,30 +213,37 @@ When running the seeder, you should see:
 
 ```
 🌱 Starting database seeding...
-📊 Creating 50 students with realistic data...
+📊 Creating 100 students with realistic data...
+🔑 Unique batch ID: 234567
 
 🏅 Seeding badges...
-   ✓ Badges created successfully
+   ✓ Badges already exist, skipping
 🎯 Seeding activities...
-   ✓ Activities created successfully
+   ✓ Activities already exist, skipping
 👨‍🏫 Seeding teachers...
-   ✓ Teachers and admin created successfully
+   ⚠️  Teacher teacher@demo.com already exists, skipping
+   ⚠️  Teacher teacher2@demo.com already exists, skipping
+   ⚠️  Teacher teacher3@demo.com already exists, skipping
+   ✓ Teachers seeding completed
 👨‍🎓 Seeding students and parents...
-   ✓ Created 10/50 students...
-   ✓ Created 20/50 students...
-   ✓ Created 30/50 students...
-   ✓ Created 40/50 students...
-   ✓ Created 50/50 students...
-   ✓ All 50 students and parents created successfully
+   ✓ Created 10/100 students...
+   ✓ Created 20/100 students...
+   ✓ Created 30/100 students...
+   ...
+   ✓ Created 100/100 students...
+   ✓ All 100 students and parents created successfully
 
 ✅ Database seeding completed!
 
 📈 Summary:
-   - 50 students created
-   - 50 parents created
+   - 100 students created
+   - 100 parents created
    - 3 teachers created
    - All with realistic activity data, badges, and progress
+   - Batch ID: 234567 (for reference)
 ```
+
+**Note:** The batch ID (234567 in this example) is unique for each run. Use it to identify which users belong to this batch!
 
 ## 🎨 Data Features
 

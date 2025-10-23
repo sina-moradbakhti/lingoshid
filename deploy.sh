@@ -121,8 +121,9 @@ echo "2. Update deployment (rebuild and restart)"
 echo "3. Stop all services"
 echo "4. View logs"
 echo "5. Backup database"
+echo "6. Seed demo data (100 students)"
 echo ""
-read -p "Select option (1-5): " -n 1 -r
+read -p "Select option (1-6): " -n 1 -r
 echo ""
 
 case $REPLY in
@@ -150,11 +151,11 @@ case $REPLY in
 
         if [ "$DB_TABLES" = "0" ] || [ -z "$DB_TABLES" ]; then
             print_info "Seeding database..."
-            $DOCKER_COMPOSE exec backend npm run seed:prod || $DOCKER_COMPOSE exec backend npm run seed
+            $DOCKER_COMPOSE exec backend npm run seed:prod
             print_success "Database seeded"
         else
             print_success "Database already has data"
-            print_info "To re-seed manually, run: docker compose exec backend npm run seed:prod"
+            print_info "To add more demo data, run: ./deploy.sh and select option 6"
         fi
 
         print_success "Fresh deployment completed!"
@@ -198,6 +199,34 @@ case $REPLY in
         BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).sql"
         $DOCKER_COMPOSE exec -T database mysqldump -u root -p$DB_PASSWORD $DB_NAME > $BACKUP_FILE
         print_success "Database backup created: $BACKUP_FILE"
+        exit 0
+        ;;
+
+    6)
+        # Seed demo data
+        print_info "Seeding demo data..."
+        echo ""
+        print_warning "This will create 100 new students with unique identifiers."
+        print_warning "You can run this multiple times without duplicates!"
+        echo ""
+        read -p "Continue? (y/n): " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_info "Seeding cancelled"
+            exit 0
+        fi
+
+        print_info "Running seeder..."
+        $DOCKER_COMPOSE exec backend npm run seed:prod
+
+        print_success "Demo data seeded successfully!"
+        print_info "Check the logs above for the unique batch ID"
+        echo ""
+        print_info "Login credentials:"
+        echo "  Teachers: teacher@demo.com / demo123"
+        echo "  Students: student.XXXXXX.1@demo.com / demo123 (check logs for XXXXXX)"
+        echo "  Parents: parent.XXXXXX.1@demo.com / demo123"
+        echo ""
         exit 0
         ;;
 
