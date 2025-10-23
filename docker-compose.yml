@@ -84,18 +84,22 @@ services:
       timeout: 10s
       retries: 3
 
-  # Landing Page Container (Optional - for future use)
-  # Uncomment when you have a landing page
-  # landing:
-  #   build:
-  #     context: ./landing
-  #     dockerfile: Dockerfile
-  #   container_name: lingoshid-landing
-  #   restart: unless-stopped
-  #   ports:
-  #     - "127.0.0.1:8081:80"
-  #   networks:
-  #     - lingoshid-network
+  # Landing Page Container
+  landing:
+    build:
+      context: ./landing
+      dockerfile: Dockerfile
+    container_name: lingoshid-landing
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:80"
+    networks:
+      - lingoshid-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   lingoshid-network:
