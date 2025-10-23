@@ -510,16 +510,10 @@ export class TeachersService {
   }
 
   async getTeacherAnalytics(teacherId: string) {
+    // First, get basic teacher info with minimal relations
     const teacher = await this.teacherRepository.findOne({
       where: { id: teacherId },
-      relations: [
-        'students',
-        'students.user',
-        'students.activityCompletions',
-        'students.activityCompletions.activity',
-        'students.badges',
-        'students.progress'
-      ],
+      relations: ['students', 'students.user'],
     });
 
     if (!teacher) {
@@ -544,16 +538,21 @@ export class TeachersService {
       };
     }
 
-    // Calculate overall statistics
+    // Calculate overall statistics directly from student fields (no need to load all completions)
     const totalPoints = students.reduce((sum, s) => sum + s.totalPoints, 0);
     const averagePoints = Math.round(totalPoints / totalStudents);
 
     const totalLevel = students.reduce((sum, s) => sum + s.currentLevel, 0);
     const averageLevel = Math.round(totalLevel / totalStudents);
 
-    const totalActivitiesCompleted = students.reduce((sum, s) =>
-      sum + (s.activityCompletions?.length || 0), 0
-    );
+    // Use database query to count total activities efficiently
+    const totalActivitiesCompleted = await this.studentRepository
+      .createQueryBuilder('student')
+      .leftJoin('student.activityCompletions', 'completion')
+      .where('student.teacherId = :teacherId', { teacherId })
+      .select('COUNT(completion.id)', 'count')
+      .getRawOne()
+      .then(result => parseInt(result.count) || 0);
 
     // Performance distribution (by level)
     const performanceDistribution = students.reduce((dist: any, student) => {
@@ -562,52 +561,53 @@ export class TeachersService {
       return dist;
     }, {});
 
-    // Skill area analytics (aggregate from all students)
-    const skillAreaMap: any = {};
-    students.forEach(student => {
-      student.progress?.forEach((prog: any) => {
-        if (!skillAreaMap[prog.skillArea]) {
-          skillAreaMap[prog.skillArea] = {
-            skillArea: prog.skillArea,
-            totalStudents: 0,
-            averageProgress: 0,
-            totalProgress: 0
-          };
-        }
-        skillAreaMap[prog.skillArea].totalStudents++;
-        skillAreaMap[prog.skillArea].totalProgress += prog.currentLevel || 0;
-      });
-    });
+    // Skill area analytics - use database aggregation
+    const skillAreaAnalytics = await this.studentRepository
+      .createQueryBuilder('student')
+      .leftJoin('student.progress', 'progress')
+      .where('student.teacherId = :teacherId', { teacherId })
+      .andWhere('progress.skillArea IS NOT NULL')
+      .select('progress.skillArea', 'skillArea')
+      .addSelect('COUNT(DISTINCT student.id)', 'studentsCount')
+      .addSelect('ROUND(AVG(progress.assessmentLevel))', 'averageLevel')
+      .groupBy('progress.skillArea')
+      .getRawMany()
+      .then(results => results.map(r => ({
+        skillArea: r.skillArea,
+        averageLevel: parseInt(r.averageLevel) || 0,
+        studentsCount: parseInt(r.studentsCount) || 0,
+      })));
 
-    const skillAreaAnalytics = Object.values(skillAreaMap).map((skill: any) => ({
-      skillArea: skill.skillArea,
-      averageLevel: Math.round(skill.totalProgress / skill.totalStudents),
-      studentsCount: skill.totalStudents
-    }));
-
-    // Recent activity trend (last 7 days)
+    // Recent activity trend (last 7 days) - use database aggregation
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      return date.toISOString().split('T')[0];
+      date.setHours(0, 0, 0, 0);
+      return date;
     }).reverse();
 
-    const recentActivityTrend = last7Days.map(date => {
-      const activitiesOnDate = students.reduce((count, student) => {
-        const completions = student.activityCompletions?.filter((ac: any) =>
-          ac.completedAt.toISOString().split('T')[0] === date
-        ) || [];
-        return count + completions.length;
-      }, 0);
+    const activityTrendData = await this.studentRepository
+      .createQueryBuilder('student')
+      .leftJoin('student.activityCompletions', 'completion')
+      .where('student.teacherId = :teacherId', { teacherId })
+      .andWhere('completion.completedAt IS NOT NULL')
+      .andWhere('completion.completedAt >= :startDate', { startDate: last7Days[0] })
+      .select('DATE_FORMAT(completion.completedAt, "%Y-%m-%d")', 'date')
+      .addSelect('COUNT(completion.id)', 'count')
+      .groupBy('DATE_FORMAT(completion.completedAt, "%Y-%m-%d")')
+      .getRawMany();
 
-      return {
-        date,
-        activitiesCompleted: activitiesOnDate
-      };
-    });
+    const activityTrendMap = new Map(
+      activityTrendData.map(d => [d.date, parseInt(d.count) || 0])
+    );
 
-    // Top performers (top 5 by points)
-    const topPerformers = students
+    const recentActivityTrend = last7Days.map(date => ({
+      date: date.toISOString().split('T')[0],
+      activitiesCompleted: activityTrendMap.get(date.toISOString().split('T')[0]) || 0,
+    }));
+
+    // Top performers (top 5 by points) - already have this data
+    const topPerformers = [...students]
       .sort((a, b) => b.totalPoints - a.totalPoints)
       .slice(0, 5)
       .map(student => ({
@@ -615,46 +615,78 @@ export class TeachersService {
         name: `${student.user.firstName} ${student.user.lastName}`,
         totalPoints: student.totalPoints,
         currentLevel: student.currentLevel,
-        activitiesCompleted: student.activityCompletions?.length || 0
+        activitiesCompleted: 0, // Will be calculated separately
       }));
 
-    // Students needing attention (bottom 5 by activity in last 7 days)
+    // Get activity counts for top performers efficiently
+    if (topPerformers.length > 0) {
+      const topPerformerIds = topPerformers.map(p => p.id);
+      const activityCounts = await this.studentRepository
+        .createQueryBuilder('student')
+        .leftJoin('student.activityCompletions', 'completion')
+        .where('student.id IN (:...ids)', { ids: topPerformerIds })
+        .select('student.id', 'studentId')
+        .addSelect('COUNT(completion.id)', 'count')
+        .groupBy('student.id')
+        .getRawMany();
+
+      const countMap = new Map(activityCounts.map(c => [c.studentId, parseInt(c.count) || 0]));
+      topPerformers.forEach(performer => {
+        performer.activitiesCompleted = countMap.get(performer.id) || 0;
+      });
+    }
+
+    // Students needing attention (bottom 5 by activity in last 7 days) - use database query
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    oneWeekAgo.setHours(0, 0, 0, 0);
 
-    const studentsWithRecentActivity = students.map(student => {
-      const recentActivities = student.activityCompletions?.filter((ac: any) =>
-        new Date(ac.completedAt) >= oneWeekAgo
-      ) || [];
+    const recentActivityCounts = await this.studentRepository
+      .createQueryBuilder('student')
+      .leftJoin('student.activityCompletions', 'completion', 'completion.completedAt >= :oneWeekAgo', { oneWeekAgo })
+      .leftJoin('student.user', 'user')
+      .where('student.teacherId = :teacherId', { teacherId })
+      .andWhere('user.id IS NOT NULL')
+      .select('student.id', 'id')
+      .addSelect('user.firstName', 'firstName')
+      .addSelect('user.lastName', 'lastName')
+      .addSelect('COUNT(completion.id)', 'recentActivitiesCount')
+      .addSelect('student.lastActivityDate', 'lastActivityDate')
+      .addSelect('student.streakDays', 'streakDays')
+      .groupBy('student.id')
+      .addGroupBy('user.firstName')
+      .addGroupBy('user.lastName')
+      .addGroupBy('student.lastActivityDate')
+      .addGroupBy('student.streakDays')
+      .orderBy('COUNT(completion.id)', 'ASC')
+      .limit(5)
+      .getRawMany();
 
-      return {
-        id: student.id,
-        name: `${student.user.firstName} ${student.user.lastName}`,
-        recentActivitiesCount: recentActivities.length,
-        lastActivityDate: student.lastActivityDate,
-        streakDays: student.streakDays
-      };
-    });
+    const studentsNeedingAttention = recentActivityCounts.map(s => ({
+      id: s.id,
+      name: `${s.firstName} ${s.lastName}`,
+      recentActivitiesCount: parseInt(s.recentActivitiesCount) || 0,
+      lastActivityDate: s.lastActivityDate,
+      streakDays: s.streakDays,
+    }));
 
-    const studentsNeedingAttention = studentsWithRecentActivity
-      .sort((a, b) => a.recentActivitiesCount - b.recentActivitiesCount)
-      .slice(0, 5);
+    // Average completion rate - use database aggregation
+    const avgScoreResult = await this.studentRepository
+      .createQueryBuilder('student')
+      .leftJoin('student.activityCompletions', 'completion')
+      .where('student.teacherId = :teacherId', { teacherId })
+      .andWhere('completion.score IS NOT NULL')
+      .select('ROUND(AVG(completion.score))', 'avgScore')
+      .getRawOne();
 
-    // Average completion rate
-    const studentsWithActivities = students.filter(s => s.activityCompletions && s.activityCompletions.length > 0);
-    const averageScore = studentsWithActivities.length > 0
-      ? studentsWithActivities.reduce((sum, student) => {
-          const avgScore = student.activityCompletions.reduce((s: number, ac: any) => s + ac.score, 0) / student.activityCompletions.length;
-          return sum + avgScore;
-        }, 0) / studentsWithActivities.length
-      : 0;
+    const averageCompletionRate = parseInt(avgScoreResult?.avgScore) || 0;
 
     return {
       totalStudents,
       averagePoints,
       averageLevel,
       totalActivitiesCompleted,
-      averageCompletionRate: Math.round(averageScore),
+      averageCompletionRate,
       performanceDistribution,
       skillAreaAnalytics,
       recentActivityTrend,
