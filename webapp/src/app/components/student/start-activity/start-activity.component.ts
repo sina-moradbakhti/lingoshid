@@ -456,25 +456,40 @@ export class StartActivityComponent implements OnInit, OnDestroy {
   getCurrentWord(): string {
     if (!this.currentSession || this.currentSession.activity.type !== 'pronunciation_challenge') return '';
     const content = this.currentSession.activity.content;
-    if (!content?.words || !Array.isArray(content.words)) {
+    if (!content?.words || !Array.isArray(content.words) || content.words.length === 0) {
       // Fallback to hardcoded data if content not available
       const index = this.currentSession.currentStage - 1;
       return this.pronunciationWords[index]?.word || '';
     }
     const index = this.currentSession.currentStage - 1;
-    return content.words[index]?.word || '';
+    // Words can be either strings or objects with word property
+    const wordData = content.words[index];
+    if (typeof wordData === 'string') {
+      return wordData; // API returns strings directly
+    } else if (wordData && typeof wordData === 'object') {
+      return wordData.word || ''; // Fallback format with word property
+    }
+    return '';
   }
 
   getCurrentPhonetic(): string {
     if (!this.currentSession || this.currentSession.activity.type !== 'pronunciation_challenge') return '';
     const content = this.currentSession.activity.content;
-    if (!content?.words || !Array.isArray(content.words)) {
+    if (!content?.words || !Array.isArray(content.words) || content.words.length === 0) {
       // Fallback to hardcoded data if content not available
       const index = this.currentSession.currentStage - 1;
       return this.pronunciationWords[index]?.phonetic || '';
     }
     const index = this.currentSession.currentStage - 1;
-    return content.words[index]?.phonetic || '';
+    const wordData = content.words[index];
+    // Words array from API are strings only, no phonetics provided
+    // Return empty for now, or could add phonetics to seeder
+    if (typeof wordData === 'string') {
+      return ''; // API doesn't provide phonetics for string format
+    } else if (wordData && typeof wordData === 'object') {
+      return wordData.phonetic || ''; // Object format with phonetic property
+    }
+    return '';
   }
 
   getCurrentPicture(): string {
