@@ -149,6 +149,15 @@ export class StartActivityComponent implements OnInit, OnDestroy {
       this.currentSession = session!;
       this.activitySessionService.setCurrentSession(session!);
 
+      // Check if this activity type is supported by the old component
+      // If not, redirect to the new modular system
+      const supportedTypes = ['pronunciation_challenge', 'picture_description', 'virtual_conversation', 'role_play', 'story_creation', 'singing_chanting'];
+      if (!supportedTypes.includes(this.currentSession.activity.type)) {
+        console.log(`🔄 Activity type "${this.currentSession.activity.type}" not supported by old component, redirecting to modular system...`);
+        this.router.navigate(['/student/module-activities', activityId, 'start']);
+        return;
+      }
+
       this.updateProgress();
       this.initializeActivityData();
       this.startSessionTimer();

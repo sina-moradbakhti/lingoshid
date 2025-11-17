@@ -1,0 +1,146 @@
+<div class="quiz-module">
+  <!-- Header -->
+  <div class="module-header">
+    <h2>📝 {{ config.title }}</h2>
+    <p class="description">{{ config.description }}</p>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <span class="progress-text">Question {{ currentStage }}/{{ getTotalStages() }}</span>
+    </div>
+
+    <!-- Statistics -->
+    <div class="statistics" *ngIf="stageResults.length > 0">
+      <div class="stat-item correct">
+        <span class="stat-value">{{ getStatistics().correct }}</span>
+        <span class="stat-label">Correct</span>
+      </div>
+      <div class="stat-item incorrect">
+        <span class="stat-value">{{ getStatistics().incorrect }}</span>
+        <span class="stat-label">Incorrect</span>
+      </div>
+      <div class="stat-item percentage">
+        <span class="stat-value">{{ getStatistics().percentage }}%</span>
+        <span class="stat-label">Score</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question Display -->
+  <div class="question-container" *ngIf="currentQuestion">
+    <!-- Category Badge -->
+    <div class="category-badge" *ngIf="currentQuestion.category">
+      {{ currentQuestion.category }}
+    </div>
+
+    <!-- Question Text -->
+    <div class="question-card">
+      <h3 class="question-text">{{ currentQuestion.question }}</h3>
+    </div>
+
+    <!-- Answer Options -->
+    <div class="options-container">
+      <button
+        *ngFor="let option of currentQuestion.options; let i = index"
+        class="option-btn"
+        [ngClass]="getOptionClass(i)"
+        [disabled]="isAnswerSubmitted"
+        (click)="selectAnswer(i)">
+        <span class="option-letter">{{ ['A', 'B', 'C', 'D'][i] }}</span>
+        <span class="option-text">{{ option }}</span>
+        <span class="option-icon" *ngIf="isAnswerSubmitted">
+          <span *ngIf="i === currentQuestion.correctAnswer">✓</span>
+          <span *ngIf="i === selectedAnswer && i !== currentQuestion.correctAnswer">✗</span>
+        </span>
+      </button>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="action-section" *ngIf="!isAnswerSubmitted">
+      <button
+        class="submit-btn"
+        [disabled]="selectedAnswer === null"
+        (click)="submitAnswer()">
+        <span *ngIf="selectedAnswer === null">Select an Answer</span>
+        <span *ngIf="selectedAnswer !== null">Submit Answer</span>
+      </button>
+      <p class="hint" *ngIf="selectedAnswer === null">
+        Choose one option above
+      </p>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="feedback-section" *ngIf="isAnswerSubmitted">
+      <!-- Result Badge -->
+      <div class="result-badge" [class.correct]="isCorrect" [class.incorrect]="!isCorrect">
+        <div class="result-icon">
+          <span *ngIf="isCorrect">✓</span>
+          <span *ngIf="!isCorrect">✗</span>
+        </div>
+        <div class="result-text">
+          <h4>{{ isCorrect ? 'Correct!' : 'Incorrect' }}</h4>
+          <p>{{ isCorrect ? 'Great job!' : 'Keep trying!' }}</p>
+        </div>
+      </div>
+
+      <!-- Explanation -->
+      <div class="explanation" *ngIf="showExplanation && currentQuestion.explanation">
+        <h5>💡 Explanation:</h5>
+        <p>{{ currentQuestion.explanation }}</p>
+      </div>
+
+      <!-- Correct Answer Display (if wrong) -->
+      <div class="correct-answer-info" *ngIf="!isCorrect">
+        <p>
+          <strong>Correct Answer:</strong>
+          {{ ['A', 'B', 'C', 'D'][currentQuestion.correctAnswer] }}.
+          {{ currentQuestion.options[currentQuestion.correctAnswer] }}
+        </p>
+      </div>
+
+      <!-- Next Button -->
+      <div class="next-section">
+        <button
+          *ngIf="currentStage < getTotalStages()"
+          class="next-btn"
+          (click)="nextQuestion()">
+          Next Question →
+        </button>
+
+        <button
+          *ngIf="currentStage >= getTotalStages()"
+          class="complete-btn"
+          (click)="completeActivity()">
+          Complete Quiz ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading quiz...</p>
+  </div>
+
+  <!-- Processing State -->
+  <div class="processing" *ngIf="isProcessing">
+    <div class="spinner"></div>
+    <p>Processing your answer...</p>
+  </div>
+
+  <!-- Error Display -->
+  <div class="error-message" *ngIf="errorMessage">
+    <p>⚠️ {{ errorMessage }}</p>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="footer-actions">
+    <button (click)="onActivityExit()" class="exit-btn">
+      ← Exit Quiz
+    </button>
+  </div>
+</div>

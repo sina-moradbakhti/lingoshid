@@ -13,6 +13,7 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class DashboardComponent implements OnInit {
   dashboard: StudentDashboard | null = null;
+  motivationalMessage: string = '';
 
   constructor(
     private studentService: StudentService,
@@ -21,6 +22,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.motivationalMessage = this.getMotivationalMessage();
     this.loadDashboard();
   }
 

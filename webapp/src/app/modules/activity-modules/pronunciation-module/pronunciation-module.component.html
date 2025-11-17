@@ -1,0 +1,121 @@
+<div class="pronunciation-module">
+  <!-- Header -->
+  <div class="module-header">
+    <h2>🎤 {{ config.title }}</h2>
+    <p>{{ config.description }}</p>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <span class="progress-text">Stage {{ currentStage }}/{{ getTotalStages() }}</span>
+    </div>
+  </div>
+
+  <!-- Current Word Display -->
+  <div class="word-display" *ngIf="currentWord">
+    <div class="target-word">
+      <h3>{{ currentWord.word }}</h3>
+      <p class="phonetic" *ngIf="currentWord.phonetic">{{ currentWord.phonetic }}</p>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+      <button
+        (click)="playAudio()"
+        class="play-btn"
+        [class.playing]="isPlaying"
+        [disabled]="isRecording">
+        <span *ngIf="!isPlaying">🔊 Listen</span>
+        <span *ngIf="isPlaying">⏸️ Stop</span>
+      </button>
+    </div>
+
+    <!-- Recording Controls -->
+    <div class="recording-section">
+      <button
+        (click)="isRecording ? stopRecording() : startRecording()"
+        class="record-btn"
+        [class.recording]="isRecording"
+        [disabled]="isProcessing">
+        <span *ngIf="!isRecording">🎤 Start Recording</span>
+        <span *ngIf="isRecording">⏹️ Stop Recording ({{ recordingTime }}s)</span>
+      </button>
+
+      <p class="hint" *ngIf="!isRecording && !lastFeedback">
+        Click the microphone and say the word clearly
+      </p>
+    </div>
+  </div>
+
+  <!-- Feedback Display -->
+  <div class="feedback-section" *ngIf="lastFeedback">
+    <div class="feedback-card" [ngClass]="getScoreClass(lastFeedback.score)">
+      <div class="score-display">
+        <div class="score-circle">
+          <span class="score-value">{{ lastFeedback.score }}</span>
+          <span class="score-label">%</span>
+        </div>
+      </div>
+
+      <div class="feedback-content">
+        <h4>{{ lastFeedback.message }}</h4>
+        <p class="encouragement">{{ lastFeedback.encouragement }}</p>
+
+        <div class="transcription" *ngIf="lastFeedback.transcript">
+          <p><strong>You said:</strong> "{{ lastFeedback.transcript }}"</p>
+          <p><strong>Target:</strong> "{{ lastFeedback.target }}"</p>
+        </div>
+
+        <div class="suggestions" *ngIf="lastFeedback.suggestions && lastFeedback.suggestions.length > 0">
+          <p><strong>Tips:</strong></p>
+          <ul>
+            <li *ngFor="let suggestion of lastFeedback.suggestions">{{ suggestion }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Continue Button -->
+    <div class="action-buttons">
+      <button
+        *ngIf="currentStage < getTotalStages()"
+        (click)="nextStage()"
+        class="next-btn">
+        Next Word →
+      </button>
+
+      <button
+        *ngIf="currentStage >= getTotalStages()"
+        (click)="completeActivity()"
+        class="complete-btn">
+        Complete Activity ✓
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading activity...</p>
+  </div>
+
+  <!-- Processing State -->
+  <div class="processing" *ngIf="isProcessing">
+    <div class="spinner"></div>
+    <p>Processing your pronunciation...</p>
+  </div>
+
+  <!-- Error Display -->
+  <div class="error-message" *ngIf="errorMessage">
+    <p>⚠️ {{ errorMessage }}</p>
+  </div>
+
+  <!-- Exit Button -->
+  <div class="footer-actions">
+    <button (click)="onActivityExit()" class="exit-btn">
+      ← Exit Activity
+    </button>
+  </div>
+</div>

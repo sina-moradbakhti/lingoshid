@@ -4,7 +4,9 @@ export enum ActivityType {
   PICTURE_DESCRIPTION = 'picture_description',
   ROLE_PLAY = 'role_play',
   STORY_CREATION = 'story_creation',
-  SINGING_CHANTING = 'singing_chanting'
+  SINGING_CHANTING = 'singing_chanting',
+  QUIZ_CHALLENGE = 'quiz_challenge',
+  VOCABULARY_MATCH = 'vocabulary_match'
 }
 
 export enum DifficultyLevel {

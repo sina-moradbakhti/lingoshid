@@ -34,7 +34,9 @@ export class CustomPracticeComponent implements OnInit {
     { value: 'picture_description', label: 'Picture Description', description: 'Describe images using English vocabulary' },
     { value: 'role_play', label: 'Role Play', description: 'Act out scenarios and practice real-life situations' },
     { value: 'story_creation', label: 'Story Creation', description: 'Create and tell stories in English' },
-    { value: 'singing_chanting', label: 'Singing & Chanting', description: 'Learn through songs and rhythmic chants' }
+    { value: 'singing_chanting', label: 'Singing & Chanting', description: 'Learn through songs and rhythmic chants' },
+    { value: 'quiz_challenge', label: 'Quiz Challenge', description: 'Test knowledge with multiple-choice questions' },
+    { value: 'vocabulary_match', label: 'Vocabulary Match', description: 'Match words with images to learn vocabulary' }
   ];
 
   difficultyLevels: DifficultyLevel[] = [
@@ -98,6 +100,14 @@ export class CustomPracticeComponent implements OnInit {
       rhythmPattern: '',
       lyrics: [],
       actions: []
+    },
+    quiz: {
+      instruction: '',
+      questions: []
+    },
+    vocabularyMatch: {
+      instruction: '',
+      vocabulary: []
     }
   };
 
@@ -171,7 +181,9 @@ export class CustomPracticeComponent implements OnInit {
         rhythmPattern: '',
         lyrics: [],
         actions: []
-      }
+      },
+      quiz: { instruction: '', questions: [] },
+      vocabularyMatch: { instruction: '', vocabulary: [] }
     };
   }
 
@@ -258,6 +270,34 @@ export class CustomPracticeComponent implements OnInit {
     this.content.singingChanting.actions.splice(index, 1);
   }
 
+  // Quiz Challenge methods
+  addQuizQuestion() {
+    this.content.quiz.questions.push({
+      question: '',
+      options: ['', '', '', ''],
+      correctAnswer: 0,
+      category: '',
+      explanation: ''
+    });
+  }
+
+  removeQuizQuestion(index: number) {
+    this.content.quiz.questions.splice(index, 1);
+  }
+
+  // Vocabulary Match methods
+  addVocabularyItem() {
+    this.content.vocabularyMatch.vocabulary.push({
+      word: '',
+      imageUrl: '',
+      translation: ''
+    });
+  }
+
+  removeVocabularyItem(index: number) {
+    this.content.vocabularyMatch.vocabulary.splice(index, 1);
+  }
+
   getTypeDescription(type: string): string {
     return this.activityTypes.find(t => t.value === type)?.description || '';
   }
@@ -335,6 +375,18 @@ export class CustomPracticeComponent implements OnInit {
           rhythmPattern: this.content.singingChanting.rhythmPattern,
           lyrics: this.content.singingChanting.lyrics.filter((l: string) => l.trim()),
           actions: this.content.singingChanting.actions.filter((a: string) => a.trim())
+        };
+
+      case 'quiz_challenge':
+        return {
+          instruction: this.content.quiz.instruction,
+          questions: this.content.quiz.questions.filter((q: any) => q.question && q.options && q.options.length > 0)
+        };
+
+      case 'vocabulary_match':
+        return {
+          instruction: this.content.vocabularyMatch.instruction,
+          vocabulary: this.content.vocabularyMatch.vocabulary.filter((v: any) => v.word && v.imageUrl)
         };
 
       default:

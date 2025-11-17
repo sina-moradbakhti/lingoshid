@@ -1,0 +1,130 @@
+<div class="module-runner-container">
+  <!-- Loading State -->
+  <div class="loading-screen" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <h2>Loading Activity...</h2>
+    <p>{{ activity?.title || 'Preparing your activity' }}</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-screen" *ngIf="errorMessage && !isLoading">
+    <div class="error-icon">⚠️</div>
+    <h2>Oops!</h2>
+    <p class="error-message">{{ errorMessage }}</p>
+    <button (click)="goToActivities()" class="btn-primary">
+      Back to Activities
+    </button>
+  </div>
+
+  <!-- Dynamic Module Container -->
+  <!-- This is where the activity module will be injected -->
+  <ng-container #moduleContainer></ng-container>
+
+  <!-- Completion Modal -->
+  <div class="completion-modal" *ngIf="showCompletionModal && completionResult">
+    <!-- Confetti Animation -->
+    <div class="confetti-container">
+      <div
+        *ngFor="let confetti of confettiArray"
+        class="confetti"
+        [style.left]="confetti.left"
+        [style.animation-delay]="confetti.animationDelay"
+        [style.background-color]="confetti.backgroundColor">
+      </div>
+    </div>
+
+    <div class="modal-overlay" (click)="closeCompletionModal()"></div>
+
+    <div class="modal-content" [class]="getAchievementLevel()">
+      <!-- Achievement Icon -->
+      <div class="achievement-icon">
+        <span class="icon">{{ getAchievementIcon() }}</span>
+      </div>
+
+      <!-- Title -->
+      <h2 class="completion-title">{{ getCompletionTitle() }}</h2>
+
+      <!-- Score Display -->
+      <div class="score-display">
+        <div class="score-circle">
+          <span class="score-value">{{ completionResult.score }}</span>
+          <span class="score-label">%</span>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-icon">🏆</span>
+          <span class="stat-value">{{ completionResult.totalPointsEarned }}</span>
+          <span class="stat-label">Points Earned</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-icon">⏱️</span>
+          <span class="stat-value">{{ completionResult.timeSpent }}s</span>
+          <span class="stat-label">Time Spent</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-icon">✓</span>
+          <span class="stat-value">{{ completionResult.stagesCompleted }}</span>
+          <span class="stat-label">Completed</span>
+        </div>
+      </div>
+
+      <!-- Bonus Points Breakdown -->
+      <div class="bonus-breakdown" *ngIf="completionResult.bonusPoints > 0">
+        <h4>Bonus Points!</h4>
+        <div class="bonus-item">
+          <span>Base Points:</span>
+          <span>+{{ completionResult.basePoints }}</span>
+        </div>
+        <div class="bonus-item bonus">
+          <span>Bonus:</span>
+          <span>+{{ completionResult.bonusPoints }}</span>
+        </div>
+        <div class="bonus-item total">
+          <span>Total:</span>
+          <span>{{ completionResult.totalPointsEarned }}</span>
+        </div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedback-section" *ngIf="completionResult.feedback">
+        <p class="feedback-message">{{ completionResult.feedback.message }}</p>
+        <p class="feedback-encouragement">{{ completionResult.feedback.encouragement }}</p>
+
+        <!-- Suggestions -->
+        <div class="suggestions" *ngIf="completionResult.feedback.suggestions && completionResult.feedback.suggestions.length > 0">
+          <h5>Tips for Improvement:</h5>
+          <ul>
+            <li *ngFor="let suggestion of completionResult.feedback.suggestions">
+              {{ suggestion }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Strengths -->
+        <div class="strengths" *ngIf="completionResult.feedback.strengths && completionResult.feedback.strengths.length > 0">
+          <h5>Your Strengths:</h5>
+          <ul>
+            <li *ngFor="let strength of completionResult.feedback.strengths">
+              {{ strength }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-actions">
+        <button (click)="tryAgain()" class="btn-secondary">
+          Try Again
+        </button>
+        <button (click)="goToActivities()" class="btn-primary">
+          More Activities
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

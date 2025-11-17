@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { UserRole } from './models/user.model';
+import { ActivityModuleRegistryService } from './services/activity-module-registry.service';
+import { PronunciationModuleComponent } from './modules/activity-modules/pronunciation-module/pronunciation-module.component';
+import { QuizModuleComponent } from './modules/activity-modules/quiz-module/quiz-module.component';
+import { VocabularyMatchModuleComponent } from './modules/activity-modules/vocabulary-match-module/vocabulary-match-module.component';
 
 @Component({
   selector: 'app-root',
@@ -33,8 +37,12 @@ export class App implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private activityModuleRegistry: ActivityModuleRegistryService
+  ) {
+    // Initialize activity modules on app startup
+    this.initializeActivityModules();
+  }
 
   ngOnInit() {
     // Check if user is authenticated and redirect to appropriate dashboard
@@ -59,6 +67,64 @@ export class App implements OnInit {
       case UserRole.ADMIN:
         this.router.navigate(['/admin']);
         break;
+    }
+  }
+
+  /**
+   * Initialize Activity Module System
+   * Register all available activity modules
+   */
+  private initializeActivityModules() {
+    console.log('🚀 Initializing Activity Module System...');
+
+    // Register Pronunciation Module
+    this.activityModuleRegistry.register({
+      type: 'pronunciation_challenge',
+      name: 'Pronunciation Challenge',
+      description: 'Practice pronunciation with speech recognition',
+      version: '1.0.0',
+      component: PronunciationModuleComponent,
+      processor: null as any, // Backend processor reference (not used in frontend)
+      supportedFeatures: ['audio', 'speech-recognition'],
+      minLevel: 1
+    });
+
+    // Register Quiz Module
+    this.activityModuleRegistry.register({
+      type: 'quiz_challenge',
+      name: 'Quiz Challenge',
+      description: 'Multiple choice quiz to test knowledge',
+      version: '1.0.0',
+      component: QuizModuleComponent,
+      processor: null as any,
+      supportedFeatures: ['text', 'multiple-choice'],
+      minLevel: 1
+    });
+
+    // Register Vocabulary Match Module
+    this.activityModuleRegistry.register({
+      type: 'vocabulary_match',
+      name: 'Vocabulary Matching',
+      description: 'Match words with pictures',
+      version: '1.0.0',
+      component: VocabularyMatchModuleComponent,
+      processor: null as any,
+      supportedFeatures: ['images', 'interactive', 'matching'],
+      minLevel: 1
+    });
+
+    console.log('✅ Activity Module System initialized successfully');
+    console.log(`📦 Registered ${this.activityModuleRegistry.getRegisteredTypes().length} module types`);
+
+    // Debug: Print all registered modules
+    if (console.table) {
+      const modules = this.activityModuleRegistry.getAllModules().map(m => ({
+        Type: m.type,
+        Name: m.name,
+        Version: m.version,
+        Features: m.supportedFeatures.join(', ')
+      }));
+      console.table(modules);
     }
   }
 }
