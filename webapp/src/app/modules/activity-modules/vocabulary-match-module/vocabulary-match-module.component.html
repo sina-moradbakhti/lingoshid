@@ -1,0 +1,140 @@
+<div class="vocabulary-match-module">
+  <!-- Header -->
+  <div class="module-header">
+    <h2>🎯 {{ config.title }}</h2>
+    <p>{{ config.description }}</p>
+
+    <!-- Progress -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <span class="progress-text">Round {{ currentStage }}/{{ getTotalStages() }}</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-icon">✓</span>
+        <span class="stat-value">{{ getMatchProgress() }}</span>
+        <span class="stat-label">Matched</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">🎯</span>
+        <span class="stat-value">{{ getAccuracy() }}%</span>
+        <span class="stat-label">Accuracy</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">⚠️</span>
+        <span class="stat-value">{{ errors }}</span>
+        <span class="stat-label">Errors</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Area -->
+  <div class="game-container">
+    <p class="instruction">Match each word with its corresponding picture</p>
+
+    <div class="matching-area">
+      <!-- Words Column -->
+      <div class="words-column">
+        <h3>Words</h3>
+        <div class="items-list">
+          <button
+            *ngFor="let word of words"
+            class="word-btn"
+            [ngClass]="getWordClass(word.id)"
+            [disabled]="word.matched"
+            (click)="selectWord(word.id)">
+            <span class="word-text">{{ word.text }}</span>
+            <span
+              class="speaker-icon"
+              [class.playing]="playingWordId === word.id"
+              (click)="playWord(word.id, $event)"
+              title="Listen to pronunciation">
+              🔊
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Connection Indicator -->
+      <div class="connection-area">
+        <div class="connection-line" *ngIf="selectedWord || selectedImage">
+          <div class="pulse-dot"></div>
+        </div>
+        <p class="hint" *ngIf="!selectedWord && !selectedImage">
+          Select a word and then select its matching picture
+        </p>
+        <p class="hint active" *ngIf="selectedWord && !selectedImage">
+          Now select the matching picture →
+        </p>
+        <p class="hint active" *ngIf="!selectedWord && selectedImage">
+          ← Now select the matching word
+        </p>
+      </div>
+
+      <!-- Images Column -->
+      <div class="images-column">
+        <h3>Pictures</h3>
+        <div class="items-list">
+          <button
+            *ngFor="let image of images"
+            class="image-btn"
+            [ngClass]="getImageClass(image.id)"
+            [disabled]="image.matched"
+            (click)="selectImage(image.id)">
+            <img [src]="image.url" [alt]="'Picture'" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Correct Match Feedback -->
+  <div class="feedback-overlay correct" *ngIf="showCorrectFeedback">
+    <div class="feedback-content">
+      <div class="feedback-icon">✓</div>
+      <h3>Perfect Match!</h3>
+      <div class="matched-pair" *ngIf="currentFeedbackPair">
+        <span class="pair-word">{{ currentFeedbackPair.word }}</span>
+        <span class="pair-connector">↔</span>
+        <img [src]="currentFeedbackPair.image" class="pair-image" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Incorrect Match Feedback -->
+  <div class="feedback-overlay incorrect" *ngIf="showIncorrectFeedback">
+    <div class="feedback-content">
+      <div class="feedback-icon">✗</div>
+      <h3>Try Again!</h3>
+      <p>Those don't match. Keep trying!</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading vocabulary...</p>
+  </div>
+
+  <!-- Processing State -->
+  <div class="processing" *ngIf="isProcessing">
+    <div class="spinner"></div>
+    <p>Processing results...</p>
+  </div>
+
+  <!-- Error Display -->
+  <div class="error-message" *ngIf="errorMessage">
+    <p>⚠️ {{ errorMessage }}</p>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="footer-actions">
+    <button (click)="onActivityExit()" class="exit-btn">
+      ← Exit Activity
+    </button>
+  </div>
+</div>

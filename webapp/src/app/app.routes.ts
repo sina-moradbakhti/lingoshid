@@ -32,12 +32,8 @@ export const routes: Routes = [
         loadComponent: () => import('./components/student/activities/activities.component').then(m => m.ActivitiesComponent)
       },
       {
-        path: 'activities/:id',
-        loadComponent: () => import('./components/student/activity-detail/activity-detail.component').then(m => m.ActivityDetailComponent)
-      },
-      {
-        path: 'activities/:id/start',
-        loadComponent: () => import('./components/student/start-activity/start-activity.component').then(m => m.StartActivityComponent)
+        path: 'module-activities/:id/start',
+        loadComponent: () => import('./components/student/module-activity-runner/module-activity-runner.component').then(m => m.ModuleActivityRunnerComponent)
       },
       {
         path: 'leaderboard',
