@@ -9,6 +9,7 @@ import { Component, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseActivityModuleComponent } from '../base-activity-module.component';
 import { StageSubmissionData, StageResult } from '../../../models/activity-module.interface';
+import { SpeechService } from '../../../services/speech.service';
 
 interface PronunciationWord {
   word: string;
@@ -38,9 +39,14 @@ export class PronunciationModuleComponent extends BaseActivityModuleComponent {
   // Feedback from last attempt
   lastFeedback: any = null;
   showingFeedback = false;
-  private autoAdvanceTimer: any;
 
-  constructor(private ngZone: NgZone) {
+  // Track if user has listened to current word
+  hasListenedToCurrentWord = false;
+
+  constructor(
+    private ngZone: NgZone,
+    private speechService: SpeechService
+  ) {
     super();
   }
 
@@ -69,10 +75,6 @@ export class PronunciationModuleComponent extends BaseActivityModuleComponent {
 
     if (this.recordingTimer) {
       clearInterval(this.recordingTimer);
-    }
-
-    if (this.autoAdvanceTimer) {
-      clearTimeout(this.autoAdvanceTimer);
     }
   }
 
@@ -115,19 +117,14 @@ export class PronunciationModuleComponent extends BaseActivityModuleComponent {
       this.currentWord = this.words[index];
       this.lastFeedback = null;
       this.showingFeedback = false;
-
-      // Clear any pending auto-advance
-      if (this.autoAdvanceTimer) {
-        clearTimeout(this.autoAdvanceTimer);
-        this.autoAdvanceTimer = null;
-      }
+      this.hasListenedToCurrentWord = false; // Reset for new word
     }
   }
 
   /**
    * Override: Called when stage changes
    */
-  protected override onStageChanged(newStage: number): void {
+  protected override onStageChanged(): void {
     this.loadCurrentWord();
   }
 
@@ -149,40 +146,32 @@ export class PronunciationModuleComponent extends BaseActivityModuleComponent {
 
     if (!this.currentWord) return;
 
-    // Use Web Speech API for text-to-speech
-    if ('speechSynthesis' in window) {
-      this.isPlaying = true;
+    this.isPlaying = true;
+    this.hasListenedToCurrentWord = true; // Mark that user has listened
 
-      const utterance = new SpeechSynthesisUtterance(this.currentWord.word);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.8; // Slower for learning
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
-
-      utterance.onend = () => {
+    // Use shared speech service with child-friendly settings
+    this.speechService.speak(
+      this.currentWord.word,
+      () => {
+        // On end
         this.ngZone.run(() => {
           this.isPlaying = false;
         });
-      };
-
-      utterance.onerror = () => {
+      },
+      () => {
+        // On error
         this.ngZone.run(() => {
           this.isPlaying = false;
         });
-      };
-
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utterance);
-    }
+      }
+    );
   }
 
   /**
    * Stop audio playback
    */
   stopAudio(): void {
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
+    this.speechService.stop();
     this.isPlaying = false;
   }
 
@@ -317,15 +306,20 @@ export class PronunciationModuleComponent extends BaseActivityModuleComponent {
     // Generate feedback with confidence percentage
     const feedback = this.generateStageFeedback(score, targetWord, spokenWord, confidence);
 
-    // Store for display
-    this.lastFeedback = feedback;
-    this.showingFeedback = true;
+    // Store for display - MUST run in Angular zone for UI update
+    this.ngZone.run(() => {
+      this.lastFeedback = feedback;
+      this.showingFeedback = true;
 
-    console.log('💾 lastFeedback set to:', this.lastFeedback);
-    console.log('🔍 Confidence value:', this.lastFeedback.confidence);
+      console.log('💾 lastFeedback set to:', this.lastFeedback);
+      console.log('🔍 Confidence value:', this.lastFeedback.confidence);
+    });
 
-    // Auto-advance to next word after 2 seconds
-    this.scheduleAutoAdvance();
+    // IMPORTANT: Wait 2 seconds before resolving so base component doesn't auto-advance immediately
+    // This gives user time to see the feedback
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    console.log('⏰ 2 seconds passed, ready to advance');
 
     return {
       stageNumber: data.stageNumber,
@@ -374,30 +368,6 @@ export class PronunciationModuleComponent extends BaseActivityModuleComponent {
 
     console.log('✅ Feedback object:', feedback);
     return feedback;
-  }
-
-  /**
-   * Schedule auto-advance to next word after showing feedback
-   */
-  private scheduleAutoAdvance(): void {
-    // Clear any existing timer
-    if (this.autoAdvanceTimer) {
-      clearTimeout(this.autoAdvanceTimer);
-    }
-
-    // Auto-advance after 2 seconds
-    this.autoAdvanceTimer = setTimeout(() => {
-      this.ngZone.run(() => {
-        // Check if we're on the last stage
-        if (this.currentStage < this.getTotalStages()) {
-          console.log('🔄 Auto-advancing to next word...');
-          this.nextStage();
-        } else {
-          console.log('✅ Last word completed, ready for activity completion');
-          // Don't auto-complete the activity, let user click the button
-        }
-      });
-    }, 2000); // 2 seconds delay
   }
 
   /**

@@ -9,6 +9,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseActivityModuleComponent } from '../base-activity-module.component';
 import { StageSubmissionData, StageResult } from '../../../models/activity-module.interface';
+import { SpeechService } from '../../../services/speech.service';
 
 interface VocabularyItem {
   word: string;
@@ -62,6 +63,13 @@ export class VocabularyMatchModuleComponent extends BaseActivityModuleComponent 
   showCorrectFeedback = false;
   showIncorrectFeedback = false;
   currentFeedbackPair: { word: string; image: string } | null = null;
+
+  // Speech
+  playingWordId: string | null = null;
+
+  constructor(private speechService: SpeechService) {
+    super();
+  }
 
   /**
    * Initialize the module
@@ -203,6 +211,33 @@ export class VocabularyMatchModuleComponent extends BaseActivityModuleComponent 
     if (this.selectedImage) {
       this.checkMatch();
     }
+  }
+
+  /**
+   * Play word pronunciation using child-friendly voice
+   */
+  playWord(wordId: string, event?: Event): void {
+    // Prevent word selection when clicking speaker icon
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const word = this.words.find(w => w.id === wordId);
+    if (!word) return;
+
+    this.playingWordId = wordId;
+
+    this.speechService.speak(
+      word.text,
+      () => {
+        // On end
+        this.playingWordId = null;
+      },
+      () => {
+        // On error
+        this.playingWordId = null;
+      }
+    );
   }
 
   /**

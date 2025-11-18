@@ -47,7 +47,14 @@
             [ngClass]="getWordClass(word.id)"
             [disabled]="word.matched"
             (click)="selectWord(word.id)">
-            {{ word.text }}
+            <span class="word-text">{{ word.text }}</span>
+            <span
+              class="speaker-icon"
+              [class.playing]="playingWordId === word.id"
+              (click)="playWord(word.id, $event)"
+              title="Listen to pronunciation">
+              🔊
+            </span>
           </button>
         </div>
       </div>

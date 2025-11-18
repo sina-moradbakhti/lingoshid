@@ -14,7 +14,7 @@
   </div>
 
   <!-- Current Word Display -->
-  <div class="word-display" *ngIf="currentWord">
+  <div class="word-display" *ngIf="currentWord && !showingFeedback">
     <div class="target-word">
       <h3>{{ currentWord.word }}</h3>
       <p class="phonetic" *ngIf="currentWord.phonetic">{{ currentWord.phonetic }}</p>
@@ -38,20 +38,30 @@
         (click)="isRecording ? stopRecording() : startRecording()"
         class="record-btn"
         [class.recording]="isRecording"
-        [disabled]="isProcessing">
+        [disabled]="isProcessing || !hasListenedToCurrentWord">
         <span *ngIf="!isRecording">🎤 Start Recording</span>
         <span *ngIf="isRecording">⏹️ Stop Recording ({{ recordingTime }}s)</span>
       </button>
 
-      <p class="hint" *ngIf="!isRecording && !lastFeedback">
+      <p class="hint" *ngIf="!hasListenedToCurrentWord && !lastFeedback">
+        👆 Click "Listen" first to hear the correct pronunciation
+      </p>
+
+      <p class="hint" *ngIf="hasListenedToCurrentWord && !isRecording && !lastFeedback">
         Click the microphone and say the word clearly
       </p>
     </div>
   </div>
 
   <!-- Feedback Display -->
-  <div class="feedback-section" *ngIf="lastFeedback">
+  <div class="feedback-section" *ngIf="lastFeedback && showingFeedback">
     <div class="feedback-card" [ngClass]="getScoreClass(lastFeedback.score)">
+
+      <!-- Show current word at top for context -->
+      <div class="feedback-word-context">
+        <h3>{{ currentWord?.word }}</h3>
+      </div>
+
       <div class="score-display">
         <div class="score-circle">
           <span class="score-value">{{ lastFeedback.score }}</span>
