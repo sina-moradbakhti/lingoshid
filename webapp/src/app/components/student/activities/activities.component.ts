@@ -41,8 +41,8 @@ export class ActivitiesComponent implements OnInit {
   }
 
   startActivity(activity: Activity) {
-    // Navigate to activity detail page
-    this.router.navigate(['/student/activities', activity.id]);
+    // Navigate directly to modular system (bypasses old hardcoded UI)
+    this.router.navigate(['/student/module-activities', activity.id, 'start']);
   }
 
   goBack() {

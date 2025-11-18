@@ -57,6 +57,17 @@
           <span class="score-value">{{ lastFeedback.score }}</span>
           <span class="score-label">%</span>
         </div>
+
+        <!-- Confidence Percentage -->
+        <div class="confidence-display" *ngIf="lastFeedback.confidence !== undefined && lastFeedback.confidence !== null">
+          <div class="confidence-label">Confidence</div>
+          <div class="confidence-value">{{ lastFeedback.confidence }}%</div>
+          <div class="confidence-bar">
+            <div class="confidence-fill"
+                 [style.width.%]="lastFeedback.confidence"
+                 [ngClass]="getScoreClass(lastFeedback.confidence)"></div>
+          </div>
+        </div>
       </div>
 
       <div class="feedback-content">
@@ -75,10 +86,15 @@
           </ul>
         </div>
       </div>
+
+      <!-- Auto-advance indicator -->
+      <div class="auto-advance-notice" *ngIf="showingFeedback && currentStage < getTotalStages()">
+        <p>⏱️ Next word in 2 seconds...</p>
+      </div>
     </div>
 
-    <!-- Continue Button -->
-    <div class="action-buttons">
+    <!-- Continue Button (Hidden during auto-advance) -->
+    <div class="action-buttons" *ngIf="!showingFeedback || currentStage >= getTotalStages()">
       <button
         *ngIf="currentStage < getTotalStages()"
         (click)="nextStage()"
