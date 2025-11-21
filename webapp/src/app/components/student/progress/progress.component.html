@@ -1,242 +1,365 @@
-
-    <div class="progress-container">
-      <div class="header">
-        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
-        <h1>📊 Advanced Progress Analytics</h1>
-        <p>Comprehensive insights into your learning journey</p>
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading" *ngIf="isLoading">
-        <div class="spinner">🎮</div>
-        <p>Loading your progress analytics...</p>
-      </div>
-
-      <!-- Progress Content -->
-      <div class="progress-content" *ngIf="!isLoading && detailedProgress">
-        <!-- Student Overview Cards -->
-        <div class="overview-grid">
-          <div class="overview-card primary">
-            <div class="card-icon">🎯</div>
-            <div class="card-content">
-              <h3>{{ detailedProgress.student.totalPoints }}</h3>
-              <p>Total Points</p>
-              <small>Level {{ detailedProgress.student.currentLevel }}</small>
-            </div>
+<div class="progress-page">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-left">
+        <button (click)="goBack()" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+          </svg>
+          Back
+        </button>
+        <div class="page-title">
+          <div class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+            </svg>
           </div>
-
-          <div class="overview-card success">
-            <div class="card-icon">✅</div>
-            <div class="card-content">
-              <h3>{{ detailedProgress.completedActivities }}/{{ detailedProgress.totalActivities }}</h3>
-              <p>Activities Completed</p>
-              <small>{{ getCompletionPercentage() }}% completion rate</small>
-            </div>
-          </div>
-
-          <div class="overview-card warning">
-            <div class="card-icon">⚡</div>
-            <div class="card-content">
-              <h3>{{ detailedProgress.student.streakDays }}</h3>
-              <p>Day Streak</p>
-              <small>{{ detailedProgress.learningAnalytics.consistencyScore }}% consistency</small>
-            </div>
-          </div>
-
-          <div class="overview-card info">
-            <div class="card-icon">⏱️</div>
-            <div class="card-content">
-              <h3>{{ formatTimeFromSeconds(detailedProgress.totalTimeSpent) }}</h3>
-              <p>Total Practice Time</p>
-              <small>Avg: {{ detailedProgress.learningAnalytics.averageSessionTime }}min/session</small>
-            </div>
-          </div>
+          <h1>Progress Analytics</h1>
         </div>
-
-        <!-- Skills Progress Section -->
-        <div class="section-card">
-          <h2>🎭 Skill Mastery Analysis</h2>
-          <div class="skills-grid">
-            <div class="skill-card" *ngFor="let skill of detailedProgress.skillProgress">
-              <div class="skill-header">
-                <h3>{{ getSkillIcon(skill.skillArea) }} {{ skill.skillArea | titlecase }}</h3>
-                <span class="skill-level">Level {{ skill.currentLevel }}</span>
-              </div>
-
-              <div class="progress-ring-container">
-                <div class="progress-ring">
-                  <svg viewBox="0 0 36 36" class="circular-chart">
-                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                    <path class="circle" [attr.stroke-dasharray]="skill.progressPercentage + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                    <text x="18" y="20.35" class="percentage">{{ skill.progressPercentage }}%</text>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="skill-metrics">
-                <div class="metric">
-                  <span class="metric-value">{{ skill.activitiesCompleted }}/{{ skill.totalActivitiesAvailable }}</span>
-                  <span class="metric-label">Activities</span>
-                </div>
-                <div class="metric">
-                  <span class="metric-value">{{ skill.averageScore }}%</span>
-                  <span class="metric-label">Avg Score</span>
-                </div>
-                <div class="metric">
-                  <span class="metric-value">{{ skill.totalPracticeTime }}m</span>
-                  <span class="metric-label">Practice Time</span>
-                </div>
-              </div>
-
-              <div class="skill-improvement" *ngIf="skill.recentImprovement !== 0">
-                <span class="improvement-badge" [class.positive]="skill.recentImprovement > 0" [class.negative]="skill.recentImprovement < 0">
-                  {{ skill.recentImprovement > 0 ? '+' : '' }}{{ skill.recentImprovement }}% recent change
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Learning Analytics -->
-        <div class="analytics-grid">
-          <div class="section-card">
-            <h2>🧠 Learning Intelligence</h2>
-            <div class="analytics-content">
-              <div class="insight-item">
-                <span class="insight-icon">💪</span>
-                <div class="insight-text">
-                  <h4>Strongest Skill</h4>
-                  <p>{{ detailedProgress.learningAnalytics.strongestSkill | titlecase }}</p>
-                </div>
-              </div>
-
-              <div class="insight-item">
-                <span class="insight-icon">🎯</span>
-                <div class="insight-text">
-                  <h4>Focus Area</h4>
-                  <p>{{ detailedProgress.learningAnalytics.improvementArea | titlecase }}</p>
-                </div>
-              </div>
-
-              <div class="insight-item">
-                <span class="insight-icon">🚀</span>
-                <div class="insight-text">
-                  <h4>Learning Velocity</h4>
-                  <p>{{ detailedProgress.learningAnalytics.learningVelocity }} activities/week</p>
-                </div>
-              </div>
-
-              <div class="insight-item">
-                <span class="insight-icon">⏭️</span>
-                <div class="insight-text">
-                  <h4>Next Level Progress</h4>
-                  <p>{{ detailedProgress.learningAnalytics.activitiesNeededForNextLevel }} activities needed</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <h2>📈 Performance Trends</h2>
-            <div class="trends-content">
-              <div class="trend-indicator">
-                <span class="trend-icon" [class]="getTrendClass(detailedProgress.performanceTrends.improvementTrend)">
-                  {{ getTrendIcon(detailedProgress.performanceTrends.improvementTrend) }}
-                </span>
-                <div class="trend-text">
-                  <h4>Performance Trend</h4>
-                  <p>{{ detailedProgress.performanceTrends.improvementTrend | titlecase }}</p>
-                </div>
-              </div>
-
-              <div class="consistency-meter">
-                <h4>Performance Consistency</h4>
-                <div class="meter-container">
-                  <div class="meter-bar">
-                    <div class="meter-fill" [style.width.%]="detailedProgress.performanceTrends.performanceConsistency"></div>
-                  </div>
-                  <span class="meter-value">{{ detailedProgress.performanceTrends.performanceConsistency }}%</span>
-                </div>
-              </div>
-
-              <div class="weekly-summary">
-                <h4>Weekly Activity Trends</h4>
-                <div class="weeks-chart">
-                  <div class="week-bar" *ngFor="let week of getRecentWeeks()">
-                    <div class="bar" [style.height.%]="getWeekBarHeight(week.activitiesCompleted)"></div>
-                    <span class="week-label">{{ week.week }}</span>
-                    <span class="week-value">{{ week.activitiesCompleted }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Achievement Progress -->
-        <div class="section-card" *ngIf="detailedProgress.achievementProgress">
-          <h2>🏆 Achievement Progress</h2>
-          <div class="achievement-content">
-            <div class="achievement-overview">
-              <div class="badge-progress">
-                <div class="badge-circle">
-                  <span class="badge-count">{{ detailedProgress.achievementProgress.badgesEarned }}/{{ detailedProgress.achievementProgress.totalBadges }}</span>
-                  <span class="badge-label">Badges Earned</span>
-                </div>
-                <div class="progress-arc">
-                  <div class="arc-fill" [style.transform]="'rotate(' + (detailedProgress.achievementProgress.badgeProgress * 1.8) + 'deg)'"></div>
-                </div>
-              </div>
-
-              <div class="next-badge" *ngIf="detailedProgress.achievementProgress.nextBadgeTarget">
-                <h4>🎯 Next Target</h4>
-                <div class="target-badge">
-                  <h5>{{ detailedProgress.achievementProgress.nextBadgeTarget.name }}</h5>
-                  <p>{{ detailedProgress.achievementProgress.nextBadgeTarget.description }}</p>
-                  <div class="target-progress">
-                    <div class="target-bar">
-                      <div class="target-fill" [style.width.%]="detailedProgress.achievementProgress.nextBadgeTarget.progress"></div>
-                    </div>
-                    <span>{{ detailedProgress.achievementProgress.nextBadgeTarget.progress }}% complete</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activity Timeline -->
-        <div class="section-card">
-          <h2>📅 Activity Timeline (Last 30 Days)</h2>
-          <div class="timeline-container">
-            <div class="timeline-chart">
-              <div class="timeline-day" *ngFor="let day of getRecentTimeline()"
-                   [class.active]="day.activitiesCompleted > 0"
-                   [title]="getTimelineTooltip(day)">
-                <div class="day-bar" [style.height.%]="getTimelineBarHeight(day.activitiesCompleted)"></div>
-                <span class="day-label">{{ getDayLabel(day.date) }}</span>
-              </div>
-            </div>
-            <div class="timeline-legend">
-              <span>Less active</span>
-              <div class="legend-squares">
-                <div class="legend-square low"></div>
-                <div class="legend-square medium"></div>
-                <div class="legend-square high"></div>
-                <div class="legend-square highest"></div>
-              </div>
-              <span>More active</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="!isLoading && !detailedProgress">
-        <div class="empty-icon">📊</div>
-        <h3>No Progress Data Available</h3>
-        <p>Start completing activities to see your detailed progress analytics!</p>
-        <button (click)="loadProgress()" class="retry-btn">Retry Loading</button>
       </div>
     </div>
-  
+  </nav>
+
+  <!-- Main Content -->
+  <main class="progress-content">
+    <!-- Header Section -->
+    <section class="header-section">
+      <div class="header-card">
+        <div class="header-content">
+          <h2>Advanced Progress Analytics</h2>
+          <p>Comprehensive insights into your learning journey</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading your progress analytics...</p>
+    </div>
+
+    <!-- Progress Content -->
+    <ng-container *ngIf="!isLoading && detailedProgress">
+      <!-- Overview Cards -->
+      <div class="overview-grid">
+        <div class="overview-card primary">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="card-content">
+            <h3>{{ detailedProgress.student.totalPoints }}</h3>
+            <p>Total Points</p>
+            <small>Level {{ detailedProgress.student.currentLevel }}</small>
+          </div>
+        </div>
+
+        <div class="overview-card success">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="card-content">
+            <h3>{{ detailedProgress.completedActivities }}/{{ detailedProgress.totalActivities }}</h3>
+            <p>Activities Completed</p>
+            <small>{{ getCompletionPercentage() }}% completion rate</small>
+          </div>
+        </div>
+
+        <div class="overview-card warning">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="card-content">
+            <h3>{{ detailedProgress.student.streakDays }}</h3>
+            <p>Day Streak</p>
+            <small>{{ detailedProgress.learningAnalytics.consistencyScore }}% consistency</small>
+          </div>
+        </div>
+
+        <div class="overview-card info">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="card-content">
+            <h3>{{ formatTimeFromSeconds(detailedProgress.totalTimeSpent) }}</h3>
+            <p>Total Practice Time</p>
+            <small>Avg: {{ detailedProgress.learningAnalytics.averageSessionTime }}min/session</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Progress Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
+              <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
+              <path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z" />
+            </svg>
+          </div>
+          <h2>Skill Mastery Analysis</h2>
+        </div>
+
+        <div class="skills-grid">
+          <div class="skill-card" *ngFor="let skill of detailedProgress.skillProgress">
+            <div class="skill-header">
+              <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                </svg>
+                {{ skill.skillArea | titlecase }}
+              </h3>
+              <span class="skill-level">Level {{ skill.currentLevel }}</span>
+            </div>
+
+            <div class="progress-ring-container">
+              <div class="progress-ring">
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path class="circle" [attr.stroke-dasharray]="skill.progressPercentage + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <text x="18" y="20.35" class="percentage">{{ skill.progressPercentage }}%</text>
+                </svg>
+              </div>
+            </div>
+
+            <div class="skill-metrics">
+              <div class="metric">
+                <span class="metric-value">{{ skill.activitiesCompleted }}/{{ skill.totalActivitiesAvailable }}</span>
+                <span class="metric-label">Activities</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">{{ skill.averageScore }}%</span>
+                <span class="metric-label">Avg Score</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">{{ skill.totalPracticeTime }}m</span>
+                <span class="metric-label">Practice</span>
+              </div>
+            </div>
+
+            <div class="skill-improvement" *ngIf="skill.recentImprovement !== 0">
+              <span class="improvement-badge" [class.positive]="skill.recentImprovement > 0" [class.negative]="skill.recentImprovement < 0">
+                {{ skill.recentImprovement > 0 ? '+' : '' }}{{ skill.recentImprovement }}% recent change
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learning Analytics -->
+      <div class="analytics-grid">
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 .75a8.25 8.25 0 00-4.135 15.39c.686.398 1.115 1.008 1.134 1.623a.75.75 0 00.577.706c.352.083.71.148 1.074.195.323.041.6-.218.6-.544v-4.661a6.714 6.714 0 01-.937-.171.75.75 0 11.374-1.453 5.261 5.261 0 002.626 0 .75.75 0 11.374 1.452 6.712 6.712 0 01-.937.172v4.66c0 .327.277.586.6.545.364-.047.722-.112 1.074-.195a.75.75 0 00.577-.706c.02-.615.448-1.225 1.134-1.623A8.25 8.25 0 0012 .75z" />
+                <path fill-rule="evenodd" d="M9.013 19.9a.75.75 0 01.877-.597 11.319 11.319 0 004.22 0 .75.75 0 11.28 1.473 12.819 12.819 0 01-4.78 0 .75.75 0 01-.597-.876zM9.754 22.344a.75.75 0 01.824-.668 13.682 13.682 0 002.844 0 .75.75 0 11.156 1.492 15.156 15.156 0 01-3.156 0 .75.75 0 01-.668-.824z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h2>Learning Intelligence</h2>
+          </div>
+
+          <div class="analytics-content">
+            <div class="insight-item">
+              <div class="insight-icon strength">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="insight-text">
+                <h4>Strongest Skill</h4>
+                <p>{{ detailedProgress.learningAnalytics.strongestSkill | titlecase }}</p>
+              </div>
+            </div>
+
+            <div class="insight-item">
+              <div class="insight-icon focus">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="insight-text">
+                <h4>Focus Area</h4>
+                <p>{{ detailedProgress.learningAnalytics.improvementArea | titlecase }}</p>
+              </div>
+            </div>
+
+            <div class="insight-item">
+              <div class="insight-icon velocity">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="insight-text">
+                <h4>Learning Velocity</h4>
+                <p>{{ detailedProgress.learningAnalytics.learningVelocity }} activities/week</p>
+              </div>
+            </div>
+
+            <div class="insight-item">
+              <div class="insight-icon next">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.97 3.97a.75.75 0 011.06 0l7.5 7.5a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 11-1.06-1.06l6.22-6.22H3a.75.75 0 010-1.5h16.19l-6.22-6.22a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="insight-text">
+                <h4>Next Level Progress</h4>
+                <p>{{ detailedProgress.learningAnalytics.activitiesNeededForNextLevel }} activities needed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h2>Performance Trends</h2>
+          </div>
+
+          <div class="trends-content">
+            <div class="trend-indicator">
+              <div class="trend-icon" [ngClass]="getTrendClass(detailedProgress.performanceTrends.improvementTrend)">
+                <svg *ngIf="detailedProgress.performanceTrends.improvementTrend === 'improving'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12 2.25a.75.75 0 01.75.75v16.19l6.22-6.22a.75.75 0 111.06 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 111.06-1.06l6.22 6.22V3a.75.75 0 01.75-.75z" clip-rule="evenodd" transform="rotate(180 12 12)" />
+                </svg>
+                <svg *ngIf="detailedProgress.performanceTrends.improvementTrend === 'declining'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12 2.25a.75.75 0 01.75.75v16.19l6.22-6.22a.75.75 0 111.06 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 111.06-1.06l6.22 6.22V3a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+                </svg>
+                <svg *ngIf="detailedProgress.performanceTrends.improvementTrend === 'stable'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.75 12a.75.75 0 01.75-.75h15a.75.75 0 010 1.5h-15a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="trend-text">
+                <h4>Performance Trend</h4>
+                <p>{{ detailedProgress.performanceTrends.improvementTrend | titlecase }}</p>
+              </div>
+            </div>
+
+            <div class="consistency-meter">
+              <h4>Performance Consistency</h4>
+              <div class="meter-container">
+                <div class="meter-bar">
+                  <div class="meter-fill" [style.width.%]="detailedProgress.performanceTrends.performanceConsistency"></div>
+                </div>
+                <span class="meter-value">{{ detailedProgress.performanceTrends.performanceConsistency }}%</span>
+              </div>
+            </div>
+
+            <div class="weekly-summary">
+              <h4>Weekly Activity Trends</h4>
+              <div class="weeks-chart">
+                <div class="week-bar" *ngFor="let week of getRecentWeeks()">
+                  <div class="bar" [style.height.%]="getWeekBarHeight(week.activitiesCompleted)"></div>
+                  <span class="week-label">{{ week.week }}</span>
+                  <span class="week-value">{{ week.activitiesCompleted }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievement Progress -->
+      <div class="section-card" *ngIf="detailedProgress.achievementProgress">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2>Achievement Progress</h2>
+        </div>
+
+        <div class="achievement-content">
+          <div class="badge-progress">
+            <div class="badge-circle">
+              <span class="badge-count">{{ detailedProgress.achievementProgress.badgesEarned }}/{{ detailedProgress.achievementProgress.totalBadges }}</span>
+              <span class="badge-label">Badges Earned</span>
+            </div>
+            <div class="progress-arc">
+              <div class="arc-fill" [style.transform]="'rotate(' + (detailedProgress.achievementProgress.badgeProgress * 1.8) + 'deg)'"></div>
+            </div>
+          </div>
+
+          <div class="next-badge" *ngIf="detailedProgress.achievementProgress.nextBadgeTarget">
+            <h4>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
+              </svg>
+              Next Target
+            </h4>
+            <div class="target-badge">
+              <h5>{{ detailedProgress.achievementProgress.nextBadgeTarget.name }}</h5>
+              <p>{{ detailedProgress.achievementProgress.nextBadgeTarget.description }}</p>
+              <div class="target-progress">
+                <div class="target-bar">
+                  <div class="target-fill" [style.width.%]="detailedProgress.achievementProgress.nextBadgeTarget.progress"></div>
+                </div>
+                <span>{{ detailedProgress.achievementProgress.nextBadgeTarget.progress }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Timeline -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2>Activity Timeline (Last 14 Days)</h2>
+        </div>
+
+        <div class="timeline-container">
+          <div class="timeline-chart">
+            <div class="timeline-day" *ngFor="let day of getRecentTimeline()"
+                 [class.active]="day.activitiesCompleted > 0"
+                 [title]="getTimelineTooltip(day)">
+              <div class="day-bar" [style.height.%]="getTimelineBarHeight(day.activitiesCompleted)"></div>
+              <span class="day-label">{{ getDayLabel(day.date) }}</span>
+            </div>
+          </div>
+          <div class="timeline-legend">
+            <span>Less active</span>
+            <div class="legend-squares">
+              <div class="legend-square low"></div>
+              <div class="legend-square medium"></div>
+              <div class="legend-square high"></div>
+              <div class="legend-square highest"></div>
+            </div>
+            <span>More active</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && !detailedProgress">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+        </svg>
+      </div>
+      <h3>No Progress Data Available</h3>
+      <p>Start completing activities to see your detailed progress analytics!</p>
+      <button (click)="loadProgress()" class="retry-btn">Retry Loading</button>
+    </div>
+  </main>
+</div>

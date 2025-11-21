@@ -1,115 +1,209 @@
-
-    <div class="container">
-      <div class="header">
-        <button (click)="goBack()" class="back-btn">← Back</button>
-        <h1>Register New Student</h1>
-      </div>
-
-      <div *ngIf="!registrationComplete" class="form-container">
-        <form (ngSubmit)="onSubmit()">
-          <div class="form-section">
-            <h3>Student Information</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label>First Name *</label>
-                <input type="text" [(ngModel)]="formData.studentFirstName" name="studentFirstName" required />
-              </div>
-              <div class="form-group">
-                <label>Last Name *</label>
-                <input type="text" [(ngModel)]="formData.studentLastName" name="studentLastName" required />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Age *</label>
-                <input type="number" [(ngModel)]="formData.age" name="age" min="6" max="18" required />
-              </div>
-              <div class="form-group">
-                <label>Grade *</label>
-                <input type="number" [(ngModel)]="formData.grade" name="grade" min="4" max="12" required />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>School Name</label>
-                <input type="text" [(ngModel)]="formData.schoolName" name="schoolName" />
-              </div>
-              <div class="form-group">
-                <label>Class Name</label>
-                <input type="text" [(ngModel)]="formData.className" name="className" />
-              </div>
-            </div>
+<div class="register-student-page">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-left">
+        <button (click)="goBack()" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+          </svg>
+          Back
+        </button>
+        <div class="page-title">
+          <div class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
+            </svg>
           </div>
-
-          <div class="form-section">
-            <h3>Parent Information</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label>First Name *</label>
-                <input type="text" [(ngModel)]="formData.parentFirstName" name="parentFirstName" required />
-              </div>
-              <div class="form-group">
-                <label>Last Name *</label>
-                <input type="text" [(ngModel)]="formData.parentLastName" name="parentLastName" required />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Phone Number</label>
-                <input type="tel" [(ngModel)]="formData.parentPhoneNumber" name="parentPhoneNumber" />
-              </div>
-              <div class="form-group">
-                <label>Occupation</label>
-                <input type="text" [(ngModel)]="formData.parentOccupation" name="parentOccupation" />
-              </div>
-            </div>
-          </div>
-
-          <button type="submit" [disabled]="isSubmitting" class="submit-btn">
-            {{ isSubmitting ? 'Creating...' : 'Register Student' }}
-          </button>
-        </form>
-      </div>
-
-      <div *ngIf="registrationComplete && credentials" class="credentials-container">
-        <h2>✅ Registration Successful!</h2>
-        <p class="success-message">{{ credentials.message }}</p>
-
-        <div class="credentials-section">
-          <h3>Student Credentials</h3>
-          <div class="credential-card">
-            <div class="credential-info">
-              <p><strong>Name:</strong> {{ credentials.student.firstName }} {{ credentials.student.lastName }}</p>
-              <p><strong>Username:</strong> {{ credentials.student.username }}</p>
-              <p><strong>Password:</strong> {{ credentials.student.password }}</p>
-            </div>
-            <div class="qr-code">
-              <img [src]="credentials.student.qrCode" alt="Student QR Code" />
-              <p>Student QR Code</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="credentials-section">
-          <h3>Parent Credentials</h3>
-          <div class="credential-card">
-            <div class="credential-info">
-              <p><strong>Name:</strong> {{ credentials.parent.firstName }} {{ credentials.parent.lastName }}</p>
-              <p><strong>Username:</strong> {{ credentials.parent.username }}</p>
-              <p><strong>Password:</strong> {{ credentials.parent.password }}</p>
-            </div>
-            <div class="qr-code">
-              <img [src]="credentials.parent.qrCode" alt="Parent QR Code" />
-              <p>Parent QR Code</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button (click)="printCredentials()" class="action-btn">🖨️ Print Credentials</button>
-          <button (click)="registerAnother()" class="action-btn">➕ Register Another</button>
-          <button (click)="goBack()" class="action-btn">✅ Done</button>
+          <h1>Register New Student</h1>
         </div>
       </div>
     </div>
-  
+  </nav>
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <!-- Registration Form -->
+    <div *ngIf="!registrationComplete" class="form-container">
+      <form (ngSubmit)="onSubmit()">
+        <!-- Student Information Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <div class="section-icon student">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h3>Student Information</h3>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name *</label>
+              <input type="text" [(ngModel)]="formData.studentFirstName" name="studentFirstName" required placeholder="Enter first name" />
+            </div>
+            <div class="form-group">
+              <label>Last Name *</label>
+              <input type="text" [(ngModel)]="formData.studentLastName" name="studentLastName" required placeholder="Enter last name" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Age *</label>
+              <input type="number" [(ngModel)]="formData.age" name="age" min="6" max="18" required />
+            </div>
+            <div class="form-group">
+              <label>Grade *</label>
+              <input type="number" [(ngModel)]="formData.grade" name="grade" min="4" max="12" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>School Name</label>
+              <input type="text" [(ngModel)]="formData.schoolName" name="schoolName" placeholder="Enter school name" />
+            </div>
+            <div class="form-group">
+              <label>Class Name</label>
+              <input type="text" [(ngModel)]="formData.className" name="className" placeholder="Enter class name" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Parent Information Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <div class="section-icon parent">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h3>Parent Information</h3>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name *</label>
+              <input type="text" [(ngModel)]="formData.parentFirstName" name="parentFirstName" required placeholder="Enter first name" />
+            </div>
+            <div class="form-group">
+              <label>Last Name *</label>
+              <input type="text" [(ngModel)]="formData.parentLastName" name="parentLastName" required placeholder="Enter last name" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" [(ngModel)]="formData.parentPhoneNumber" name="parentPhoneNumber" placeholder="Enter phone number" />
+            </div>
+            <div class="form-group">
+              <label>Occupation</label>
+              <input type="text" [(ngModel)]="formData.parentOccupation" name="parentOccupation" placeholder="Enter occupation" />
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="isSubmitting" class="submit-btn">
+          <svg *ngIf="!isSubmitting" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
+          </svg>
+          {{ isSubmitting ? 'Creating...' : 'Register Student' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Credentials Display -->
+    <div *ngIf="registrationComplete && credentials" class="credentials-container">
+      <div class="success-header">
+        <div class="success-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h2>Registration Successful!</h2>
+        <p>{{ credentials.message }}</p>
+      </div>
+
+      <!-- Student Credentials -->
+      <div class="credentials-section">
+        <h3>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+          </svg>
+          Student Credentials
+        </h3>
+        <div class="credential-card">
+          <div class="credential-info">
+            <div class="credential-row">
+              <span class="credential-label">Name:</span>
+              <span class="credential-value">{{ credentials.student.firstName }} {{ credentials.student.lastName }}</span>
+            </div>
+            <div class="credential-row">
+              <span class="credential-label">Username:</span>
+              <span class="credential-value">{{ credentials.student.username }}</span>
+            </div>
+            <div class="credential-row">
+              <span class="credential-label">Password:</span>
+              <span class="credential-value">{{ credentials.student.password }}</span>
+            </div>
+          </div>
+          <div class="qr-code">
+            <img [src]="credentials.student.qrCode" alt="Student QR Code" />
+            <p>Student QR Code</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parent Credentials -->
+      <div class="credentials-section">
+        <h3>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
+          </svg>
+          Parent Credentials
+        </h3>
+        <div class="credential-card">
+          <div class="credential-info">
+            <div class="credential-row">
+              <span class="credential-label">Name:</span>
+              <span class="credential-value">{{ credentials.parent.firstName }} {{ credentials.parent.lastName }}</span>
+            </div>
+            <div class="credential-row">
+              <span class="credential-label">Username:</span>
+              <span class="credential-value">{{ credentials.parent.username }}</span>
+            </div>
+            <div class="credential-row">
+              <span class="credential-label">Password:</span>
+              <span class="credential-value">{{ credentials.parent.password }}</span>
+            </div>
+          </div>
+          <div class="qr-code">
+            <img [src]="credentials.parent.qrCode" alt="Parent QR Code" />
+            <p>Parent QR Code</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button (click)="printCredentials()" class="action-btn secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 003 3h.27l-.155 1.705A1.875 1.875 0 007.232 22.5h9.536a1.875 1.875 0 001.867-2.045l-.155-1.705h.27a3 3 0 003-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0018 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25zM16.5 6.205v-2.83A.375.375 0 0016.125 3h-8.25a.375.375 0 00-.375.375v2.83a49.353 49.353 0 019 0zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 01-.374.409H7.232a.375.375 0 01-.374-.409l.526-5.784a.373.373 0 01.333-.337 41.741 41.741 0 018.566 0zm.967-3.97a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H18a.75.75 0 01-.75-.75V10.5z" clip-rule="evenodd" />
+          </svg>
+          Print Credentials
+        </button>
+        <button (click)="registerAnother()" class="action-btn secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+          </svg>
+          Register Another
+        </button>
+        <button (click)="goBack()" class="action-btn primary">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+          </svg>
+          Done
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

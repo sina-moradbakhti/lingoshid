@@ -1,124 +1,275 @@
+<div class="students-list-page">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-left">
+        <button (click)="goBack()" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+          </svg>
+          Back
+        </button>
 
-    <div class="container">
-      <div class="header">
-        <button (click)="goBack()" class="back-btn">← Back</button>
-        <h1>My Students</h1>
-      </div>
-
-      <div class="search-section">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="filterStudents()"
-          placeholder="Search students..."
-          class="search-input"
-        />
-      </div>
-
-      <div *ngIf="isLoading" class="loading">Loading students...</div>
-
-      <div *ngIf="!isLoading && filteredStudents.length > 0" class="students-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Username</th>
-              <th>Grade</th>
-              <th>Points</th>
-              <th>Level</th>
-              <th>Parent</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let student of filteredStudents">
-              <td>{{ student.firstName }} {{ student.lastName }}</td>
-              <td>{{ student.username }}</td>
-              <td>{{ student.grade }}</td>
-              <td>{{ student.totalPoints }}</td>
-              <td>{{ student.currentLevel }}</td>
-              <td>
-                <div *ngIf="student.parent">
-                  {{ student.parent.firstName }} {{ student.parent.lastName }}
-                  <br>
-                  <small>{{ student.parent.username }}</small>
-                </div>
-              </td>
-              <td>
-                <button (click)="viewProgress(student.id)" class="action-btn view">View Progress</button>
-                <button (click)="editStudent(student)" class="action-btn edit">Edit</button>
-                <button (click)="resetCredentials(student.id, 'student')" class="action-btn reset">Reset Student Cred</button>
-                <button (click)="resetCredentials(student.id, 'parent')" class="action-btn reset">Reset Parent Cred</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div *ngIf="!isLoading && filteredStudents.length === 0" class="empty-state">
-        <p>No students found</p>
-      </div>
-
-      <!-- Edit Student Modal -->
-      <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-          <h2>Edit Student</h2>
-          <form (ngSubmit)="saveStudentEdit()">
-            <div class="form-group">
-              <label>First Name</label>
-              <input type="text" [(ngModel)]="editingStudent.firstName" name="firstName" required />
-            </div>
-            <div class="form-group">
-              <label>Last Name</label>
-              <input type="text" [(ngModel)]="editingStudent.lastName" name="lastName" required />
-            </div>
-            <div class="form-group">
-              <label>Grade</label>
-              <input type="number" [(ngModel)]="editingStudent.grade" name="grade" min="4" max="12" required />
-            </div>
-            <div class="form-group">
-              <label>Age</label>
-              <input type="number" [(ngModel)]="editingStudent.age" name="age" min="6" max="18" required />
-            </div>
-            <div class="form-group">
-              <label>School Name</label>
-              <input type="text" [(ngModel)]="editingStudent.schoolName" name="schoolName" />
-            </div>
-            <div class="form-group">
-              <label>Class Name</label>
-              <input type="text" [(ngModel)]="editingStudent.className" name="className" />
-            </div>
-            <div class="modal-actions">
-              <button type="submit" class="btn-save">Save Changes</button>
-              <button type="button" (click)="closeEditModal()" class="btn-cancel">Cancel</button>
-            </div>
-          </form>
+        <div class="page-title">
+          <div class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
+            </svg>
+          </div>
+          <h1>My Students</h1>
         </div>
       </div>
 
-      <!-- Credentials Modal -->
-      <div *ngIf="showCredentialsModal" class="modal-overlay" (click)="closeCredentialsModal()">
-        <div class="credentials-modal-content" (click)="$event.stopPropagation()">
-          <h2>✅ {{ credentialsData?.message }}</h2>
-          <p class="success-message">New credentials have been generated. Please save or print them.</p>
-
-          <div class="credential-display">
-            <div class="credential-info">
-              <p><strong>Name:</strong> {{ credentialsData?.firstName }} {{ credentialsData?.lastName }}</p>
-              <p><strong>Username:</strong> <span class="highlight">{{ credentialsData?.username }}</span></p>
-              <p><strong>Password:</strong> <span class="highlight">{{ credentialsData?.password }}</span></p>
-            </div>
-            <div class="qr-code-section">
-              <img [src]="credentialsData?.qrCode" alt="QR Code" class="qr-image" />
-              <p class="qr-label">Scan to save credentials</p>
-            </div>
-          </div>
-
-          <div class="modal-actions">
-            <button (click)="printCredentials()" class="btn-print">🖨️ Print</button>
-            <button (click)="closeCredentialsModal()" class="btn-done">✅ Done</button>
-          </div>
+      <div class="navbar-right">
+        <div class="student-count">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+          </svg>
+          {{ filteredStudents.length }} Students
         </div>
       </div>
     </div>
-  
+  </nav>
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-card">
+        <div class="search-input-wrapper">
+          <span class="search-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+            </svg>
+          </span>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="filterStudents()"
+            placeholder="Search by name, username, or grade..."
+            class="search-input"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading students...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && filteredStudents.length === 0">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <h3>No Students Found</h3>
+      <p>Try adjusting your search or register new students.</p>
+    </div>
+
+    <!-- Students Table -->
+    <section class="students-table-section" *ngIf="!isLoading && filteredStudents.length > 0">
+      <div class="table-card">
+        <div class="table-wrapper">
+          <table class="students-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Username</th>
+                <th>Grade</th>
+                <th>Points</th>
+                <th>Level</th>
+                <th>Parent</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let student of filteredStudents">
+                <!-- Student Name -->
+                <td data-label="Student">
+                  <div class="student-info">
+                    <div class="student-avatar">
+                      {{ student.firstName?.charAt(0) }}{{ student.lastName?.charAt(0) }}
+                    </div>
+                    <span class="student-name">{{ student.firstName }} {{ student.lastName }}</span>
+                  </div>
+                </td>
+
+                <!-- Username -->
+                <td data-label="Username" class="username-cell">
+                  {{ student.username }}
+                </td>
+
+                <!-- Grade -->
+                <td data-label="Grade">
+                  <span class="grade-badge">Grade {{ student.grade }}</span>
+                </td>
+
+                <!-- Points -->
+                <td data-label="Points">
+                  <div class="points-cell">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                    </svg>
+                    {{ student.totalPoints }}
+                  </div>
+                </td>
+
+                <!-- Level -->
+                <td data-label="Level">
+                  <span class="level-badge">Lv. {{ student.currentLevel }}</span>
+                </td>
+
+                <!-- Parent -->
+                <td data-label="Parent">
+                  <div class="parent-info" *ngIf="student.parent">
+                    <div class="parent-name">{{ student.parent.firstName }} {{ student.parent.lastName }}</div>
+                    <div class="parent-username">{{ student.parent.username }}</div>
+                  </div>
+                  <span class="no-parent" *ngIf="!student.parent">No parent linked</span>
+                </td>
+
+                <!-- Actions -->
+                <td data-label="Actions">
+                  <div class="actions-cell">
+                    <button (click)="viewProgress(student.id)" class="action-btn view">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+                      </svg>
+                      Progress
+                    </button>
+                    <button (click)="editStudent(student)" class="action-btn edit">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                      </svg>
+                      Edit
+                    </button>
+                    <button (click)="resetCredentials(student.id, 'student')" class="action-btn reset">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M15.75 1.5a6.75 6.75 0 00-6.651 7.906c.067.39-.032.717-.221.906l-6.5 6.499a3 3 0 00-.878 2.121v2.818c0 .414.336.75.75.75H6a.75.75 0 00.75-.75v-1.5h1.5A.75.75 0 009 19.5V18h1.5a.75.75 0 00.53-.22l2.658-2.658c.19-.189.517-.288.906-.22A6.75 6.75 0 1015.75 1.5zm0 3a.75.75 0 000 1.5A2.25 2.25 0 0118 8.25a.75.75 0 001.5 0 3.75 3.75 0 00-3.75-3.75z" clip-rule="evenodd" />
+                      </svg>
+                      Reset Student
+                    </button>
+                    <button (click)="resetCredentials(student.id, 'parent')" class="action-btn reset">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M15.75 1.5a6.75 6.75 0 00-6.651 7.906c.067.39-.032.717-.221.906l-6.5 6.499a3 3 0 00-.878 2.121v2.818c0 .414.336.75.75.75H6a.75.75 0 00.75-.75v-1.5h1.5A.75.75 0 009 19.5V18h1.5a.75.75 0 00.53-.22l2.658-2.658c.19-.189.517-.288.906-.22A6.75 6.75 0 1015.75 1.5zm0 3a.75.75 0 000 1.5A2.25 2.25 0 0118 8.25a.75.75 0 001.5 0 3.75 3.75 0 00-3.75-3.75z" clip-rule="evenodd" />
+                      </svg>
+                      Reset Parent
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Edit Student Modal -->
+  <div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+          </svg>
+        </div>
+        <h2>Edit Student</h2>
+      </div>
+
+      <form (ngSubmit)="saveStudentEdit()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" [(ngModel)]="editingStudent.firstName" name="firstName" required />
+          </div>
+
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" [(ngModel)]="editingStudent.lastName" name="lastName" required />
+          </div>
+
+          <div class="form-group">
+            <label>Grade</label>
+            <input type="number" [(ngModel)]="editingStudent.grade" name="grade" min="4" max="12" required />
+          </div>
+
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" [(ngModel)]="editingStudent.age" name="age" min="6" max="18" required />
+          </div>
+
+          <div class="form-group">
+            <label>School Name</label>
+            <input type="text" [(ngModel)]="editingStudent.schoolName" name="schoolName" />
+          </div>
+
+          <div class="form-group">
+            <label>Class Name</label>
+            <input type="text" [(ngModel)]="editingStudent.className" name="className" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="closeEditModal()" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-save">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Credentials Modal -->
+  <div class="modal-overlay" *ngIf="showCredentialsModal" (click)="closeCredentialsModal()">
+    <div class="modal-content credentials-modal" (click)="$event.stopPropagation()">
+      <div class="success-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+        </svg>
+      </div>
+
+      <h2>{{ credentialsData?.message }}</h2>
+      <p class="success-message">New credentials have been generated. Please save or print them.</p>
+
+      <div class="credential-display">
+        <div class="credential-info">
+          <div class="credential-item">
+            <span class="credential-label">Name</span>
+            <span class="credential-value">{{ credentialsData?.firstName }} {{ credentialsData?.lastName }}</span>
+          </div>
+          <div class="credential-item">
+            <span class="credential-label">Username</span>
+            <span class="credential-value highlight">{{ credentialsData?.username }}</span>
+          </div>
+          <div class="credential-item">
+            <span class="credential-label">Password</span>
+            <span class="credential-value highlight">{{ credentialsData?.password }}</span>
+          </div>
+        </div>
+
+        <div class="qr-code-section">
+          <img [src]="credentialsData?.qrCode" alt="QR Code" class="qr-image" />
+          <p class="qr-label">Scan to save credentials</p>
+        </div>
+      </div>
+
+      <div class="credentials-actions">
+        <button (click)="printCredentials()" class="btn-print">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 003 3h.27l-.155 1.705A1.875 1.875 0 007.232 22.5h9.536a1.875 1.875 0 001.867-2.045l-.155-1.705h.27a3 3 0 003-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0018 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25zM16.5 6.205v-2.83A.375.375 0 0016.125 3h-8.25a.375.375 0 00-.375.375v2.83a49.353 49.353 0 019 0zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 01-.374.409H7.232a.375.375 0 01-.374-.409l.526-5.784a.373.373 0 01.333-.337 41.741 41.741 0 018.566 0zm.967-3.97a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H18a.75.75 0 01-.75-.75V10.5z" clip-rule="evenodd" />
+          </svg>
+          Print
+        </button>
+        <button (click)="closeCredentialsModal()" class="btn-done">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
+          </svg>
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

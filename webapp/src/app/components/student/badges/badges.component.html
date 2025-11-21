@@ -1,43 +1,108 @@
+<div class="badges-page">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-left">
+        <button (click)="goBack()" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+          </svg>
+          Back
+        </button>
+        <div class="page-title">
+          <div class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h1>My Badges</h1>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-    <div class="badges-container">
-      <div class="header">
-        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
-        <h1>🏅 My Badges</h1>
-        <p>Collect badges by completing activities and reaching milestones!</p>
+  <!-- Main Content -->
+  <main class="badges-content">
+    <!-- Header Section -->
+    <section class="header-section">
+      <div class="header-card">
+        <div class="header-content">
+          <div class="header-text">
+            <h2>Badge Collection</h2>
+            <p>Collect badges by completing activities and reaching milestones!</p>
+          </div>
+          <div class="header-stats" *ngIf="!isLoading && badges.length > 0">
+            <div class="stat-item">
+              <div class="stat-value">{{ studentBadges.length }}</div>
+              <div class="stat-label">Earned</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ badges.length }}</div>
+              <div class="stat-label">Total</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Badges Section -->
+    <section class="badges-section" *ngIf="!isLoading && badges.length > 0">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h2>All Badges</h2>
       </div>
 
-      <!-- Loading State -->
-      <div class="loading" *ngIf="isLoading">
-        <div class="spinner">🎮</div>
-        <p>Loading your badges...</p>
-      </div>
-
-      <!-- Badges Grid -->
-      <div class="badges-grid" *ngIf="!isLoading && badges.length > 0">
+      <div class="badges-grid">
         <div class="badge-card"
              *ngFor="let badge of badges"
              [class.earned]="isBadgeEarned(badge)"
              [class.locked]="!isBadgeEarned(badge)">
-          <div class="badge-icon">{{ badge.icon || '🏅' }}</div>
+          <div class="badge-icon-wrapper">
+            <span class="badge-icon">{{ badge.icon || '🏅' }}</span>
+          </div>
           <h3>{{ badge.name }}</h3>
           <p>{{ badge.description }}</p>
           <div class="badge-status"
                [class.earned]="isBadgeEarned(badge)"
                [class.locked]="!isBadgeEarned(badge)">
-            {{ isBadgeEarned(badge) ? 'Earned!' : 'Locked' }}
+            <svg *ngIf="isBadgeEarned(badge)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+            </svg>
+            <svg *ngIf="!isBadgeEarned(badge)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd" />
+            </svg>
+            {{ isBadgeEarned(badge) ? 'Earned' : 'Locked' }}
           </div>
           <div class="earned-date" *ngIf="isBadgeEarned(badge) && getBadgeEarnedDate(badge)">
-            Earned: {{ getBadgeEarnedDate(badge) | date:'short' }}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
+            </svg>
+            {{ getBadgeEarnedDate(badge) | date:'mediumDate' }}
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="!isLoading && badges.length === 0">
-        <div class="empty-icon">🏅</div>
-        <h3>No Badges Available</h3>
-        <p>Badges will be loaded soon. Check back later!</p>
-        <button (click)="loadBadges()" class="retry-btn">Retry Loading</button>
-      </div>
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading your badges...</p>
     </div>
-  
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && badges.length === 0">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <h3>No Badges Available</h3>
+      <p>Badges will be loaded soon. Check back later!</p>
+      <button (click)="loadBadges()" class="retry-btn">Retry Loading</button>
+    </div>
+  </main>
+</div>
