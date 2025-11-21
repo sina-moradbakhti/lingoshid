@@ -1,63 +1,161 @@
-
-    <div class="leaderboard-container">
-      <div class="header">
-        <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
-        <h1>🏆 Leaderboard</h1>
-        <p>See how you rank among your classmates!</p>
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading" *ngIf="isLoading">
-        <div class="spinner">🎮</div>
-        <p>Loading leaderboard...</p>
-      </div>
-
-      <!-- Leaderboard Content -->
-      <div class="leaderboard-card" *ngIf="!isLoading">
-        <!-- Podium for top 3 -->
-        <div class="podium" *ngIf="topEntries.length > 0">
-          <div class="rank-item"
-               *ngFor="let entry of topEntries; let i = index"
-               [class.gold]="i === 0"
-               [class.silver]="i === 1"
-               [class.bronze]="i === 2"
-               [class.current-user]="entry.isCurrentUser">
-            <div class="rank-number">{{ getRankEmoji(i + 1) }}</div>
-            <div class="student-info">
-              <h3>{{ entry.student.user.firstName }} {{ entry.student.user.lastName }}{{ entry.isCurrentUser ? ' (You)' : '' }}</h3>
-              <p>{{ entry.points }} points</p>
-              <small>Level {{ entry.student.currentLevel }}</small>
-            </div>
+<div class="leaderboard-page">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-left">
+        <button (click)="goBack()" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+          </svg>
+          Back
+        </button>
+        <div class="page-title">
+          <div class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clip-rule="evenodd" />
+            </svg>
           </div>
-        </div>
-
-        <!-- Full Leaderboard List -->
-        <div class="leaderboard-list" *ngIf="allEntries.length > 3">
-          <h3>Full Rankings</h3>
-          <div class="rank-list">
-            <div class="rank-entry"
-                 *ngFor="let entry of allEntries; let i = index"
-                 [class.current-user]="entry.isCurrentUser">
-              <span class="rank">#{{ entry.rank }}</span>
-              <span class="name">{{ entry.student.user.firstName }} {{ entry.student.user.lastName }}{{ entry.isCurrentUser ? ' (You)' : '' }}</span>
-              <span class="points">{{ entry.points }} pts</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="leaderboard-stats" *ngIf="leaderboardData">
-          <p>Total Students: {{ leaderboardData.totalStudents }}</p>
-          <p *ngIf="leaderboardData.currentUserRank">Your Rank: #{{ leaderboardData.currentUserRank }}</p>
-        </div>
-
-        <!-- Empty State -->
-        <div class="empty-state" *ngIf="allEntries.length === 0">
-          <div class="empty-icon">🏆</div>
-          <h3>No Leaderboard Data</h3>
-          <p>Start completing activities to see rankings!</p>
-          <button (click)="loadLeaderboard()" class="retry-btn">Retry Loading</button>
+          <h1>Leaderboard</h1>
         </div>
       </div>
     </div>
-  
+  </nav>
+
+  <!-- Main Content -->
+  <main class="leaderboard-content">
+    <!-- Header Section -->
+    <section class="header-section">
+      <div class="header-card">
+        <div class="header-content">
+          <div class="header-text">
+            <h2>Class Rankings</h2>
+            <p>See how you rank among your classmates and compete for the top spot!</p>
+          </div>
+          <div class="header-stats" *ngIf="!isLoading && leaderboardData">
+            <div class="stat-item">
+              <div class="stat-value">{{ leaderboardData.totalStudents }}</div>
+              <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-item" *ngIf="leaderboardData.currentUserRank">
+              <div class="stat-value">#{{ leaderboardData.currentUserRank }}</div>
+              <div class="stat-label">Your Rank</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading leaderboard...</p>
+    </div>
+
+    <!-- Leaderboard Content -->
+    <ng-container *ngIf="!isLoading">
+      <!-- Top 3 Podium -->
+      <section class="podium-section" *ngIf="topEntries.length > 0">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2>Top Performers</h2>
+        </div>
+
+        <div class="podium">
+          <!-- First Place -->
+          <div class="podium-item" *ngIf="topEntries[0]">
+            <div class="podium-avatar gold">
+              {{ topEntries[0].student.user.firstName.charAt(0) }}{{ topEntries[0].student.user.lastName.charAt(0) }}
+              <span class="rank-badge gold">1</span>
+            </div>
+            <div class="podium-card gold" [class.current-user]="topEntries[0].isCurrentUser">
+              <p class="podium-name">{{ topEntries[0].student.user.firstName }} {{ topEntries[0].student.user.lastName }}</p>
+              <p class="podium-points gold">{{ topEntries[0].points }} pts</p>
+              <p class="podium-level">Level {{ topEntries[0].student.currentLevel }}</p>
+              <span class="you-badge" *ngIf="topEntries[0].isCurrentUser">You</span>
+            </div>
+          </div>
+
+          <!-- Second Place -->
+          <div class="podium-item" *ngIf="topEntries[1]">
+            <div class="podium-avatar silver">
+              {{ topEntries[1].student.user.firstName.charAt(0) }}{{ topEntries[1].student.user.lastName.charAt(0) }}
+              <span class="rank-badge silver">2</span>
+            </div>
+            <div class="podium-card silver" [class.current-user]="topEntries[1].isCurrentUser">
+              <p class="podium-name">{{ topEntries[1].student.user.firstName }} {{ topEntries[1].student.user.lastName }}</p>
+              <p class="podium-points silver">{{ topEntries[1].points }} pts</p>
+              <p class="podium-level">Level {{ topEntries[1].student.currentLevel }}</p>
+              <span class="you-badge" *ngIf="topEntries[1].isCurrentUser">You</span>
+            </div>
+          </div>
+
+          <!-- Third Place -->
+          <div class="podium-item" *ngIf="topEntries[2]">
+            <div class="podium-avatar bronze">
+              {{ topEntries[2].student.user.firstName.charAt(0) }}{{ topEntries[2].student.user.lastName.charAt(0) }}
+              <span class="rank-badge bronze">3</span>
+            </div>
+            <div class="podium-card bronze" [class.current-user]="topEntries[2].isCurrentUser">
+              <p class="podium-name">{{ topEntries[2].student.user.firstName }} {{ topEntries[2].student.user.lastName }}</p>
+              <p class="podium-points bronze">{{ topEntries[2].points }} pts</p>
+              <p class="podium-level">Level {{ topEntries[2].student.currentLevel }}</p>
+              <span class="you-badge" *ngIf="topEntries[2].isCurrentUser">You</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Full Rankings List -->
+      <section class="rankings-section" *ngIf="allEntries.length > 3">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm4.5 7.5a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zm3.75-1.5a.75.75 0 00-1.5 0v4.5a.75.75 0 001.5 0V12zm2.25-3a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0V9.75A.75.75 0 0113.5 9zm3.75-1.5a.75.75 0 00-1.5 0v9a.75.75 0 001.5 0v-9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2>Full Rankings</h2>
+        </div>
+
+        <div class="rankings-list">
+          <div class="rank-entry"
+               *ngFor="let entry of allEntries"
+               [class.current-user]="entry.isCurrentUser">
+            <span class="rank-position" [class.top-3]="entry.rank <= 3">#{{ entry.rank }}</span>
+            <div class="rank-avatar">
+              {{ entry.student.user.firstName.charAt(0) }}{{ entry.student.user.lastName.charAt(0) }}
+            </div>
+            <div class="rank-info">
+              <p class="rank-name">
+                {{ entry.student.user.firstName }} {{ entry.student.user.lastName }}
+                <span class="you-indicator" *ngIf="entry.isCurrentUser">You</span>
+              </p>
+              <p class="rank-level">Level {{ entry.student.currentLevel }}</p>
+            </div>
+            <div class="rank-points">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+              </svg>
+              {{ entry.points }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="allEntries.length === 0">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h3>No Leaderboard Data</h3>
+        <p>Start completing activities to see rankings!</p>
+        <button (click)="loadLeaderboard()" class="retry-btn">Retry Loading</button>
+      </div>
+    </ng-container>
+  </main>
+</div>

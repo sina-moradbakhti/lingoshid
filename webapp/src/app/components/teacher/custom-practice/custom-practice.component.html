@@ -1,362 +1,414 @@
-    <div class="container">
-      <div class="header">
-        <button (click)="goBack()" class="back-btn">← Back</button>
-        <h1>Create Custom Practice</h1>
-      </div>
-
-      <div class="two-column-layout">
-        <!-- Left: Create Form -->
-        <div class="form-section">
-          <h2>New Practice</h2>
-          <form (ngSubmit)="createPractice()" class="practice-form">
-            <div class="form-group">
-              <label>Title *</label>
-              <input type="text" [(ngModel)]="newPractice.title" name="title" required placeholder="e.g., Describe Your Favorite Food" />
-            </div>
-
-            <div class="form-group">
-              <label>Description *</label>
-              <textarea [(ngModel)]="newPractice.description" name="description" required rows="3" placeholder="What will students do in this activity?"></textarea>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Activity Type *</label>
-                <select [(ngModel)]="newPractice.type" name="type" required (change)="onActivityTypeChange()">
-                  <option value="">Select type...</option>
-                  <option *ngFor="let type of activityTypes" [value]="type.value">{{ type.label }}</option>
-                </select>
-                <small *ngIf="newPractice.type" class="type-description">{{ getTypeDescription(newPractice.type) }}</small>
-              </div>
-
-              <div class="form-group">
-                <label>Difficulty *</label>
-                <select [(ngModel)]="newPractice.difficulty" name="difficulty" required>
-                  <option value="">Select...</option>
-                  <option *ngFor="let diff of difficultyLevels" [value]="diff.value">{{ diff.label }}</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Skill Area *</label>
-                <select [(ngModel)]="newPractice.skillArea" name="skillArea" required>
-                  <option value="">Select...</option>
-                  <option *ngFor="let skill of skillAreas" [value]="skill.value">{{ skill.label }}</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>Points Reward *</label>
-                <input type="number" [(ngModel)]="newPractice.pointsReward" name="pointsReward" required min="5" max="50" />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Min Level *</label>
-                <input type="number" [(ngModel)]="newPractice.minLevel" name="minLevel" required min="1" max="10" />
-              </div>
-
-              <div class="form-group">
-                <label>Max Level (Optional)</label>
-                <input type="number" [(ngModel)]="newPractice.maxLevel" name="maxLevel" min="1" max="10" />
-              </div>
-            </div>
-
-            <!-- Dynamic Content Fields Based on Activity Type -->
-            <div *ngIf="newPractice.type" class="content-section">
-              <h3>Activity Content</h3>
-
-              <!-- Pronunciation Challenge Content -->
-              <div *ngIf="newPractice.type === 'pronunciation_challenge'" class="content-fields">
-                <div class="form-group">
-                  <label>Instruction (Optional)</label>
-                  <textarea [(ngModel)]="content.pronunciation.instruction" name="pronInstruction" rows="2"
-                    placeholder="e.g., Listen carefully and repeat each word clearly"></textarea>
-                </div>
-
-                <div class="words-section">
-                  <label>Words to Practice *</label>
-                  <div *ngFor="let word of content.pronunciation.words; let i = index" class="word-item">
-                    <div class="word-header">
-                      <span class="word-number">Word {{i + 1}}</span>
-                      <button type="button" (click)="removePronunciationWord(i)" class="btn-remove">×</button>
-                    </div>
-                    <div class="word-fields">
-                      <input type="text" [(ngModel)]="word.word" [name]="'word_' + i" placeholder="Word" required />
-                      <input type="text" [(ngModel)]="word.phonetic" [name]="'phonetic_' + i" placeholder="Phonetic (e.g., /həˈloʊ/)" required />
-                      <input type="text" [(ngModel)]="word.audioUrl" [name]="'audioUrl_' + i" placeholder="Audio URL (optional)" />
-                    </div>
-                  </div>
-                  <button type="button" (click)="addPronunciationWord()" class="btn-add">+ Add Word</button>
-                </div>
-              </div>
-
-              <!-- Picture Description Content -->
-              <div *ngIf="newPractice.type === 'picture_description'" class="content-fields">
-                <div class="form-group">
-                  <label>Instruction (Optional)</label>
-                  <textarea [(ngModel)]="content.pictureDescription.instruction" name="picInstruction" rows="2"
-                    placeholder="e.g., Look at the picture and describe what you see"></textarea>
-                </div>
-
-                <div class="pictures-section">
-                  <label>Pictures *</label>
-                  <div *ngFor="let picture of content.pictureDescription.pictures; let i = index" class="picture-item">
-                    <div class="picture-header">
-                      <span class="picture-number">Picture {{i + 1}}</span>
-                      <button type="button" (click)="removePicture(i)" class="btn-remove">×</button>
-                    </div>
-                    <div class="picture-fields">
-                      <input type="text" [(ngModel)]="picture.imageUrl" [name]="'imageUrl_' + i" placeholder="Image URL" required />
-                      <textarea [(ngModel)]="picture.prompt" [name]="'prompt_' + i" rows="2" placeholder="Prompt" required></textarea>
-                      <input type="text" [(ngModel)]="picture.vocabularyHints" [name]="'vocab_' + i"
-                        placeholder="Vocabulary hints (comma-separated)" />
-                    </div>
-                  </div>
-                  <button type="button" (click)="addPicture()" class="btn-add">+ Add Picture</button>
-                </div>
-              </div>
-
-              <!-- Virtual Conversation Content -->
-              <div *ngIf="newPractice.type === 'virtual_conversation'" class="content-fields">
-                <div class="form-group">
-                  <label>Instruction (Optional)</label>
-                  <textarea [(ngModel)]="content.conversation.instruction" name="convInstruction" rows="2"
-                    placeholder="e.g., Have a conversation with the character"></textarea>
-                </div>
-
-                <div class="character-section">
-                  <h4>Character Information</h4>
-                  <div class="form-group">
-                    <label>Character Name *</label>
-                    <input type="text" [(ngModel)]="content.conversation.character.name" name="charName" placeholder="e.g., Alex" required />
-                  </div>
-                  <div class="form-group">
-                    <label>Avatar (Emoji) *</label>
-                    <input type="text" [(ngModel)]="content.conversation.character.avatar" name="charAvatar" placeholder="e.g., 👦" required />
-                  </div>
-                  <div class="form-group">
-                    <label>Character Bio *</label>
-                    <textarea [(ngModel)]="content.conversation.character.bio" name="charBio" rows="2"
-                      placeholder="e.g., A friendly student who loves sports" required></textarea>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label>Conversation Topic *</label>
-                  <input type="text" [(ngModel)]="content.conversation.topic" name="convTopic" placeholder="e.g., Hobbies and Interests" required />
-                </div>
-
-                <div class="prompts-section">
-                  <label>Conversation Prompts *</label>
-                  <div *ngFor="let prompt of content.conversation.prompts; let i = index" class="prompt-item">
-                    <input type="text" [(ngModel)]="content.conversation.prompts[i]" [name]="'prompt_' + i" placeholder="Prompt" required />
-                    <button type="button" (click)="removeConversationPrompt(i)" class="btn-remove-small">×</button>
-                  </div>
-                  <button type="button" (click)="addConversationPrompt()" class="btn-add">+ Add Prompt</button>
-                </div>
-              </div>
-
-              <!-- Role Play Content -->
-              <div *ngIf="newPractice.type === 'role_play'" class="content-fields">
-                <div class="form-group">
-                  <label>Instruction (Optional)</label>
-                  <textarea [(ngModel)]="content.rolePlay.instruction" name="roleInstruction" rows="2"
-                    placeholder="e.g., Act out the scenario with your partner"></textarea>
-                </div>
-
-                <div class="scenarios-section">
-                  <label>Scenarios *</label>
-                  <div *ngFor="let scenario of content.rolePlay.scenarios; let i = index" class="scenario-item">
-                    <div class="scenario-header">
-                      <span class="scenario-number">Scenario {{i + 1}}</span>
-                      <button type="button" (click)="removeScenario(i)" class="btn-remove">×</button>
-                    </div>
-                    <div class="scenario-fields">
-                      <input type="text" [(ngModel)]="scenario.title" [name]="'scenarioTitle_' + i" placeholder="Scenario Title" required />
-                      <textarea [(ngModel)]="scenario.description" [name]="'scenarioDesc_' + i" rows="2" placeholder="Description" required></textarea>
-
-                      <div class="characters-subsection">
-                        <label>Characters</label>
-                        <div *ngFor="let char of scenario.characters; let j = index" class="character-item-small">
-                          <input type="text" [(ngModel)]="char.name" [name]="'charName_' + i + '_' + j" placeholder="Name" required />
-                          <input type="text" [(ngModel)]="char.role" [name]="'charRole_' + i + '_' + j" placeholder="Role" required />
-                          <button type="button" (click)="removeScenarioCharacter(i, j)" class="btn-remove-small">×</button>
-                        </div>
-                        <button type="button" (click)="addScenarioCharacter(i)" class="btn-add-small">+ Character</button>
-                      </div>
-
-                      <div class="prompts-subsection">
-                        <label>Dialogue Prompts</label>
-                        <div *ngFor="let prompt of scenario.dialoguePrompts; let j = index" class="prompt-item-small">
-                          <input type="text" [(ngModel)]="scenario.dialoguePrompts[j]" [name]="'dialoguePrompt_' + i + '_' + j" placeholder="Prompt" />
-                          <button type="button" (click)="removeDialoguePrompt(i, j)" class="btn-remove-small">×</button>
-                        </div>
-                        <button type="button" (click)="addDialoguePrompt(i)" class="btn-add-small">+ Prompt</button>
-                      </div>
-                    </div>
-                  </div>
-                  <button type="button" (click)="addScenario()" class="btn-add">+ Add Scenario</button>
-                </div>
-              </div>
-
-              <!-- Story Creation Content -->
-              <div *ngIf="newPractice.type === 'story_creation'" class="content-fields">
-                <div class="form-group">
-                  <label>Instruction (Optional)</label>
-                  <textarea [(ngModel)]="content.storyCreation.instruction" name="storyInstruction" rows="2"
-                    placeholder="e.g., Create your own story using the vocabulary words"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Theme *</label>
-                  <input type="text" [(ngModel)]="content.storyCreation.theme" name="storyTheme" placeholder="e.g., Adventure" required />
-                </div>
-
-                <div class="form-group">
-                  <label>Story Starter (Optional)</label>
-                  <textarea [(ngModel)]="content.storyCreation.storyStarter" name="storyStarter" rows="2"
-                    placeholder="e.g., Once upon a time, in a faraway land..."></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Vocabulary Words (comma-separated)</label>
-                  <input type="text" [(ngModel)]="content.storyCreation.vocabularyWords" name="storyVocab"
-                    placeholder="e.g., adventure, forest, treasure" />
-                </div>
-
-                <div class="form-group">
-                  <label>Image Prompts (URLs, comma-separated)</label>
-                  <input type="text" [(ngModel)]="content.storyCreation.imagePrompts" name="storyImages"
-                    placeholder="Image URLs" />
-                </div>
-
-                <div class="guiding-questions-section">
-                  <label>Guiding Questions</label>
-                  <div *ngFor="let question of content.storyCreation.guidingQuestions; let i = index" class="question-item">
-                    <input type="text" [(ngModel)]="content.storyCreation.guidingQuestions[i]" [name]="'question_' + i" placeholder="Question" />
-                    <button type="button" (click)="removeGuidingQuestion(i)" class="btn-remove-small">×</button>
-                  </div>
-                  <button type="button" (click)="addGuidingQuestion()" class="btn-add">+ Add Question</button>
-                </div>
-              </div>
-
-              <!-- Singing & Chanting Content -->
-              <div *ngIf="newPractice.type === 'singing_chanting'" class="content-fields">
-                <div class="form-group">
-                  <label>Instruction (Optional)</label>
-                  <textarea [(ngModel)]="content.singingChanting.instruction" name="singInstruction" rows="2"
-                    placeholder="e.g., Sing along and follow the rhythm"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Song/Chant Title *</label>
-                  <input type="text" [(ngModel)]="content.singingChanting.title" name="songTitle" placeholder="e.g., Twinkle Twinkle Little Star" required />
-                </div>
-
-                <div class="form-group">
-                  <label>Audio URL (Optional)</label>
-                  <input type="text" [(ngModel)]="content.singingChanting.audioUrl" name="songAudio" placeholder="Audio file URL" />
-                </div>
-
-                <div class="form-group">
-                  <label>Rhythm Pattern (Optional)</label>
-                  <input type="text" [(ngModel)]="content.singingChanting.rhythmPattern" name="songRhythm"
-                    placeholder="e.g., 4/4 time, steady beat" />
-                </div>
-
-                <div class="lyrics-section">
-                  <label>Lyrics *</label>
-                  <div *ngFor="let line of content.singingChanting.lyrics; let i = index" class="lyric-item">
-                    <textarea [(ngModel)]="content.singingChanting.lyrics[i]" [name]="'lyric_' + i" rows="1" placeholder="Lyric line" required></textarea>
-                    <button type="button" (click)="removeLyricLine(i)" class="btn-remove-small">×</button>
-                  </div>
-                  <button type="button" (click)="addLyricLine()" class="btn-add">+ Add Line</button>
-                </div>
-
-                <div class="actions-section">
-                  <label>Actions (Optional)</label>
-                  <div *ngFor="let action of content.singingChanting.actions; let i = index" class="action-item">
-                    <input type="text" [(ngModel)]="content.singingChanting.actions[i]" [name]="'action_' + i" placeholder="Action description" />
-                    <button type="button" (click)="removeAction(i)" class="btn-remove-small">×</button>
-                  </div>
-                  <button type="button" (click)="addAction()" class="btn-add">+ Add Action</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Assign To</label>
-              <div class="student-selection">
-                <label class="checkbox-label">
-                  <input type="checkbox" [(ngModel)]="assignToAll" name="assignToAll" (change)="toggleAssignAll()" />
-                  All Students
-                </label>
-                <div *ngIf="!assignToAll" class="student-list-selector">
-                  <div *ngFor="let student of students" class="checkbox-label">
-                    <input type="checkbox" [checked]="isStudentSelected(student.id)" (change)="toggleStudent(student.id)" />
-                    {{ student.firstName }} {{ student.lastName }} (Grade {{ student.grade }})
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="createError" class="error-message">{{ createError }}</div>
-            <div *ngIf="createSuccess" class="success-message">{{ createSuccess }}</div>
-
-            <button type="submit" class="btn-create" [disabled]="isCreating">
-              {{ isCreating ? 'Creating...' : 'Create Practice' }}
-            </button>
-          </form>
+<div class="custom-practice-page">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-left">
+        <button (click)="goBack()" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+          </svg>
+          Back
+        </button>
+        <div class="page-title">
+          <div class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 6.75a5.25 5.25 0 016.775-5.025.75.75 0 01.313 1.248l-3.32 3.319c.063.475.276.934.641 1.299.365.365.824.578 1.3.64l3.318-3.319a.75.75 0 011.248.313 5.25 5.25 0 01-5.472 6.756c-1.018-.086-1.87.1-2.309.634L7.344 21.3A3.298 3.298 0 112.7 16.657l8.684-7.151c.533-.44.72-1.291.634-2.309A5.342 5.342 0 0112 6.75zM4.117 19.125a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75h-.008a.75.75 0 01-.75-.75v-.008z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h1>Create Custom Practice</h1>
         </div>
+      </div>
+    </div>
+  </nav>
 
-        <!-- Right: Existing Practices -->
-        <div class="practices-section">
-          <h2>My Custom Practices</h2>
-
-          <div *ngIf="isLoadingPractices" class="loading">Loading...</div>
-
-          <div *ngIf="!isLoadingPractices && customPractices.length === 0" class="empty-state">
-            No custom practices yet. Create one to get started!
+  <!-- Main Content -->
+  <main class="page-content">
+    <div class="two-column-layout">
+      <!-- Left: Create Form -->
+      <div class="form-section">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+          </svg>
+          New Practice
+        </h2>
+        <form (ngSubmit)="createPractice()" class="practice-form">
+          <div class="form-group">
+            <label>Title *</label>
+            <input type="text" [(ngModel)]="newPractice.title" name="title" required placeholder="e.g., Describe Your Favorite Food" />
           </div>
 
-          <div *ngIf="!isLoadingPractices && customPractices.length > 0" class="practices-list">
-            <div *ngFor="let practice of customPractices" class="practice-card">
-              <div class="practice-header">
-                <h3>{{ practice.activity.title }}</h3>
-                <button (click)="deletePractice(practice.activity.id)" class="btn-delete" title="Delete">🗑️</button>
-              </div>
-              <p class="practice-description">{{ practice.activity.description }}</p>
-              <div class="practice-meta">
-                <span class="badge">{{ formatType(practice.activity.type) }}</span>
-                <span class="badge">{{ formatDifficulty(practice.activity.difficulty) }}</span>
-                <span class="badge">{{ formatSkillArea(practice.activity.skillArea) }}</span>
-              </div>
-              <div class="practice-stats">
-                <div class="stat-item">
-                  <strong>{{ practice.activity.pointsReward }}</strong> pts
-                </div>
-                <div class="stat-item">
-                  <strong>{{ practice.totalAssigned }}</strong> students
-                </div>
-                <div class="stat-item">
-                  Level <strong>{{ practice.activity.minLevel }}</strong>
-                  <span *ngIf="practice.activity.maxLevel">- {{ practice.activity.maxLevel }}</span>
-                </div>
-              </div>
-              <details class="assigned-students">
-                <summary>View assigned students ({{ practice.totalAssigned }})</summary>
-                <ul>
-                  <li *ngFor="let student of practice.assignedStudents">
-                    {{ student.name }}
-                  </li>
-                </ul>
-              </details>
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea [(ngModel)]="newPractice.description" name="description" required rows="3" placeholder="What will students do in this activity?"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Activity Type *</label>
+              <select [(ngModel)]="newPractice.type" name="type" required (change)="onActivityTypeChange()">
+                <option value="">Select type...</option>
+                <option *ngFor="let type of activityTypes" [value]="type.value">{{ type.label }}</option>
+              </select>
+              <small *ngIf="newPractice.type">{{ getTypeDescription(newPractice.type) }}</small>
             </div>
+
+            <div class="form-group">
+              <label>Difficulty *</label>
+              <select [(ngModel)]="newPractice.difficulty" name="difficulty" required>
+                <option value="">Select...</option>
+                <option *ngFor="let diff of difficultyLevels" [value]="diff.value">{{ diff.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Skill Area *</label>
+              <select [(ngModel)]="newPractice.skillArea" name="skillArea" required>
+                <option value="">Select...</option>
+                <option *ngFor="let skill of skillAreas" [value]="skill.value">{{ skill.label }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Points Reward *</label>
+              <input type="number" [(ngModel)]="newPractice.pointsReward" name="pointsReward" required min="5" max="50" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Min Level *</label>
+              <input type="number" [(ngModel)]="newPractice.minLevel" name="minLevel" required min="1" max="10" />
+            </div>
+
+            <div class="form-group">
+              <label>Max Level (Optional)</label>
+              <input type="number" [(ngModel)]="newPractice.maxLevel" name="maxLevel" min="1" max="10" />
+            </div>
+          </div>
+
+          <!-- Dynamic Content Fields Based on Activity Type -->
+          <div *ngIf="newPractice.type" class="content-section">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm11.378-3.917c-.89-.777-2.366-.777-3.255 0a.75.75 0 01-.988-1.129c1.454-1.272 3.776-1.272 5.23 0 1.513 1.324 1.513 3.518 0 4.842a3.75 3.75 0 01-.837.552c-.676.328-1.028.774-1.028 1.152v.75a.75.75 0 01-1.5 0v-.75c0-1.279 1.06-2.107 1.875-2.502.182-.088.351-.199.503-.331.83-.727.83-1.857 0-2.584zM12 18a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+              </svg>
+              Activity Content
+            </h3>
+
+            <!-- Pronunciation Challenge Content -->
+            <div *ngIf="newPractice.type === 'pronunciation_challenge'" class="content-fields">
+              <div class="form-group">
+                <label>Instruction (Optional)</label>
+                <textarea [(ngModel)]="content.pronunciation.instruction" name="pronInstruction" rows="2"
+                  placeholder="e.g., Listen carefully and repeat each word clearly"></textarea>
+              </div>
+
+              <div class="words-section">
+                <label>Words to Practice *</label>
+                <div *ngFor="let word of content.pronunciation.words; let i = index" class="word-item">
+                  <div class="word-header">
+                    <span class="word-number">Word {{i + 1}}</span>
+                    <button type="button" (click)="removePronunciationWord(i)" class="btn-remove">×</button>
+                  </div>
+                  <div class="word-fields">
+                    <input type="text" [(ngModel)]="word.word" [name]="'word_' + i" placeholder="Word" required />
+                    <input type="text" [(ngModel)]="word.phonetic" [name]="'phonetic_' + i" placeholder="Phonetic (e.g., /həˈloʊ/)" required />
+                    <input type="text" [(ngModel)]="word.audioUrl" [name]="'audioUrl_' + i" placeholder="Audio URL (optional)" />
+                  </div>
+                </div>
+                <button type="button" (click)="addPronunciationWord()" class="btn-add">+ Add Word</button>
+              </div>
+            </div>
+
+            <!-- Picture Description Content -->
+            <div *ngIf="newPractice.type === 'picture_description'" class="content-fields">
+              <div class="form-group">
+                <label>Instruction (Optional)</label>
+                <textarea [(ngModel)]="content.pictureDescription.instruction" name="picInstruction" rows="2"
+                  placeholder="e.g., Look at the picture and describe what you see"></textarea>
+              </div>
+
+              <div class="pictures-section">
+                <label>Pictures *</label>
+                <div *ngFor="let picture of content.pictureDescription.pictures; let i = index" class="picture-item">
+                  <div class="picture-header">
+                    <span class="picture-number">Picture {{i + 1}}</span>
+                    <button type="button" (click)="removePicture(i)" class="btn-remove">×</button>
+                  </div>
+                  <div class="picture-fields">
+                    <input type="text" [(ngModel)]="picture.imageUrl" [name]="'imageUrl_' + i" placeholder="Image URL" required />
+                    <textarea [(ngModel)]="picture.prompt" [name]="'prompt_' + i" rows="2" placeholder="Prompt" required></textarea>
+                    <input type="text" [(ngModel)]="picture.vocabularyHints" [name]="'vocab_' + i"
+                      placeholder="Vocabulary hints (comma-separated)" />
+                  </div>
+                </div>
+                <button type="button" (click)="addPicture()" class="btn-add">+ Add Picture</button>
+              </div>
+            </div>
+
+            <!-- Virtual Conversation Content -->
+            <div *ngIf="newPractice.type === 'virtual_conversation'" class="content-fields">
+              <div class="form-group">
+                <label>Instruction (Optional)</label>
+                <textarea [(ngModel)]="content.conversation.instruction" name="convInstruction" rows="2"
+                  placeholder="e.g., Have a conversation with the character"></textarea>
+              </div>
+
+              <div class="character-section">
+                <h4>Character Information</h4>
+                <div class="form-group">
+                  <label>Character Name *</label>
+                  <input type="text" [(ngModel)]="content.conversation.character.name" name="charName" placeholder="e.g., Alex" required />
+                </div>
+                <div class="form-group">
+                  <label>Avatar (Emoji) *</label>
+                  <input type="text" [(ngModel)]="content.conversation.character.avatar" name="charAvatar" placeholder="e.g., Student emoji" required />
+                </div>
+                <div class="form-group">
+                  <label>Character Bio *</label>
+                  <textarea [(ngModel)]="content.conversation.character.bio" name="charBio" rows="2"
+                    placeholder="e.g., A friendly student who loves sports" required></textarea>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Conversation Topic *</label>
+                <input type="text" [(ngModel)]="content.conversation.topic" name="convTopic" placeholder="e.g., Hobbies and Interests" required />
+              </div>
+
+              <div class="prompts-section">
+                <label>Conversation Prompts *</label>
+                <div *ngFor="let prompt of content.conversation.prompts; let i = index" class="prompt-item">
+                  <input type="text" [(ngModel)]="content.conversation.prompts[i]" [name]="'prompt_' + i" placeholder="Prompt" required />
+                  <button type="button" (click)="removeConversationPrompt(i)" class="btn-remove-small">×</button>
+                </div>
+                <button type="button" (click)="addConversationPrompt()" class="btn-add">+ Add Prompt</button>
+              </div>
+            </div>
+
+            <!-- Role Play Content -->
+            <div *ngIf="newPractice.type === 'role_play'" class="content-fields">
+              <div class="form-group">
+                <label>Instruction (Optional)</label>
+                <textarea [(ngModel)]="content.rolePlay.instruction" name="roleInstruction" rows="2"
+                  placeholder="e.g., Act out the scenario with your partner"></textarea>
+              </div>
+
+              <div class="scenarios-section">
+                <label>Scenarios *</label>
+                <div *ngFor="let scenario of content.rolePlay.scenarios; let i = index" class="scenario-item">
+                  <div class="scenario-header">
+                    <span class="scenario-number">Scenario {{i + 1}}</span>
+                    <button type="button" (click)="removeScenario(i)" class="btn-remove">×</button>
+                  </div>
+                  <div class="scenario-fields">
+                    <input type="text" [(ngModel)]="scenario.title" [name]="'scenarioTitle_' + i" placeholder="Scenario Title" required />
+                    <textarea [(ngModel)]="scenario.description" [name]="'scenarioDesc_' + i" rows="2" placeholder="Description" required></textarea>
+
+                    <div class="characters-subsection">
+                      <label>Characters</label>
+                      <div *ngFor="let char of scenario.characters; let j = index" class="character-item-small">
+                        <input type="text" [(ngModel)]="char.name" [name]="'charName_' + i + '_' + j" placeholder="Name" required />
+                        <input type="text" [(ngModel)]="char.role" [name]="'charRole_' + i + '_' + j" placeholder="Role" required />
+                        <button type="button" (click)="removeScenarioCharacter(i, j)" class="btn-remove-small">×</button>
+                      </div>
+                      <button type="button" (click)="addScenarioCharacter(i)" class="btn-add-small">+ Character</button>
+                    </div>
+
+                    <div class="prompts-subsection">
+                      <label>Dialogue Prompts</label>
+                      <div *ngFor="let prompt of scenario.dialoguePrompts; let j = index" class="prompt-item-small">
+                        <input type="text" [(ngModel)]="scenario.dialoguePrompts[j]" [name]="'dialoguePrompt_' + i + '_' + j" placeholder="Prompt" />
+                        <button type="button" (click)="removeDialoguePrompt(i, j)" class="btn-remove-small">×</button>
+                      </div>
+                      <button type="button" (click)="addDialoguePrompt(i)" class="btn-add-small">+ Prompt</button>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" (click)="addScenario()" class="btn-add">+ Add Scenario</button>
+              </div>
+            </div>
+
+            <!-- Story Creation Content -->
+            <div *ngIf="newPractice.type === 'story_creation'" class="content-fields">
+              <div class="form-group">
+                <label>Instruction (Optional)</label>
+                <textarea [(ngModel)]="content.storyCreation.instruction" name="storyInstruction" rows="2"
+                  placeholder="e.g., Create your own story using the vocabulary words"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Theme *</label>
+                <input type="text" [(ngModel)]="content.storyCreation.theme" name="storyTheme" placeholder="e.g., Adventure" required />
+              </div>
+
+              <div class="form-group">
+                <label>Story Starter (Optional)</label>
+                <textarea [(ngModel)]="content.storyCreation.storyStarter" name="storyStarter" rows="2"
+                  placeholder="e.g., Once upon a time, in a faraway land..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Vocabulary Words (comma-separated)</label>
+                <input type="text" [(ngModel)]="content.storyCreation.vocabularyWords" name="storyVocab"
+                  placeholder="e.g., adventure, forest, treasure" />
+              </div>
+
+              <div class="form-group">
+                <label>Image Prompts (URLs, comma-separated)</label>
+                <input type="text" [(ngModel)]="content.storyCreation.imagePrompts" name="storyImages"
+                  placeholder="Image URLs" />
+              </div>
+
+              <div class="guiding-questions-section">
+                <label>Guiding Questions</label>
+                <div *ngFor="let question of content.storyCreation.guidingQuestions; let i = index" class="question-item">
+                  <input type="text" [(ngModel)]="content.storyCreation.guidingQuestions[i]" [name]="'question_' + i" placeholder="Question" />
+                  <button type="button" (click)="removeGuidingQuestion(i)" class="btn-remove-small">×</button>
+                </div>
+                <button type="button" (click)="addGuidingQuestion()" class="btn-add">+ Add Question</button>
+              </div>
+            </div>
+
+            <!-- Singing & Chanting Content -->
+            <div *ngIf="newPractice.type === 'singing_chanting'" class="content-fields">
+              <div class="form-group">
+                <label>Instruction (Optional)</label>
+                <textarea [(ngModel)]="content.singingChanting.instruction" name="singInstruction" rows="2"
+                  placeholder="e.g., Sing along and follow the rhythm"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Song/Chant Title *</label>
+                <input type="text" [(ngModel)]="content.singingChanting.title" name="songTitle" placeholder="e.g., Twinkle Twinkle Little Star" required />
+              </div>
+
+              <div class="form-group">
+                <label>Audio URL (Optional)</label>
+                <input type="text" [(ngModel)]="content.singingChanting.audioUrl" name="songAudio" placeholder="Audio file URL" />
+              </div>
+
+              <div class="form-group">
+                <label>Rhythm Pattern (Optional)</label>
+                <input type="text" [(ngModel)]="content.singingChanting.rhythmPattern" name="songRhythm"
+                  placeholder="e.g., 4/4 time, steady beat" />
+              </div>
+
+              <div class="lyrics-section">
+                <label>Lyrics *</label>
+                <div *ngFor="let line of content.singingChanting.lyrics; let i = index" class="lyric-item">
+                  <textarea [(ngModel)]="content.singingChanting.lyrics[i]" [name]="'lyric_' + i" rows="1" placeholder="Lyric line" required></textarea>
+                  <button type="button" (click)="removeLyricLine(i)" class="btn-remove-small">×</button>
+                </div>
+                <button type="button" (click)="addLyricLine()" class="btn-add">+ Add Line</button>
+              </div>
+
+              <div class="actions-section">
+                <label>Actions (Optional)</label>
+                <div *ngFor="let action of content.singingChanting.actions; let i = index" class="action-item">
+                  <input type="text" [(ngModel)]="content.singingChanting.actions[i]" [name]="'action_' + i" placeholder="Action description" />
+                  <button type="button" (click)="removeAction(i)" class="btn-remove-small">×</button>
+                </div>
+                <button type="button" (click)="addAction()" class="btn-add">+ Add Action</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Assign To</label>
+            <div class="student-selection">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="assignToAll" name="assignToAll" (change)="toggleAssignAll()" />
+                All Students
+              </label>
+              <div *ngIf="!assignToAll" class="student-list-selector">
+                <div *ngFor="let student of students" class="checkbox-label">
+                  <input type="checkbox" [checked]="isStudentSelected(student.id)" (change)="toggleStudent(student.id)" />
+                  {{ student.firstName }} {{ student.lastName }} (Grade {{ student.grade }})
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="createError" class="error-message">{{ createError }}</div>
+          <div *ngIf="createSuccess" class="success-message">{{ createSuccess }}</div>
+
+          <button type="submit" class="btn-create" [disabled]="isCreating">
+            <svg *ngIf="!isCreating" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+            </svg>
+            {{ isCreating ? 'Creating...' : 'Create Practice' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Right: Existing Practices -->
+      <div class="practices-section">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.644 1.59a.75.75 0 01.712 0l9.75 5.25a.75.75 0 010 1.32l-9.75 5.25a.75.75 0 01-.712 0l-9.75-5.25a.75.75 0 010-1.32l9.75-5.25z" />
+            <path d="M3.265 10.602l7.668 4.129a2.25 2.25 0 002.134 0l7.668-4.13 1.37.739a.75.75 0 010 1.32l-9.75 5.25a.75.75 0 01-.71 0l-9.75-5.25a.75.75 0 010-1.32l1.37-.738z" />
+            <path d="M10.933 19.231l-7.668-4.13-1.37.739a.75.75 0 000 1.32l9.75 5.25c.221.12.489.12.71 0l9.75-5.25a.75.75 0 000-1.32l-1.37-.738-7.668 4.13a2.25 2.25 0 01-2.134-.001z" />
+          </svg>
+          My Custom Practices
+        </h2>
+
+        <div *ngIf="isLoadingPractices" class="loading">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0112.548-3.364l1.903 1.903h-3.183a.75.75 0 100 1.5h4.992a.75.75 0 00.75-.75V4.356a.75.75 0 00-1.5 0v3.18l-1.9-1.9A9 9 0 003.306 9.67a.75.75 0 101.45.388zm15.408 3.352a.75.75 0 00-.919.53 7.5 7.5 0 01-12.548 3.364l-1.902-1.903h3.183a.75.75 0 000-1.5H2.984a.75.75 0 00-.75.75v4.992a.75.75 0 001.5 0v-3.18l1.9 1.9a9 9 0 0015.059-4.035.75.75 0 00-.53-.918z" clip-rule="evenodd" />
+          </svg>
+          Loading...
+        </div>
+
+        <div *ngIf="!isLoadingPractices && customPractices.length === 0" class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z" clip-rule="evenodd" />
+          </svg>
+          No custom practices yet. Create one to get started!
+        </div>
+
+        <div *ngIf="!isLoadingPractices && customPractices.length > 0" class="practices-list">
+          <div *ngFor="let practice of customPractices" class="practice-card">
+            <div class="practice-header">
+              <h3>{{ practice.activity.title }}</h3>
+              <button (click)="deletePractice(practice.activity.id)" class="btn-delete" title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            <p class="practice-description">{{ practice.activity.description }}</p>
+            <div class="practice-meta">
+              <span class="badge">{{ formatType(practice.activity.type) }}</span>
+              <span class="badge">{{ formatDifficulty(practice.activity.difficulty) }}</span>
+              <span class="badge">{{ formatSkillArea(practice.activity.skillArea) }}</span>
+            </div>
+            <div class="practice-stats">
+              <div class="stat-item">
+                <strong>{{ practice.activity.pointsReward }}</strong> pts
+              </div>
+              <div class="stat-item">
+                <strong>{{ practice.totalAssigned }}</strong> students
+              </div>
+              <div class="stat-item">
+                Level <strong>{{ practice.activity.minLevel }}</strong>
+                <span *ngIf="practice.activity.maxLevel">- {{ practice.activity.maxLevel }}</span>
+              </div>
+            </div>
+            <details class="assigned-students">
+              <summary>View assigned students ({{ practice.totalAssigned }})</summary>
+              <ul>
+                <li *ngFor="let student of practice.assignedStudents">
+                  {{ student.name }}
+                </li>
+              </ul>
+            </details>
           </div>
         </div>
       </div>
     </div>
+  </main>
+</div>

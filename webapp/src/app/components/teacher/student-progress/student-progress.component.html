@@ -1,192 +1,327 @@
-
-    <div class="progress-container">
-      <div class="header">
-        <button (click)="goBack()" class="back-btn">← Back to Students</button>
-        <h1>Student Progress Analysis</h1>
-      </div>
-
-      <div *ngIf="isLoading" class="loading">Loading progress...</div>
-
-      <div *ngIf="!isLoading && detailedProgress" class="content">
-        <div class="student-info">
-          <h2>{{ detailedProgress.student.name }}</h2>
-          <p>Grade {{ detailedProgress.student.grade }} | Level {{ detailedProgress.student.currentLevel }}</p>
+<div class="teacher-student-progress-page">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-left">
+        <button (click)="goBack()" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+          </svg>
+          Back to Students
+        </button>
+        <div class="page-title">
+          <div class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+            </svg>
+          </div>
+          <h1>Student Progress Analysis</h1>
         </div>
-
-        <div class="overview-cards">
-          <div class="card">
-            <h3>{{ detailedProgress.student.totalPoints }}</h3>
-            <p>Total Points</p>
-            <small>Level {{ detailedProgress.student.currentLevel }}</small>
-          </div>
-
-          <div class="card">
-            <h3>{{ detailedProgress.completedActivities }}/{{ detailedProgress.totalActivities }}</h3>
-            <p>Activities Completed</p>
-            <small>{{ getCompletionPercentage() }}% completion</small>
-          </div>
-
-          <div class="card">
-            <h3>{{ detailedProgress.student.streakDays }}</h3>
-            <p>Day Streak</p>
-            <small>{{ detailedProgress.learningAnalytics.consistencyScore }}% consistency</small>
-          </div>
-
-          <div class="card">
-            <h3>{{ formatTime(detailedProgress.totalTimeSpent) }}</h3>
-            <p>Practice Time</p>
-          </div>
-        </div>
-
-        <div class="skills-section">
-          <h2>Skills Progress</h2>
-          <div class="skills-grid">
-            <div *ngFor="let skill of detailedProgress.skillProgress" class="skill-card">
-              <h4>{{ skill.skillArea | titlecase }}</h4>
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="skill.progressPercentage"></div>
-              </div>
-              <p>{{ skill.progressPercentage }}% - Level {{ skill.currentLevel }}</p>
-              <small>{{ skill.activitiesCompleted }}/{{ skill.totalActivitiesAvailable }} activities</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Activities Timeline -->
-        <div class="recent-activities-section">
-          <h2>📅 Recent Activities</h2>
-          <div class="activities-timeline">
-            <div *ngFor="let entry of getRecentActivities(); let i = index"
-                 class="timeline-entry"
-                 [class.today]="isToday(entry.date)">
-              <div class="timeline-date">
-                <span class="day">{{ formatDay(entry.date) }}</span>
-                <span class="date">{{ formatDate(entry.date) }}</span>
-              </div>
-              <div class="timeline-content">
-                <div class="activity-stats">
-                  <div class="stat">
-                    <span class="icon">🎯</span>
-                    <span class="value">{{ entry.activitiesCompleted }}</span>
-                    <span class="label">activities</span>
-                  </div>
-                  <div class="stat">
-                    <span class="icon">⏱️</span>
-                    <span class="value">{{ formatTime(entry.totalTimeSpent) }}</span>
-                    <span class="label">practice</span>
-                  </div>
-                  <div class="stat">
-                    <span class="icon">⭐</span>
-                    <span class="value">{{ entry.pointsEarned }}</span>
-                    <span class="label">points</span>
-                  </div>
-                  <div class="stat">
-                    <span class="icon">📊</span>
-                    <span class="value">{{ entry.averageScore }}%</span>
-                    <span class="label">avg score</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Performance Charts -->
-        <div class="charts-section">
-          <h2>📈 Performance Analytics</h2>
-          <div class="charts-grid">
-            <div class="chart-container">
-              <h3>Weekly Progress</h3>
-              <canvas #weeklyChart></canvas>
-            </div>
-            <div class="chart-container">
-              <h3>Skills Distribution</h3>
-              <canvas #skillsChart></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Class Comparison Section -->
-        <div class="comparison-section">
-          <h2>👥 Class Comparison</h2>
-          <div class="charts-grid">
-            <div class="chart-container">
-              <h3>Performance vs Class Average</h3>
-              <canvas #comparisonChart></canvas>
-            </div>
-            <div class="chart-container">
-              <h3>Class Ranking</h3>
-              <canvas #rankingChart></canvas>
-            </div>
-          </div>
-
-          <div class="comparison-stats">
-            <div class="stat-card">
-              <h4>Class Rank</h4>
-              <div class="rank-display">
-                <span class="rank-number">{{ classRank }}</span>
-                <span class="rank-total">/ {{ totalStudents }}</span>
-              </div>
-              <p class="percentile">Top {{ getPercentile() }}%</p>
-            </div>
-
-            <div class="stat-card">
-              <h4>Points Comparison</h4>
-              <div class="comparison-bar">
-                <div class="student-bar" [style.width.%]="getPointsPercentage()">
-                  <span>Student: {{ detailedProgress.student.totalPoints }}</span>
-                </div>
-                <div class="average-bar" [style.width.%]="getClassAveragePercentage()">
-                  <span>Class Avg: {{ classAveragePoints }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>Performance Summary</h4>
-              <div class="performance-indicators">
-                <div class="indicator" [class.above-average]="detailedProgress.student.totalPoints > classAveragePoints">
-                  <span class="label">Points:</span>
-                  <span class="value" [class.positive]="detailedProgress.student.totalPoints > classAveragePoints">
-                    {{ getPointsDifference() }} {{ detailedProgress.student.totalPoints > classAveragePoints ? 'above' : 'below' }} average
-                  </span>
-                </div>
-                <div class="indicator" [class.above-average]="detailedProgress.averageScore > classAverageScore">
-                  <span class="label">Score:</span>
-                  <span class="value" [class.positive]="detailedProgress.averageScore > classAverageScore">
-                    {{ getScoreDifference() }}% {{ detailedProgress.averageScore > classAverageScore ? 'above' : 'below' }} average
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="analytics-section">
-          <h2>🧠 Learning Analytics</h2>
-          <div class="analytics-grid">
-            <div class="insight">
-              <strong>Strongest Skill:</strong>
-              <p>{{ detailedProgress.learningAnalytics.strongestSkill | titlecase }}</p>
-            </div>
-            <div class="insight">
-              <strong>Focus Area:</strong>
-              <p>{{ detailedProgress.learningAnalytics.improvementArea | titlecase }}</p>
-            </div>
-            <div class="insight">
-              <strong>Learning Velocity:</strong>
-              <p>{{ detailedProgress.learningAnalytics.learningVelocity }} activities/week</p>
-            </div>
-            <div class="insight">
-              <strong>Performance Trend:</strong>
-              <p>{{ detailedProgress.performanceTrends.improvementTrend | titlecase }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="!isLoading && !detailedProgress" class="empty-state">
-        <p>No progress data available</p>
       </div>
     </div>
-  
+  </nav>
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading progress data...</p>
+    </div>
+
+    <!-- Progress Content -->
+    <div *ngIf="!isLoading && detailedProgress">
+      <!-- Student Info Card -->
+      <div class="student-info-card">
+        <div class="student-info-content">
+          <div class="student-avatar">
+            {{ detailedProgress.student.name.charAt(0) }}
+          </div>
+          <div class="student-details">
+            <h2>{{ detailedProgress.student.name }}</h2>
+            <p>Grade {{ detailedProgress.student.grade }} | Level {{ detailedProgress.student.currentLevel }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overview Cards -->
+      <section class="overview-section">
+        <div class="overview-grid">
+          <div class="overview-card">
+            <div class="card-icon points">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="card-value">{{ detailedProgress.student.totalPoints }}</div>
+              <div class="card-label">Total Points</div>
+              <div class="card-sub">Level {{ detailedProgress.student.currentLevel }}</div>
+            </div>
+          </div>
+
+          <div class="overview-card">
+            <div class="card-icon activities">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="card-value">{{ detailedProgress.completedActivities }}/{{ detailedProgress.totalActivities }}</div>
+              <div class="card-label">Activities Completed</div>
+              <div class="card-sub">{{ getCompletionPercentage() }}% completion</div>
+            </div>
+          </div>
+
+          <div class="overview-card">
+            <div class="card-icon streak">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="card-value">{{ detailedProgress.student.streakDays }}</div>
+              <div class="card-label">Day Streak</div>
+              <div class="card-sub">{{ detailedProgress.learningAnalytics.consistencyScore }}% consistency</div>
+            </div>
+          </div>
+
+          <div class="overview-card">
+            <div class="card-icon time">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="card-value">{{ formatTime(detailedProgress.totalTimeSpent) }}</div>
+              <div class="card-label">Practice Time</div>
+              <div class="card-sub">Total learning time</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Skills Progress Section -->
+      <section class="skills-section">
+        <div class="section-header">
+          <div class="section-icon teal">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z" clip-rule="evenodd" />
+              <path fill-rule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2>Skills Progress</h2>
+        </div>
+
+        <div class="skills-grid">
+          <div *ngFor="let skill of detailedProgress.skillProgress" class="skill-card">
+            <div class="skill-header">
+              <span class="skill-name">{{ skill.skillArea }}</span>
+              <span class="skill-level">Level {{ skill.currentLevel }}</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="skill.progressPercentage"></div>
+            </div>
+            <div class="skill-stats">
+              <span class="skill-percentage">{{ skill.progressPercentage }}%</span>
+              <span class="skill-activities">{{ skill.activitiesCompleted }}/{{ skill.totalActivitiesAvailable }} activities</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Activities Section -->
+      <section class="recent-activities-section">
+        <div class="section-header">
+          <div class="section-icon violet">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2>Recent Activities</h2>
+        </div>
+
+        <div class="activities-timeline">
+          <div *ngFor="let entry of getRecentActivities()"
+               class="timeline-entry"
+               [class.today]="isToday(entry.date)">
+            <div class="timeline-date">
+              <span class="day">{{ formatDay(entry.date) }}</span>
+              <span class="date">{{ formatDate(entry.date) }}</span>
+            </div>
+            <div class="timeline-content">
+              <div class="activity-stats">
+                <div class="stat">
+                  <div class="stat-icon target">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <span class="value">{{ entry.activitiesCompleted }}</span>
+                  <span class="label">Activities</span>
+                </div>
+                <div class="stat">
+                  <div class="stat-icon time">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <span class="value">{{ formatTime(entry.totalTimeSpent) }}</span>
+                  <span class="label">Practice</span>
+                </div>
+                <div class="stat">
+                  <div class="stat-icon star">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <span class="value">{{ entry.pointsEarned }}</span>
+                  <span class="label">Points</span>
+                </div>
+                <div class="stat">
+                  <div class="stat-icon chart">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+                    </svg>
+                  </div>
+                  <span class="value">{{ entry.averageScore }}%</span>
+                  <span class="label">Avg Score</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section class="charts-section">
+        <div class="section-header">
+          <div class="section-icon coral">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z" clip-rule="evenodd" />
+              <path fill-rule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2>Performance Analytics</h2>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-container">
+            <h3>Weekly Progress</h3>
+            <canvas #weeklyChart></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Skills Distribution</h3>
+            <canvas #skillsChart></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Class Comparison Section -->
+      <section class="comparison-section">
+        <div class="section-header">
+          <div class="section-icon primary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
+              <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
+            </svg>
+          </div>
+          <h2>Class Comparison</h2>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-container">
+            <h3>Performance vs Class Average</h3>
+            <canvas #comparisonChart></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Class Ranking</h3>
+            <canvas #rankingChart></canvas>
+          </div>
+        </div>
+
+        <div class="comparison-stats">
+          <div class="stat-card">
+            <h4>Class Rank</h4>
+            <div class="rank-display">
+              <span class="rank-number">{{ classRank }}</span>
+              <span class="rank-total">/ {{ totalStudents }}</span>
+            </div>
+            <p class="percentile">Top {{ getPercentile() }}%</p>
+          </div>
+
+          <div class="stat-card">
+            <h4>Points Comparison</h4>
+            <div class="comparison-bar">
+              <div class="student-bar" [style.width.%]="getPointsPercentage()">
+                <span>Student: {{ detailedProgress.student.totalPoints }}</span>
+              </div>
+              <div class="average-bar" [style.width.%]="getClassAveragePercentage()">
+                <span>Class Avg: {{ classAveragePoints }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <h4>Performance Summary</h4>
+            <div class="performance-indicators">
+              <div class="indicator" [class.above-average]="detailedProgress.student.totalPoints > classAveragePoints">
+                <span class="label">Points:</span>
+                <span class="value" [class.positive]="detailedProgress.student.totalPoints > classAveragePoints">
+                  {{ getPointsDifference() }} {{ detailedProgress.student.totalPoints > classAveragePoints ? 'above' : 'below' }} average
+                </span>
+              </div>
+              <div class="indicator" [class.above-average]="detailedProgress.averageScore > classAverageScore">
+                <span class="label">Score:</span>
+                <span class="value" [class.positive]="detailedProgress.averageScore > classAverageScore">
+                  {{ getScoreDifference() }}% {{ detailedProgress.averageScore > classAverageScore ? 'above' : 'below' }} average
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics Insights Section -->
+      <section class="analytics-section">
+        <div class="section-header">
+          <div class="section-icon teal">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.237 8.237 0 016 18.75c1.995 0 3.823.707 5.25 1.886V4.533zM12.75 20.636A8.214 8.214 0 0118 18.75c.966 0 1.89.166 2.75.47a.75.75 0 001-.708V4.262a.75.75 0 00-.5-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v16.103z" />
+            </svg>
+          </div>
+          <h2>Learning Analytics</h2>
+        </div>
+
+        <div class="analytics-grid">
+          <div class="insight-card">
+            <div class="insight-label">Strongest Skill</div>
+            <div class="insight-value">{{ detailedProgress.learningAnalytics.strongestSkill }}</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">Focus Area</div>
+            <div class="insight-value">{{ detailedProgress.learningAnalytics.improvementArea }}</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">Learning Velocity</div>
+            <div class="insight-value">{{ detailedProgress.learningAnalytics.learningVelocity }} activities/week</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">Performance Trend</div>
+            <div class="insight-value">{{ detailedProgress.performanceTrends.improvementTrend }}</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && !detailedProgress">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+        </svg>
+      </div>
+      <p>No progress data available</p>
+    </div>
+  </main>
+</div>
