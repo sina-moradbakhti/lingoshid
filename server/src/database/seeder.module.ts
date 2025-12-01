@@ -8,6 +8,7 @@ import { Teacher } from '../entities/teacher.entity';
 import { Badge } from '../entities/badge.entity';
 import { Activity } from '../entities/activity.entity';
 import { ActivityCompletion } from '../entities/activity-completion.entity';
+import { ActivitySession } from '../entities/activity-session.entity';
 import { Progress } from '../entities/progress.entity';
 
 @Module({
@@ -20,6 +21,7 @@ import { Progress } from '../entities/progress.entity';
       Badge,
       Activity,
       ActivityCompletion,
+      ActivitySession,
       Progress,
     ]),
   ],

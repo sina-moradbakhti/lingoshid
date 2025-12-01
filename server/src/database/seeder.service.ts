@@ -9,6 +9,7 @@ import { Teacher } from '../entities/teacher.entity';
 import { Badge } from '../entities/badge.entity';
 import { Activity } from '../entities/activity.entity';
 import { ActivityCompletion } from '../entities/activity-completion.entity';
+import { ActivitySession } from '../entities/activity-session.entity';
 import { Progress } from '../entities/progress.entity';
 import { UserRole } from '../enums/user-role.enum';
 import { ActivityType, DifficultyLevel, SkillArea } from '../enums/activity-type.enum';
@@ -48,6 +49,8 @@ export class SeederService {
     private activityRepository: Repository<Activity>,
     @InjectRepository(ActivityCompletion)
     private activityCompletionRepository: Repository<ActivityCompletion>,
+    @InjectRepository(ActivitySession)
+    private activitySessionRepository: Repository<ActivitySession>,
     @InjectRepository(Progress)
     private progressRepository: Repository<Progress>,
   ) {}
@@ -182,11 +185,29 @@ export class SeederService {
     console.log('🎯 Seeding activities...');
 
     // Clear old non-modular activities
-    const existingActivities = await this.activityRepository.count();
-    if (existingActivities > 0) {
-      console.log('   🗑️  Clearing old activities...');
-      await this.activityRepository.clear(); // Use clear() instead of delete({})
-      console.log('   ✓ Old activities removed');
+    const existingActivities = await this.activityRepository.find();
+    if (existingActivities.length > 0) {
+      console.log(`   🗑️  Clearing ${existingActivities.length} old activities...`);
+
+      // First, clear activity sessions (foreign key dependency)
+      const sessionCount = await this.activitySessionRepository.count();
+      if (sessionCount > 0) {
+        console.log(`   🗑️  Clearing ${sessionCount} activity sessions...`);
+        const sessions = await this.activitySessionRepository.find();
+        await this.activitySessionRepository.remove(sessions);
+      }
+
+      // Then clear activity completions (foreign key dependency)
+      const completionCount = await this.activityCompletionRepository.count();
+      if (completionCount > 0) {
+        console.log(`   🗑️  Clearing ${completionCount} activity completions...`);
+        const completions = await this.activityCompletionRepository.find();
+        await this.activityCompletionRepository.remove(completions);
+      }
+
+      // Finally, delete activities
+      await this.activityRepository.remove(existingActivities);
+      console.log('   ✓ Old activities and related data removed');
     }
 
     // Create new modular activities
