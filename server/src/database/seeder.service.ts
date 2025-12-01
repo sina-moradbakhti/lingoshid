@@ -185,7 +185,7 @@ export class SeederService {
     const existingActivities = await this.activityRepository.count();
     if (existingActivities > 0) {
       console.log('   🗑️  Clearing old activities...');
-      await this.activityRepository.delete({});
+      await this.activityRepository.clear(); // Use clear() instead of delete({})
       console.log('   ✓ Old activities removed');
     }
 
