@@ -516,6 +516,62 @@ export class SeederService {
       return;
     }
 
+    // Create demo student account if it doesn't exist
+    const existingDemoStudent = await this.userRepository.findOne({ where: { email: 'student@demo.com' } });
+    if (!existingDemoStudent) {
+      console.log('   📝 Creating demo student account...');
+
+      // Create demo parent first
+      const demoParentUser = this.userRepository.create({
+        email: 'parent@demo.com',
+        password: await bcrypt.hash('demo123', 10),
+        firstName: 'Demo',
+        lastName: 'Parent',
+        role: UserRole.PARENT,
+      });
+      const savedDemoParentUser = await this.userRepository.save(demoParentUser);
+
+      const demoParent = this.parentRepository.create({
+        user: savedDemoParentUser,
+        phoneNumber: '+98-912-000-0000',
+        occupation: 'Engineer',
+        receiveNotifications: true,
+        receiveProgressReports: true,
+      });
+      const savedDemoParent = await this.parentRepository.save(demoParent);
+
+      // Create demo student
+      const demoStudentUser = this.userRepository.create({
+        email: 'student@demo.com',
+        password: await bcrypt.hash('demo123', 10),
+        firstName: 'Alex',
+        lastName: 'Johnson',
+        role: UserRole.STUDENT,
+      });
+      const savedDemoStudentUser = await this.userRepository.save(demoStudentUser);
+
+      const demoStudent = this.studentRepository.create({
+        user: savedDemoStudentUser,
+        grade: 5,
+        age: 10,
+        totalPoints: 500,
+        currentLevel: 5,
+        experiencePoints: 200,
+        proficiencyLevel: 'intermediate',
+        schoolName: 'Tehran Elementary School',
+        className: '5A',
+        streakDays: 7,
+        lastActivityDate: new Date(),
+        teacher: this.randomElement(teachers),
+        parent: savedDemoParent,
+      });
+      await this.studentRepository.save(demoStudent);
+
+      console.log('   ✓ Demo student account created: student@demo.com / demo123');
+    } else {
+      console.log('   ⚠️  Demo student already exists, skipping');
+    }
+
     for (let i = 0; i < this.STUDENT_COUNT; i++) {
       const gender = Math.random() > 0.5 ? 'male' : 'female';
       const studentFirstName = this.randomElement(this.firstNames[gender]);
