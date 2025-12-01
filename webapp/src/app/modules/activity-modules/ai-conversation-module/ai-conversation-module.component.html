@@ -26,7 +26,7 @@
         <div class="message-bubble">
           <div class="message-header">
             <span class="message-sender">
-              {{ message.role === 'student' ? '👤 You' : '🤖 Alex' }}
+              {{ message.role === 'student' ? '👤 You' : '🤖 Lingo' }}
             </span>
             <span class="message-time">
               {{ message.timestamp | date:'shortTime' }}
@@ -42,7 +42,7 @@
       <div class="message-wrapper ai-message" *ngIf="isAiTyping">
         <div class="message-bubble typing-indicator">
           <div class="message-header">
-            <span class="message-sender">🤖 Alex</span>
+            <span class="message-sender">🤖 Lingo</span>
           </div>
           <div class="typing-dots">
             <span></span>

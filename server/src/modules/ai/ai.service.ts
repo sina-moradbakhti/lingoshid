@@ -132,12 +132,20 @@ export class AiService {
         content: msg.content,
       }));
 
-    // Get system prompt
-    const systemPrompt = getConversationSystemPrompt(
+    // Adjust difficulty based on student's actual proficiency level
+    // If student is beginner proficiency but activity is advanced, use intermediate
+    const adjustedDifficulty = this.adjustDifficultyForStudent(
       session.difficultyLevel,
+      session.student.proficiencyLevel
+    );
+
+    // Get system prompt with adjusted difficulty
+    const systemPrompt = getConversationSystemPrompt(
+      adjustedDifficulty,
       session.student.grade,
       session.scenario,
-      session.student.user.firstName
+      session.student.user.firstName,
+      session.student.proficiencyLevel // Pass student's actual level for additional context
     );
 
     // Get custom API key from activity content if provided (for custom modules)
@@ -277,6 +285,39 @@ export class AiService {
       default:
         return 10;
     }
+  }
+
+  /**
+   * Adjust activity difficulty based on student's actual proficiency level
+   * Ensures AI uses appropriate language for the student's real English level
+   */
+  private adjustDifficultyForStudent(
+    activityDifficulty: 'beginner' | 'intermediate' | 'advanced',
+    studentProficiency: string
+  ): 'beginner' | 'intermediate' | 'advanced' {
+    // Map student proficiency levels to difficulty
+    const proficiencyMap: { [key: string]: 'beginner' | 'intermediate' | 'advanced' } = {
+      'beginner': 'beginner',
+      'elementary': 'beginner',
+      'pre-intermediate': 'intermediate',
+      'intermediate': 'intermediate',
+      'upper-intermediate': 'advanced',
+      'advanced': 'advanced',
+    };
+
+    const studentLevel = proficiencyMap[studentProficiency?.toLowerCase()] || 'beginner';
+
+    // If activity is harder than student's level, use student's level
+    // (Don't give advanced activities to beginners with complex vocabulary)
+    const difficultyOrder = { beginner: 1, intermediate: 2, advanced: 3 };
+
+    if (difficultyOrder[activityDifficulty] > difficultyOrder[studentLevel] + 1) {
+      // Activity is too hard - reduce by one level
+      return studentLevel === 'beginner' ? 'beginner' : 'intermediate';
+    }
+
+    // Otherwise use activity difficulty (allows students to challenge themselves)
+    return activityDifficulty;
   }
 
   /**

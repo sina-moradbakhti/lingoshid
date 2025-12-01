@@ -42,6 +42,10 @@ export const routes: Routes = [
       {
         path: 'badges',
         loadComponent: () => import('./components/student/badges/badges.component').then(m => m.BadgesComponent)
+      },
+      {
+        path: 'personalized-recommendations',
+        loadComponent: () => import('./pages/personalized-recommendations/personalized-recommendations.component').then(m => m.PersonalizedRecommendationsComponent)
       }
     ]
   },

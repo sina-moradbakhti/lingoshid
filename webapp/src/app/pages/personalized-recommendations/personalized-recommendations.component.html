@@ -1,0 +1,221 @@
+<div class="personalized-recommendations-page">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="back-button" (click)="goBack()">
+      ← Back to Dashboard
+    </button>
+    <h1>Your Personalized Learning Plan</h1>
+    <p class="subtitle">AI-powered recommendations based on your progress</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Analyzing your progress...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="retry-button" (click)="loadRecommendations()">Try Again</button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !error && recommendations" class="recommendations-content">
+
+    <!-- Student Profile Card -->
+    <div class="profile-card card">
+      <div class="card-header">
+        <h2>Your Profile</h2>
+        <button class="refresh-button" (click)="refreshRecommendations()">
+          🔄 Refresh
+        </button>
+      </div>
+      <div class="profile-info">
+        <div class="info-item">
+          <span class="label">Name:</span>
+          <span class="value">{{ recommendations.studentProfile.name }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Grade:</span>
+          <span class="value">{{ recommendations.studentProfile.grade }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Level:</span>
+          <span class="value level-badge" [class]="recommendations.studentProfile.overallLevel">
+            {{ recommendations.studentProfile.overallLevel | titlecase }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weakness Analysis Card -->
+    <div class="weakness-card card">
+      <h2>Areas to Focus On</h2>
+      <div class="weakness-summary">
+        <div class="primary-weakness" *ngIf="recommendations.weaknessAnalysis.primaryWeakness">
+          <div class="weakness-badge critical">
+            <span class="badge-icon">🎯</span>
+            <span class="badge-text">Priority Focus</span>
+          </div>
+          <h3>{{ recommendations.weaknessAnalysis.primaryWeakness | titlecase }}</h3>
+          <p>This is your biggest area for growth right now</p>
+        </div>
+        <div class="secondary-weakness" *ngIf="recommendations.weaknessAnalysis.secondaryWeakness">
+          <div class="weakness-badge moderate">
+            <span class="badge-icon">📌</span>
+            <span class="badge-text">Secondary Focus</span>
+          </div>
+          <h3>{{ recommendations.weaknessAnalysis.secondaryWeakness | titlecase }}</h3>
+          <p>Work on this after your primary focus</p>
+        </div>
+      </div>
+
+      <!-- Focus Areas -->
+      <div class="focus-areas" *ngIf="recommendations.weaknessAnalysis.focusAreas.length > 0">
+        <h3>Your Focus Areas</h3>
+        <div class="focus-tags">
+          <span class="focus-tag" *ngFor="let area of recommendations.weaknessAnalysis.focusAreas">
+            {{ area }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Grammar Issues -->
+      <div class="grammar-issues" *ngIf="recommendations.weaknessAnalysis.grammarIssues.length > 0">
+        <h3>Grammar to Practice</h3>
+        <div class="issue-tags">
+          <span class="issue-tag" *ngFor="let issue of recommendations.weaknessAnalysis.grammarIssues">
+            {{ issue }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill Breakdown -->
+    <div class="skills-card card">
+      <h2>Your Skill Levels</h2>
+      <div class="skills-grid">
+        <div class="skill-item" *ngFor="let skill of recommendations.skillBreakdown">
+          <div class="skill-header">
+            <h3>{{ skill.skillArea | titlecase }}</h3>
+            <div class="skill-badges">
+              <span class="trend-badge" [class]="getTrendClass(skill.trend)">
+                {{ getTrendIcon(skill.trend) }} {{ skill.trend | titlecase }}
+              </span>
+              <span class="weakness-badge" [class]="getWeaknessLevelBadge(skill.weaknessLevel)">
+                {{ getWeaknessLevelLabel(skill.weaknessLevel) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill"
+                   [style.width.%]="skill.averageScore"
+                   [style.background-color]="getSkillAreaColor(skill.skillArea)">
+              </div>
+            </div>
+            <span class="progress-label">{{ skill.averageScore }}%</span>
+          </div>
+
+          <!-- Stats -->
+          <div class="skill-stats">
+            <div class="stat">
+              <span class="stat-label">Current Score:</span>
+              <span class="stat-value">{{ skill.currentScore }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Activities:</span>
+              <span class="stat-value">{{ skill.activitiesCompleted }}</span>
+            </div>
+          </div>
+
+          <!-- Recommendations -->
+          <div class="skill-recommendations" *ngIf="skill.recommendations.length > 0">
+            <h4>Recommendations:</h4>
+            <ul>
+              <li *ngFor="let rec of skill.recommendations">{{ rec }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Plan -->
+    <div class="action-plan-card card">
+      <h2>Your Action Plan</h2>
+      <div class="action-steps">
+        <div class="action-step" *ngFor="let step of recommendations.actionPlan; let i = index">
+          <div class="step-number">{{ i + 1 }}</div>
+          <p>{{ step }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggested Practices -->
+    <div class="practices-card card">
+      <h2>Personalized Practice Activities</h2>
+      <p class="practices-subtitle">These activities were created just for you by AI!</p>
+
+      <div class="practices-grid">
+        <div class="practice-card" *ngFor="let practice of recommendations.suggestedPractices">
+          <div class="practice-header">
+            <div class="practice-icon">{{ getPracticeTypeIcon(practice.type) }}</div>
+            <div class="practice-title-section">
+              <h3>{{ practice.title }}</h3>
+              <span class="practice-type">{{ getPracticeTypeLabel(practice.type) }}</span>
+            </div>
+            <span class="difficulty-badge" [class]="practice.difficulty">
+              {{ practice.difficulty | titlecase }}
+            </span>
+          </div>
+
+          <p class="practice-description">{{ practice.description }}</p>
+
+          <!-- Target Skill -->
+          <div class="practice-skill">
+            <span class="skill-label">Target Skill:</span>
+            <span class="skill-badge" [style.background-color]="getSkillAreaColor(practice.skillArea)">
+              {{ practice.skillArea | titlecase }}
+            </span>
+          </div>
+
+          <!-- Reasoning -->
+          <div class="practice-reasoning">
+            <strong>Why this practice?</strong>
+            <p>{{ practice.reasoning }}</p>
+          </div>
+
+          <!-- Target Weaknesses -->
+          <div class="target-weaknesses">
+            <strong>Addresses:</strong>
+            <div class="weakness-tags">
+              <span class="weakness-tag" *ngFor="let weakness of practice.targetWeaknesses">
+                {{ weakness }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button class="start-practice-button" (click)="startPractice(practice)">
+            Start Practice →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="footer-info">
+      <p class="generated-date">
+        Generated: {{ recommendations.generatedAt | date: 'medium' }}
+      </p>
+      <p class="ai-notice">
+        🤖 Powered by AI - Recommendations are personalized based on your activity history and performance
+      </p>
+    </div>
+
+  </div>
+</div>
