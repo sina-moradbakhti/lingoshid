@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AiService } from './ai.service';
-import { AiController } from './ai.controller';
+import { AiController, AiPublicController } from './ai.controller';
 import { ClaudeProvider } from './providers/claude.provider';
 import { ConversationSession } from '../../entities/conversation-session.entity';
 import { Student } from '../../entities/student.entity';
@@ -21,7 +21,7 @@ import { ActivityCompletion } from '../../entities/activity-completion.entity';
       ActivityCompletion,
     ]),
   ],
-  controllers: [AiController],
+  controllers: [AiController, AiPublicController],
   providers: [AiService, ClaudeProvider],
   exports: [AiService],
 })

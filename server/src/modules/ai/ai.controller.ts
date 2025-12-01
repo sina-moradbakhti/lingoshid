@@ -26,7 +26,7 @@ export class AiController {
     @Request() req,
     @Body() dto: StartConversationDto
   ) {
-    const studentId = req.user.studentProfile?.id;
+    const studentId = req.user.studentId;
 
     if (!studentId) {
       throw new Error('Only students can start conversations');
@@ -49,7 +49,7 @@ export class AiController {
     @Request() req,
     @Body() dto: SendMessageDto
   ) {
-    const studentId = req.user.studentProfile?.id;
+    const studentId = req.user.studentId;
 
     if (!studentId) {
       throw new Error('Only students can send messages');
@@ -72,7 +72,7 @@ export class AiController {
     @Request() req,
     @Param('sessionId') sessionId: string
   ) {
-    const studentId = req.user.studentProfile?.id;
+    const studentId = req.user.studentId;
 
     if (!studentId) {
       throw new Error('Only students can end conversations');
@@ -95,7 +95,7 @@ export class AiController {
     @Request() req,
     @Param('sessionId') sessionId: string
   ) {
-    const studentId = req.user.studentProfile?.id;
+    const studentId = req.user.studentId;
 
     if (!studentId) {
       throw new Error('Unauthorized');
@@ -115,7 +115,7 @@ export class AiController {
    */
   @Get('conversations')
   async getConversations(@Request() req) {
-    const studentId = req.user.studentProfile?.id;
+    const studentId = req.user.studentId;
 
     if (!studentId) {
       throw new Error('Unauthorized');
@@ -132,11 +132,29 @@ export class AiController {
   /**
    * Health check for AI service
    * GET /api/ai/health
+   * Public endpoint - no auth required
    */
   @Get('health')
   async healthCheck() {
     const health = await this.aiService.healthCheck();
 
+    return {
+      success: true,
+      data: health,
+    };
+  }
+}
+
+// Make health endpoint public by creating a separate controller without auth
+import { Controller as PublicController, Get as PublicGet } from '@nestjs/common';
+
+@PublicController('ai/public')
+export class AiPublicController {
+  constructor(private readonly aiService: AiService) {}
+
+  @PublicGet('health')
+  async healthCheck() {
+    const health = await this.aiService.healthCheck();
     return {
       success: true,
       data: health,

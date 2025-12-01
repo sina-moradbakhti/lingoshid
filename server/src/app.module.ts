@@ -23,6 +23,7 @@ import { AiModule } from './modules/ai/ai.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env.local', '.env'], // Load .env.local first (for secrets), then .env
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

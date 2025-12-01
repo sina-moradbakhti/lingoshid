@@ -13,6 +13,7 @@ export interface ClaudeChatOptions {
   temperature?: number;
   maxTokens?: number;
   model?: string;
+  apiKey?: string; // Optional custom API key (for custom modules)
 }
 
 export interface ClaudeChatResponse {
@@ -45,7 +46,12 @@ export class ClaudeProvider {
    */
   async chat(options: ClaudeChatOptions): Promise<ClaudeChatResponse> {
     try {
-      const response = await this.client.messages.create({
+      // Use custom API key if provided (for custom modules), otherwise use default
+      const client = options.apiKey
+        ? new Anthropic({ apiKey: options.apiKey })
+        : this.client;
+
+      const response = await client.messages.create({
         model: options.model || this.defaultModel,
         max_tokens: options.maxTokens || 300,
         temperature: options.temperature || 0.7,

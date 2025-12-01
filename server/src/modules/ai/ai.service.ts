@@ -140,12 +140,16 @@ export class AiService {
       session.student.user.firstName
     );
 
+    // Get custom API key from activity content if provided (for custom modules)
+    const customApiKey = session.activity.content?.aiConfig?.apiKey;
+
     // Get AI response
     const aiResponse = await this.claudeProvider.chat({
       systemPrompt,
       messages: claudeMessages,
       temperature: 0.8, // More creative for conversation
       maxTokens: 150, // Keep responses short
+      apiKey: customApiKey, // Use custom key if provided, otherwise default
     });
 
     // Add AI's response
