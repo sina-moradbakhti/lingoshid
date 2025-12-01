@@ -7,6 +7,7 @@ import { ActivityModuleRegistryService } from './services/activity-module-regist
 import { PronunciationModuleComponent } from './modules/activity-modules/pronunciation-module/pronunciation-module.component';
 import { QuizModuleComponent } from './modules/activity-modules/quiz-module/quiz-module.component';
 import { VocabularyMatchModuleComponent } from './modules/activity-modules/vocabulary-match-module/vocabulary-match-module.component';
+import { AiConversationModuleComponent } from './modules/activity-modules/ai-conversation-module/ai-conversation-module.component';
 
 @Component({
   selector: 'app-root',
@@ -110,6 +111,18 @@ export class App implements OnInit {
       component: VocabularyMatchModuleComponent,
       processor: null as any,
       supportedFeatures: ['images', 'interactive', 'matching'],
+      minLevel: 1
+    });
+
+    // Register AI Conversation Module
+    this.activityModuleRegistry.register({
+      type: 'ai_conversation',
+      name: 'AI Conversation',
+      description: 'Practice English through natural conversations with AI',
+      version: '1.0.0',
+      component: AiConversationModuleComponent,
+      processor: null as any,
+      supportedFeatures: ['ai', 'conversation', 'chat', 'evaluation'],
       minLevel: 1
     });
 

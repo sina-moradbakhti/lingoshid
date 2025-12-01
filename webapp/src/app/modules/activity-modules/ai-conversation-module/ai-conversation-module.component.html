@@ -1,0 +1,241 @@
+<div class="ai-conversation-module">
+  <!-- Header -->
+  <div class="module-header">
+    <h2>💬 {{ config.title }}</h2>
+    <p class="description">{{ config.description }}</p>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" *ngIf="conversationStarted && !conversationEnded">
+      <div class="progress-info">
+        <span class="progress-text">💭 Conversation in progress...</span>
+        <span class="message-count">{{ messages.length }} messages</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Container -->
+  <div class="chat-container" *ngIf="conversationStarted && !showEvaluation">
+    <!-- Chat Messages -->
+    <div class="chat-messages">
+      <div
+        *ngFor="let message of messages"
+        class="message-wrapper"
+        [class.student-message]="message.role === 'student'"
+        [class.ai-message]="message.role === 'ai'">
+
+        <div class="message-bubble">
+          <div class="message-header">
+            <span class="message-sender">
+              {{ message.role === 'student' ? '👤 You' : '🤖 Alex' }}
+            </span>
+            <span class="message-time">
+              {{ message.timestamp | date:'shortTime' }}
+            </span>
+          </div>
+          <div class="message-content">
+            {{ message.content }}
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Typing Indicator -->
+      <div class="message-wrapper ai-message" *ngIf="isAiTyping">
+        <div class="message-bubble typing-indicator">
+          <div class="message-header">
+            <span class="message-sender">🤖 Alex</span>
+          </div>
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Input -->
+    <div class="message-input-container" *ngIf="!conversationEnded">
+      <div class="input-wrapper">
+        <textarea
+          [(ngModel)]="userMessage"
+          (keypress)="onMessageKeyPress($event)"
+          [disabled]="messageInputDisabled || isAiTyping"
+          placeholder="Type your message here... (Press Enter to send)"
+          rows="2"
+          class="message-input">
+        </textarea>
+        <button
+          (click)="sendMessage()"
+          [disabled]="!userMessage.trim() || messageInputDisabled || isAiTyping"
+          class="send-btn">
+          <span *ngIf="!isAiTyping">Send →</span>
+          <span *ngIf="isAiTyping">Wait...</span>
+        </button>
+      </div>
+
+      <div class="input-hints">
+        <p class="hint">💡 Tip: Speak naturally and use complete sentences</p>
+        <button
+          (click)="endConversationManually()"
+          [disabled]="messages.length < 4"
+          class="end-conversation-btn">
+          End & Get Evaluation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evaluation Results -->
+  <div class="evaluation-container" *ngIf="showEvaluation && evaluation">
+    <!-- Overall Score Card -->
+    <div class="score-card" [ngClass]="getScoreClass(evaluation.overallScore)">
+      <div class="score-circle">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" class="score-bg"></circle>
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            class="score-fill"
+            [style.stroke-dasharray]="evaluation.overallScore * 2.827 + ' 282.7'">
+          </circle>
+        </svg>
+        <div class="score-value">{{ evaluation.overallScore }}</div>
+      </div>
+      <div class="score-info">
+        <h3>{{ getEvaluationMessage(evaluation.overallScore) }}</h3>
+        <p>{{ getEncouragement(evaluation.conversationQuality) }}</p>
+        <div class="points-earned">
+          <span class="points-icon">⭐</span>
+          <span class="points-value">{{ pointsEarned }} points earned!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Scores -->
+    <div class="detailed-scores">
+      <h4>📊 Detailed Scores:</h4>
+      <div class="score-grid">
+        <div class="score-item">
+          <div class="score-label">Grammar</div>
+          <div class="score-bar-container">
+            <div class="score-bar" [style.width.%]="evaluation.grammarScore"></div>
+          </div>
+          <div class="score-number">{{ evaluation.grammarScore }}%</div>
+        </div>
+
+        <div class="score-item">
+          <div class="score-label">Vocabulary</div>
+          <div class="score-bar-container">
+            <div class="score-bar" [style.width.%]="evaluation.vocabularyScore"></div>
+          </div>
+          <div class="score-number">{{ evaluation.vocabularyScore }}%</div>
+        </div>
+
+        <div class="score-item">
+          <div class="score-label">Coherence</div>
+          <div class="score-bar-container">
+            <div class="score-bar" [style.width.%]="evaluation.coherenceScore"></div>
+          </div>
+          <div class="score-number">{{ evaluation.coherenceScore }}%</div>
+        </div>
+
+        <div class="score-item">
+          <div class="score-label">Fluency</div>
+          <div class="score-bar-container">
+            <div class="score-bar" [style.width.%]="evaluation.fluencyScore"></div>
+          </div>
+          <div class="score-number">{{ evaluation.fluencyScore }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strengths -->
+    <div class="feedback-section strengths" *ngIf="evaluation.strengths.length > 0">
+      <h4>💪 Your Strengths:</h4>
+      <ul>
+        <li *ngFor="let strength of evaluation.strengths">{{ strength }}</li>
+      </ul>
+    </div>
+
+    <!-- Areas for Improvement -->
+    <div class="feedback-section improvements" *ngIf="evaluation.improvements.length > 0">
+      <h4>📈 Areas for Improvement:</h4>
+      <ul>
+        <li *ngFor="let improvement of evaluation.improvements">{{ improvement }}</li>
+      </ul>
+    </div>
+
+    <!-- Learning Suggestions -->
+    <div class="feedback-section suggestions" *ngIf="evaluation.suggestions.length > 0">
+      <h4>💡 Learning Suggestions:</h4>
+      <ul>
+        <li *ngFor="let suggestion of evaluation.suggestions">{{ suggestion }}</li>
+      </ul>
+    </div>
+
+    <!-- Grammar Mistakes -->
+    <div class="feedback-section mistakes" *ngIf="evaluation.grammarMistakes && evaluation.grammarMistakes.length > 0">
+      <h4>📝 Grammar Corrections:</h4>
+      <div class="mistake-card" *ngFor="let mistake of evaluation.grammarMistakes">
+        <div class="mistake-text">
+          <strong>Your sentence:</strong> {{ mistake.mistake }}
+        </div>
+        <div class="correction-text">
+          <strong>Better way:</strong> {{ mistake.correction }}
+        </div>
+        <div class="explanation-text">
+          <strong>Why:</strong> {{ mistake.explanation }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Vocabulary Used -->
+    <div class="feedback-section vocabulary" *ngIf="evaluation.vocabularyUsed.length > 0">
+      <h4>📚 Great Words You Used:</h4>
+      <div class="vocabulary-tags">
+        <span class="vocab-tag" *ngFor="let word of evaluation.vocabularyUsed">
+          {{ word }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="evaluation-actions">
+      <button
+        class="complete-btn"
+        (click)="completeActivity()">
+        Complete Activity ✓
+      </button>
+      <button
+        class="retry-btn"
+        (click)="retryConversation()">
+        ↻ Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Starting conversation...</p>
+  </div>
+
+  <!-- Processing State -->
+  <div class="processing" *ngIf="isProcessing">
+    <div class="spinner"></div>
+    <p>Evaluating your conversation...</p>
+  </div>
+
+  <!-- Error Display -->
+  <div class="error-message" *ngIf="errorMessage">
+    <p>⚠️ {{ errorMessage }}</p>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="footer-actions" *ngIf="!showEvaluation">
+    <button (click)="onActivityExit()" class="exit-btn">
+      ← Exit Conversation
+    </button>
+  </div>
+</div>
