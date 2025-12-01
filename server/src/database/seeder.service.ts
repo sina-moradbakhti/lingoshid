@@ -408,6 +408,104 @@ export class SeederService {
         isActive: true,
         order: 6,
       },
+
+      // 4. AI Conversation Activities
+      {
+        title: 'Chat with a Friend - Beginner',
+        description: 'Have a simple conversation with Alex about making new friends',
+        type: ActivityType.AI_CONVERSATION,
+        difficulty: DifficultyLevel.BEGINNER,
+        skillArea: SkillArea.FLUENCY,
+        pointsReward: 50,
+        minLevel: 1,
+        content: {
+          scenario: 'making_friends',
+          difficultyLevel: 'beginner',
+          customInstructions: 'Keep responses very simple with basic vocabulary',
+        },
+        isActive: true,
+        order: 7,
+      },
+      {
+        title: 'Chat with a Friend - Intermediate',
+        description: 'Talk with Alex about your favorite hobbies and interests',
+        type: ActivityType.AI_CONVERSATION,
+        difficulty: DifficultyLevel.INTERMEDIATE,
+        skillArea: SkillArea.FLUENCY,
+        pointsReward: 60,
+        minLevel: 3,
+        content: {
+          scenario: 'my_hobbies',
+          difficultyLevel: 'intermediate',
+          customInstructions: 'Use varied vocabulary and encourage longer responses',
+        },
+        isActive: true,
+        order: 8,
+      },
+      {
+        title: 'Chat with a Friend - Advanced',
+        description: 'Have an engaging conversation with Alex about weekend plans and family',
+        type: ActivityType.AI_CONVERSATION,
+        difficulty: DifficultyLevel.ADVANCED,
+        skillArea: SkillArea.FLUENCY,
+        pointsReward: 75,
+        minLevel: 5,
+        content: {
+          scenario: 'weekend_fun',
+          difficultyLevel: 'advanced',
+          customInstructions: 'Challenge the student with complex sentence structures',
+        },
+        isActive: true,
+        order: 9,
+      },
+      {
+        title: 'School Conversations',
+        description: 'Practice talking about school life with a classmate',
+        type: ActivityType.AI_CONVERSATION,
+        difficulty: DifficultyLevel.BEGINNER,
+        skillArea: SkillArea.FLUENCY,
+        pointsReward: 50,
+        minLevel: 2,
+        content: {
+          scenario: 'at_school',
+          difficultyLevel: 'beginner',
+          customInstructions: 'Focus on school-related vocabulary',
+        },
+        isActive: true,
+        order: 10,
+      },
+      {
+        title: 'Talk About Your Family',
+        description: 'Share stories about your family members with Alex',
+        type: ActivityType.AI_CONVERSATION,
+        difficulty: DifficultyLevel.INTERMEDIATE,
+        skillArea: SkillArea.FLUENCY,
+        pointsReward: 60,
+        minLevel: 4,
+        content: {
+          scenario: 'my_family',
+          difficultyLevel: 'intermediate',
+          customInstructions: 'Encourage descriptive language about family',
+        },
+        isActive: true,
+        order: 11,
+      },
+      {
+        title: 'Favorite Things Discussion',
+        description: 'Chat about your favorite foods, games, and activities',
+        type: ActivityType.AI_CONVERSATION,
+        difficulty: DifficultyLevel.BEGINNER,
+        skillArea: SkillArea.FLUENCY,
+        pointsReward: 50,
+        minLevel: 1,
+        content: {
+          scenario: 'favorite_things',
+          difficultyLevel: 'beginner',
+          customInstructions: 'Use simple questions about preferences',
+        },
+        isActive: true,
+        order: 12,
+      },
     ];
 
     for (const activityData of activities) {
@@ -415,7 +513,7 @@ export class SeederService {
       await this.activityRepository.save(activity);
     }
 
-    console.log('   ✓ Modular activities created successfully (6 activities)');
+    console.log('   ✓ Modular activities created successfully (12 activities: 6 practice + 6 AI conversation)');
   }
 
   async seedTeachers() {
