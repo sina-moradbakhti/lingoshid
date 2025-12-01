@@ -181,105 +181,210 @@ export class SeederService {
   async seedActivities() {
     console.log('🎯 Seeding activities...');
 
+    // Clear old non-modular activities
     const existingActivities = await this.activityRepository.count();
     if (existingActivities > 0) {
-      console.log('   ✓ Activities already exist, skipping');
-      return;
+      console.log('   🗑️  Clearing old activities...');
+      await this.activityRepository.delete({});
+      console.log('   ✓ Old activities removed');
     }
 
+    // Create new modular activities
     const activities = [
+      // 1. Pronunciation Challenge Module
       {
-        title: 'First Steps - Say Hello',
-        description: 'Practice basic greetings in English',
+        title: 'Basic Greetings - Pronunciation',
+        description: 'Practice pronouncing common English greetings',
         type: ActivityType.PRONUNCIATION_CHALLENGE,
         difficulty: DifficultyLevel.BEGINNER,
         skillArea: SkillArea.PRONUNCIATION,
-        pointsReward: 10,
+        pointsReward: 20,
         minLevel: 1,
         content: {
-          words: ['hello', 'hi', 'good morning', 'good afternoon'],
-          instructions: 'Listen and repeat each greeting clearly',
+          words: ['Hello', 'Goodbye', 'Thank you', 'Please', 'Excuse me']
         },
+        isActive: true,
         order: 1,
       },
       {
-        title: 'Describe the Playground',
-        description: 'Look at the picture and describe what you see',
-        type: ActivityType.PICTURE_DESCRIPTION,
-        difficulty: DifficultyLevel.BEGINNER,
-        skillArea: SkillArea.VOCABULARY,
-        pointsReward: 15,
-        minLevel: 1,
-        content: {
-          imageUrl: '/images/playground.jpg',
-          vocabulary: ['swing', 'slide', 'children', 'playing', 'happy'],
-          instructions: 'Describe the playground using the vocabulary words',
-        },
-        order: 2,
-      },
-      {
-        title: 'Meet a New Friend',
-        description: 'Have a conversation with Alex about your hobbies',
-        type: ActivityType.VIRTUAL_CONVERSATION,
+        title: 'Common Phrases - Pronunciation',
+        description: 'Master everyday English phrases',
+        type: ActivityType.PRONUNCIATION_CHALLENGE,
         difficulty: DifficultyLevel.INTERMEDIATE,
-        skillArea: SkillArea.FLUENCY,
-        pointsReward: 20,
+        skillArea: SkillArea.PRONUNCIATION,
+        pointsReward: 25,
         minLevel: 2,
         content: {
-          character: 'Alex',
-          scenario: 'meeting_new_friend',
-          prompts: [
-            'Hi! What\'s your name?',
-            'What do you like to do for fun?',
-            'That sounds interesting! Tell me more.',
-          ],
+          words: ['How are you', 'Nice to meet you', 'See you later', 'Have a good day', 'You are welcome']
         },
+        isActive: true,
+        order: 2,
+      },
+
+      // 2. Quiz Challenge Module
+      {
+        title: 'English Grammar Quiz - Beginner',
+        description: 'Test your knowledge of basic English grammar',
+        type: ActivityType.QUIZ_CHALLENGE,
+        difficulty: DifficultyLevel.BEGINNER,
+        skillArea: SkillArea.VOCABULARY,
+        pointsReward: 25,
+        minLevel: 1,
+        content: {
+          questions: [
+            {
+              question: 'What is the past tense of "go"?',
+              options: ['goed', 'went', 'gone', 'going'],
+              correctAnswer: 1,
+              explanation: 'The past tense of "go" is "went".',
+              category: 'Grammar'
+            },
+            {
+              question: 'Which word is a noun?',
+              options: ['run', 'happy', 'cat', 'quickly'],
+              correctAnswer: 2,
+              explanation: 'A noun is a person, place, or thing. "Cat" is a thing.',
+              category: 'Parts of Speech'
+            },
+            {
+              question: 'Choose the correct sentence:',
+              options: [
+                'She go to school',
+                'She goes to school',
+                'She going to school',
+                'She gone to school'
+              ],
+              correctAnswer: 1,
+              explanation: 'We use "goes" with "she/he/it" in present simple.',
+              category: 'Grammar'
+            }
+          ],
+          passingScore: 70,
+          showExplanations: true
+        },
+        isActive: true,
         order: 3,
       },
       {
-        title: 'At the Restaurant',
-        description: 'Practice ordering food at a restaurant',
-        type: ActivityType.ROLE_PLAY,
+        title: 'English Vocabulary Quiz',
+        description: 'Test your English vocabulary knowledge',
+        type: ActivityType.QUIZ_CHALLENGE,
         difficulty: DifficultyLevel.INTERMEDIATE,
-        skillArea: SkillArea.CONFIDENCE,
-        pointsReward: 25,
+        skillArea: SkillArea.VOCABULARY,
+        pointsReward: 30,
         minLevel: 3,
         content: {
-          scenario: 'restaurant',
-          role: 'customer',
-          vocabulary: ['menu', 'order', 'please', 'thank you', 'delicious'],
-          instructions: 'Act as a customer ordering food',
+          questions: [
+            {
+              question: 'What does "brave" mean?',
+              options: ['scared', 'courageous', 'tired', 'happy'],
+              correctAnswer: 1,
+              explanation: '"Brave" means showing courage or fearlessness.',
+              category: 'Vocabulary'
+            },
+            {
+              question: 'Which word means "very big"?',
+              options: ['tiny', 'small', 'huge', 'medium'],
+              correctAnswer: 2,
+              explanation: '"Huge" means extremely large or big.',
+              category: 'Vocabulary'
+            },
+            {
+              question: 'What is the opposite of "hot"?',
+              options: ['warm', 'cold', 'cool', 'freezing'],
+              correctAnswer: 1,
+              explanation: '"Cold" is the direct opposite of "hot".',
+              category: 'Vocabulary'
+            }
+          ],
+          passingScore: 70,
+          showExplanations: true
         },
+        isActive: true,
         order: 4,
       },
+
+      // 3. Vocabulary Match Module
       {
-        title: 'My Family Story',
-        description: 'Create and tell a story about your family',
-        type: ActivityType.STORY_CREATION,
-        difficulty: DifficultyLevel.ADVANCED,
-        skillArea: SkillArea.FLUENCY,
+        title: 'Animals Vocabulary Match',
+        description: 'Match animal words with their pictures',
+        type: ActivityType.VOCABULARY_MATCH,
+        difficulty: DifficultyLevel.BEGINNER,
+        skillArea: SkillArea.VOCABULARY,
         pointsReward: 30,
-        minLevel: 4,
+        minLevel: 1,
         content: {
-          theme: 'family',
-          vocabulary: ['mother', 'father', 'sister', 'brother', 'love', 'happy'],
-          instructions: 'Create a short story about your family using the given words',
+          vocabulary: [
+            {
+              word: 'Cat',
+              imageUrl: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop',
+              translation: 'گربه',
+              category: 'Animals'
+            },
+            {
+              word: 'Dog',
+              imageUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop',
+              translation: 'سگ',
+              category: 'Animals'
+            },
+            {
+              word: 'Bird',
+              imageUrl: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=400&h=300&fit=crop',
+              translation: 'پرنده',
+              category: 'Animals'
+            },
+            {
+              word: 'Fish',
+              imageUrl: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?w=400&h=300&fit=crop',
+              translation: 'ماهی',
+              category: 'Animals'
+            }
+          ],
+          itemsPerRound: 4,
+          showTranslations: false
         },
+        isActive: true,
         order: 5,
       },
       {
-        title: 'English Songs - Twinkle Star',
-        description: 'Sing along to improve pronunciation and rhythm',
-        type: ActivityType.SINGING_CHANTING,
+        title: 'Colors Vocabulary Match',
+        description: 'Learn color words by matching them with images',
+        type: ActivityType.VOCABULARY_MATCH,
         difficulty: DifficultyLevel.BEGINNER,
-        skillArea: SkillArea.PRONUNCIATION,
-        pointsReward: 15,
+        skillArea: SkillArea.VOCABULARY,
+        pointsReward: 30,
         minLevel: 1,
         content: {
-          song: 'Twinkle, Twinkle, Little Star',
-          lyrics: 'Twinkle, twinkle, little star, How I wonder what you are...',
-          instructions: 'Sing along and focus on clear pronunciation',
+          vocabulary: [
+            {
+              word: 'Red',
+              imageUrl: 'https://images.unsplash.com/photo-1518893063132-36e46dbe2428?w=400&h=300&fit=crop',
+              translation: 'قرمز',
+              category: 'Colors'
+            },
+            {
+              word: 'Blue',
+              imageUrl: 'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=400&h=300&fit=crop',
+              translation: 'آبی',
+              category: 'Colors'
+            },
+            {
+              word: 'Yellow',
+              imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+              translation: 'زرد',
+              category: 'Colors'
+            },
+            {
+              word: 'Green',
+              imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&h=300&fit=crop',
+              translation: 'سبز',
+              category: 'Colors'
+            }
+          ],
+          itemsPerRound: 4,
+          showTranslations: false
         },
+        isActive: true,
         order: 6,
       },
     ];
@@ -289,7 +394,7 @@ export class SeederService {
       await this.activityRepository.save(activity);
     }
 
-    console.log('   ✓ Activities created successfully');
+    console.log('   ✓ Modular activities created successfully (6 activities)');
   }
 
   async seedTeachers() {
@@ -479,7 +584,6 @@ export class SeederService {
       const savedStudent = await this.studentRepository.save(student);
 
       // Create Activity Completions
-      const completedActivities = this.randomElement(activities.slice(0, Math.min(activityCount, activities.length)));
       await this.createActivityCompletions(savedStudent, activities, activityCount, performanceTier);
 
       // Assign Badges based on performance
