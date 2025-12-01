@@ -339,7 +339,7 @@ export class AiConversationModuleComponent extends BaseActivityModuleComponent {
   /**
    * Get evaluation message based on score
    */
-  private getEvaluationMessage(score: number): string {
+  getEvaluationMessage(score: number): string {
     if (score >= 90) return 'Outstanding conversation!';
     if (score >= 75) return 'Great conversation!';
     if (score >= 60) return 'Good effort!';
@@ -349,7 +349,7 @@ export class AiConversationModuleComponent extends BaseActivityModuleComponent {
   /**
    * Get encouragement based on quality
    */
-  private getEncouragement(quality: string): string {
+  getEncouragement(quality: string): string {
     switch (quality) {
       case 'excellent':
         return 'You had an excellent conversation! Your English is very good!';
