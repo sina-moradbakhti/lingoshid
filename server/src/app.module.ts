@@ -17,6 +17,7 @@ import { BadgesModule } from './modules/badges/badges.module';
 import { AchievementsModule } from './modules/achievements/achievements.module';
 import { ClassesModule } from './modules/classes/classes.module';
 import { SeederModule } from './database/seeder.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SeederModule } from './database/seeder.module';
     AchievementsModule,
     ClassesModule,
     SeederModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,6 +6,7 @@ import { Progress } from './progress.entity';
 import { ActivityCompletion } from './activity-completion.entity';
 import { ActivitySession } from './activity-session.entity';
 import { Badge } from './badge.entity';
+import { ConversationSession } from './conversation-session.entity';
 
 @Entity('students')
 export class Student {
@@ -67,6 +68,9 @@ export class Student {
 
   @OneToMany(() => ActivitySession, session => session.student)
   activitySessions: ActivitySession[];
+
+  @OneToMany(() => ConversationSession, session => session.student)
+  conversationSessions: ConversationSession[];
 
   @ManyToMany(() => Badge)
   @JoinTable()

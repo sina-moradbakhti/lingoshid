@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { ActivityType, DifficultyLevel, SkillArea } from '../enums/activity-type.enum';
 import { ActivityCompletion } from './activity-completion.entity';
 import { ActivitySession } from './activity-session.entity';
+import { ConversationSession } from './conversation-session.entity';
 
 @Entity('activities')
 export class Activity {
@@ -69,4 +70,7 @@ export class Activity {
 
   @OneToMany(() => ActivitySession, session => session.activity)
   sessions: ActivitySession[];
+
+  @OneToMany(() => ConversationSession, session => session.activity)
+  conversationSessions: ConversationSession[];
 }
