@@ -48,6 +48,8 @@ services:
       FRONTEND_URL: https://admin.lingoshid.com
       # CORS for multiple domains
       CORS_ORIGINS: https://admin.lingoshid.com,https://lingoshid.com,https://landing.lingoshid.com
+      # AI Configuration
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     ports:
       - "127.0.0.1:3000:3000"  # Only accessible from localhost (nginx will proxy)
     volumes:
